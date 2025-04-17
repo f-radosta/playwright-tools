@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["tests/shared/*"],
+      "@components/*": ["tests/shared/components/*"],
+      "@filters/*": ["tests/shared/components/filters/*"],
+      "@training/*": ["tests/internal-training/*"]
+    }
+  },
+  "include": ["tests/**/*.ts"]
+}

@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "main_auth_profile_token",
+      "value": "e6fc9f",
+      "domain": "apimpa.loc",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "3960a84052ac7c9a3f27a0789fa9f3d5",
+      "domain": "apimpa.loc",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}
