@@ -1,6 +1,7 @@
 import { HomePage } from '@shared/pages/home-page.page';
 import { CategoriesPage } from './categories.page';
 import { BasePage } from '@shared/pages/base-page';
+import { TrainingHomePage } from './training-home.page';
 
 export class TrainingApp {
   constructor(public readonly page: BasePage) {}
@@ -15,6 +16,11 @@ export class TrainingApp {
     await this.page.trainingCategoriesLink().click();
     //await this.page.waitForPageLoad(...elements);
     return new CategoriesPage(this.page.page);
+  }
+
+  async gotoTraining(): Promise<TrainingHomePage> {
+    await this.page.trainingLink().click();
+    return new TrainingHomePage(this.page.page);
   }
 
   // ... add more navigations as needed

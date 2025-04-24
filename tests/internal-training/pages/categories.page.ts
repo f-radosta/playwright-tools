@@ -1,7 +1,6 @@
-import { Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from '@shared/pages/base-page';
 import { CategoriesListComponent } from '@training/components';
-import { expect } from '@playwright/test';
 
 // Custom error for duplicate category
 export class DuplicateCategoryError extends Error {
@@ -13,7 +12,9 @@ export class DuplicateCategoryError extends Error {
 
 export class CategoriesPage extends BasePage {
   // Categories page specific elements
-  readonly pageTitle = () => this.page.getByRole('heading', { name: 'Číselník kategorie školení' });
+  override pageTitle(): Locator {
+    return this.page.getByRole('heading', { name: 'Kategorie školení' }).locator('span');
+  }
   readonly createButton = () => this.page.getByRole('link', { name: 'Přidat' });
   
   // Component instances
@@ -33,31 +34,12 @@ export class CategoriesPage extends BasePage {
     }
     return this._categoriesList;
   }
-  
-  // /**
-  //  * Filter categories by category type
-  //  */
-  // async filterByCategory(categoryValue: string): Promise<void> {
-  //   await this.categoriesList.categoriesFilter.filter(categoryValue);
-  // }
-  
-  // /**
-  //  * Click the create button to add a new category
-  //  */
-  // async clickCreate(): Promise<void> {
-  //   await this.createButton().click();
-  // }
-  
-  // /**
-  //  * Find a category by name
-  //  */
-  // async findCategoryByName(name: string) {
-  //   return this.categoriesList.findCategoryByName(name);
-  // }
 
-  // wait until page title is visible, use expect
-  async waitForPageLoad() {
-    await expect(this.pageTitle()).toBeVisible();
+  /**
+   * Verifies that the categories page is visible by checking the page header
+   */
+  async expectCategoriesPageVisible() {
+    await this.expectPageHeaderVisible();
   }
 
   // create new category
@@ -72,7 +54,7 @@ export class CategoriesPage extends BasePage {
     const duplicateCategory = this.page.getByText('Položka stejného jména již existuje');
     if (await duplicateCategory.isVisible()) {
       await this.page.getByRole('link', { name: 'Zpět na výpis' }).click();
-      await this.waitForPageLoad();
+      await this.expectPageHeaderVisible();
       throw new DuplicateCategoryError(name);
     }
   }

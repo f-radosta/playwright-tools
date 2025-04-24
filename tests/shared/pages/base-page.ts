@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class BasePage {
   readonly page: Page;
@@ -16,40 +16,19 @@ export class BasePage {
     this.page = page;
   }
 
-  // async waitForPageLoad(...elements: Array<() => Locator>) {
-  //   // Wait until the page elements are visible
-  //   for (const element of elements) {
-  //     await expect(element()).toBeVisible();
-  //   }
-  // }
+  /**
+   * Gets the page title locator - to be overridden by subclasses
+   * @returns Locator for the page title
+   */
+  pageTitle(): Locator {
+    throw new Error('pageTitle() method must be implemented by subclass');
+  }
 
-  // // Navigation methods
-  // async navigateToHome(...elements: Array<() => Locator>) {
-  //   await this.homeLink().click();
-  //   await this.waitForPageLoad(...elements);
-  // }
-
-  // async navigateToTrainingList(...elements: Array<() => Locator>) {
-  //   await this.trainingLink().click();
-  //   await this.trainingListLink().click();
-  //   await this.waitForPageLoad(...elements);
-  // }
-
-  // async navigateToTrainingCategories(...elements: Array<() => Locator>) {
-  //   await this.trainingLink().click();
-  //   await this.trainingCategoriesLink().click();
-  //   await this.waitForPageLoad(...elements);
-  // }
-
-  // async navigateToCurrentMenu(...elements: Array<() => Locator>) {
-  //   await this.lunchOrderLink().click();
-  //   await this.currentMenuLink().click();
-  //   await this.waitForPageLoad(...elements);
-  // }
-
-  // async navigateToMonthlyBilling(...elements: Array<() => Locator>) {
-  //   await this.lunchOrderLink().click();
-  //   await this.monthlyBillingLink().click();
-  //   await this.waitForPageLoad(...elements);
-  // }
+  /**
+   * Verifies that the page is visible by checking the page title in the header
+   * This is a common method for all pages except home page
+   */
+  async expectPageHeaderVisible(): Promise<void> {
+    await expect(this.pageTitle()).toBeVisible();
+  }
 }

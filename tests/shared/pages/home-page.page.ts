@@ -1,10 +1,10 @@
-import { Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from './base-page';
 
 export class HomePage extends BasePage {
   // Home page specific elements
-  readonly pageTitle = () => this.page.getByRole('heading', { name: 'Úvodní stránka' });
-  readonly welcomeMessage = () => this.page.getByText('Vítejte v interních nástrojích');
+  readonly internalTrainingLink = () => this.page.getByRole('link', { name: 'Interní školení' }).nth(2);
+  readonly lunchOrderLink = () => this.page.getByRole('link', { name: 'Objednávání obědů' });
 
   constructor(page: Page) {
     super(page);
@@ -15,8 +15,10 @@ export class HomePage extends BasePage {
     await this.page.goto('/');
   }
 
-  async isHomePageVisible() {
-    await this.pageTitle().isVisible();
-    await this.welcomeMessage().isVisible();
+  // expect Home page specific elements visible
+  async expectHomePageVisible() {
+    await expect(this.internalTrainingLink()).toBeVisible();
+    await expect(this.lunchOrderLink()).toBeVisible();
   }
+
 }
