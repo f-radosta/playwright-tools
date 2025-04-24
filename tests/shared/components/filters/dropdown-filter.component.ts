@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent } from "@shared/components/filter.component";
 
 /**
@@ -7,11 +7,11 @@ import { FilterComponent } from "@shared/components/filter.component";
 export class DropdownFilterComponent extends FilterComponent {
   /**
    * @param root The root locator for the filter component
-   * @param selector The selector for the dropdown element
+   * @param locator The locator for the dropdown element
    */
   constructor(
-    root: Locator,
-    private readonly selector: string
+    root: Locator | Page,
+    private readonly locator: Locator
   ) {
     super(root);
   }
@@ -21,13 +21,13 @@ export class DropdownFilterComponent extends FilterComponent {
    * @param optionText The text of the option to select
    */
   async select(optionText: string): Promise<void> {
-    await this.selectDropdownOption(optionText, this.selector);
+    await this.selectDropdownOption(optionText, this.locator);
   }
 
   /**
    * Gets the currently selected option text
    */
   async getSelectedOption(): Promise<string | null> {
-    return this.root.locator(this.selector).textContent();
+    return this.locator.textContent();
   }
 }

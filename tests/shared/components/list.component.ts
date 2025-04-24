@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent, ListItemComponent } from "@shared/components";
 import { listSelectors } from "@shared/selectors/list.selectors";
 
@@ -6,7 +6,7 @@ export class ListComponent<T extends ListItemComponent = ListItemComponent> {
   public readonly filter: FilterComponent;
   protected readonly itemSelector: string = listSelectors.item;
 
-  constructor(public readonly root: Locator) {
+  constructor(public readonly root: Locator | Page) {
     this.filter = new FilterComponent(root);
   }
 

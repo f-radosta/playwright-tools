@@ -1,3 +1,5 @@
+import { Locator } from "@playwright/test";
+
 /**
  * Base interface for all filter criteria
  */
@@ -12,7 +14,7 @@ export interface BaseFilterCriteria {
 export interface TextFilterCriteria extends BaseFilterCriteria {
   type: 'text';
   value: string;
-  selector: string;
+  locator: Locator;
 }
 
 /**
@@ -21,7 +23,7 @@ export interface TextFilterCriteria extends BaseFilterCriteria {
 export interface DropdownFilterCriteria extends BaseFilterCriteria {
   type: 'dropdown';
   value: string;
-  selector: string;
+  locator: Locator;
 }
 
 /**
@@ -30,7 +32,7 @@ export interface DropdownFilterCriteria extends BaseFilterCriteria {
 export interface DateFilterCriteria extends BaseFilterCriteria {
   type: 'date';
   value: string;
-  selector: string;
+  locator: Locator;
 }
 
 /**
@@ -38,7 +40,7 @@ export interface DateFilterCriteria extends BaseFilterCriteria {
  */
 export interface CheckboxFilterCriteria extends BaseFilterCriteria {
   type: 'checkbox';
-  selector: string;
+  locator: Locator;
   state?: boolean;
 }
 
@@ -60,11 +62,11 @@ export class FilterCriteria {
   /**
    * Add a text filter criterion
    */
-  addText(value: string, selector: string): FilterCriteria {
+  addText(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
       type: 'text',
       value,
-      selector
+      locator
     });
     return this;
   }
@@ -72,11 +74,11 @@ export class FilterCriteria {
   /**
    * Add a dropdown filter criterion
    */
-  addDropdown(value: string, selector: string): FilterCriteria {
+  addDropdown(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
       type: 'dropdown',
       value,
-      selector
+      locator
     });
     return this;
   }
@@ -84,11 +86,11 @@ export class FilterCriteria {
   /**
    * Add a date filter criterion
    */
-  addDate(value: string, selector: string): FilterCriteria {
+  addDate(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
       type: 'date',
       value,
-      selector
+      locator
     });
     return this;
   }
@@ -96,10 +98,10 @@ export class FilterCriteria {
   /**
    * Add a checkbox filter criterion
    */
-  addCheckbox(selector: string, state?: boolean): FilterCriteria {
+  addCheckbox(locator: Locator, state?: boolean): FilterCriteria {
     this.criteria.push({
       type: 'checkbox',
-      selector,
+      locator,
       state
     });
     return this;

@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent } from "@shared/components/filter.component";
 
 /**
@@ -7,11 +7,11 @@ import { FilterComponent } from "@shared/components/filter.component";
 export class CheckboxFilterComponent extends FilterComponent {
   /**
    * @param root The root locator for the filter component
-   * @param selector The selector for the checkbox element
+   * @param locator The locator for the checkbox element
    */
   constructor(
-    root: Locator,
-    private readonly selector: string
+    root: Locator | Page,
+    private readonly locator: Locator
   ) {
     super(root);
   }
@@ -21,14 +21,14 @@ export class CheckboxFilterComponent extends FilterComponent {
    * @param state The desired state of the checkbox (true for checked, false for unchecked)
    */
   async setState(state: boolean): Promise<void> {
-    await this.toggleCheckbox(this.selector, state);
+    await this.toggleCheckbox(this.locator, state);
   }
 
   /**
    * Toggles the current state of the checkbox
    */
   async toggle(): Promise<void> {
-    await this.toggleCheckbox(this.selector);
+    await this.toggleCheckbox(this.locator);
   }
 
   /**
@@ -36,6 +36,6 @@ export class CheckboxFilterComponent extends FilterComponent {
    * @returns true if checked, false if unchecked
    */
   async isChecked(): Promise<boolean> {
-    return this.root.locator(this.selector).isChecked();
+    return this.locator.isChecked();
   }
 }

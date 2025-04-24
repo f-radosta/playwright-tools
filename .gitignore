@@ -54,3 +54,5 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+
+.auth

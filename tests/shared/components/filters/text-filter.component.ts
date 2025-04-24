@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent } from "@shared/components/filter.component";
 
 /**
@@ -7,11 +7,11 @@ import { FilterComponent } from "@shared/components/filter.component";
 export class TextFilterComponent extends FilterComponent {
   /**
    * @param root The root locator for the filter component
-   * @param selector The selector for the text input field
+   * @param locator The locator for the text input field
    */
   constructor(
-    root: Locator,
-    private readonly selector: string
+    root: Locator | Page,
+    private readonly locator: Locator
   ) {
     super(root);
   }
@@ -21,13 +21,13 @@ export class TextFilterComponent extends FilterComponent {
    * @param text Text to filter by
    */
   async filterBy(text: string): Promise<void> {
-    await this.filterByText(text, this.selector);
+    await this.filterByText(text, this.locator);
   }
 
   /**
    * Clears the text filter
    */
   async clear(): Promise<void> {
-    await this.root.locator(this.selector).clear();
+    await this.locator.clear();
   }
 }

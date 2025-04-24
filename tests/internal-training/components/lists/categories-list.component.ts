@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { ListComponent } from "@shared/components/list.component";
 import { CategoryListItemComponent, CategoriesFilterComponent } from "@training/components";
 
@@ -8,10 +8,10 @@ import { CategoryListItemComponent, CategoriesFilterComponent } from "@training/
 export class CategoriesListComponent extends ListComponent<CategoryListItemComponent> {
   public readonly categoriesFilter: CategoriesFilterComponent;
   
-  constructor(root: Locator) {
+  constructor(root: Locator | Page) {
     super(root);
     // Override the default filter with our specialized categories filter
-    this.categoriesFilter = new CategoriesFilterComponent(root.locator('.filter-panel'));
+    this.categoriesFilter = new CategoriesFilterComponent(root);
   }
 
   /**
@@ -22,30 +22,17 @@ export class CategoriesListComponent extends ListComponent<CategoryListItemCompo
   }
 
   /**
-   * Get all active categories
-   */
-  async getActiveCategories(): Promise<CategoryListItemComponent[]> {
-    const allItems = await this.getItems();
-    const activeItems: CategoryListItemComponent[] = [];
-    
-    for (const item of allItems) {
-      if (await item.isActive()) {
-        activeItems.push(item);
-      }
-    }
-    
-    return activeItems;
-  }
-
-  /**
    * Find a category by name
    */
   async findCategoryByName(name: string): Promise<CategoryListItemComponent | null> {
     const allItems = await this.getItems();
     
-    for (const item of allItems) {
+    // Search from last to first (reversed order)
+    for (let i = allItems.length - 1; i >= 0; i--) {
+      const item = allItems[i];
       const itemName = await item.getName();
-      if (itemName?.toLowerCase() === name.toLowerCase()) {
+      if (itemName?.toLowerCase().trim() === name.toLowerCase().trim()) {
+        console.log(`Found category "${name}" at index ${i}`);
         return item;
       }
     }
@@ -54,10 +41,14 @@ export class CategoriesListComponent extends ListComponent<CategoryListItemCompo
   }
 
   /**
-   * Click the add new category button
+   * Delete a category by name
    */
-  async clickAddNewCategory(): Promise<void> {
-    await this.root.locator('.add-category-button').click();
+  async deleteCategoryByName(name: string): Promise<void> {
+    const category = await this.findCategoryByName(name);
+    if (!category) {
+      throw new Error(`Category "${name}" not found`);
+    }
+    await category.deleteItself();
   }
 
 }

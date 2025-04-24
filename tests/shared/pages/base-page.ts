@@ -1,4 +1,4 @@
-import { expect, Page, Locator } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 
 export class BasePage {
   readonly page: Page;
@@ -16,40 +16,49 @@ export class BasePage {
     this.page = page;
   }
 
-  async waitForPageLoad(...elements: Array<() => Locator>) {
-    // Wait until the page elements are visible
-    for (const element of elements) {
-      await expect(element()).toBeVisible();
-    }
+  async acceptAlert(expectedMessage?: string): Promise<void> {
+    this.page.once('dialog', async (dialog) => {
+      if (expectedMessage) {
+        expect(dialog.message()).toContain(expectedMessage);
+      }
+      await dialog.accept();
+    });
   }
 
-  // Navigation methods
-  async navigateToHome(...elements: Array<() => Locator>) {
-    await this.homeLink().click();
-    await this.waitForPageLoad(...elements);
-  }
+  // async waitForPageLoad(...elements: Array<() => Locator>) {
+  //   // Wait until the page elements are visible
+  //   for (const element of elements) {
+  //     await expect(element()).toBeVisible();
+  //   }
+  // }
 
-  async navigateToTrainingList(...elements: Array<() => Locator>) {
-    await this.trainingLink().click();
-    await this.trainingListLink().click();
-    await this.waitForPageLoad(...elements);
-  }
+  // // Navigation methods
+  // async navigateToHome(...elements: Array<() => Locator>) {
+  //   await this.homeLink().click();
+  //   await this.waitForPageLoad(...elements);
+  // }
 
-  async navigateToTrainingCategories(...elements: Array<() => Locator>) {
-    await this.trainingLink().click();
-    await this.trainingCategoriesLink().click();
-    await this.waitForPageLoad(...elements);
-  }
+  // async navigateToTrainingList(...elements: Array<() => Locator>) {
+  //   await this.trainingLink().click();
+  //   await this.trainingListLink().click();
+  //   await this.waitForPageLoad(...elements);
+  // }
 
-  async navigateToCurrentMenu(...elements: Array<() => Locator>) {
-    await this.lunchOrderLink().click();
-    await this.currentMenuLink().click();
-    await this.waitForPageLoad(...elements);
-  }
+  // async navigateToTrainingCategories(...elements: Array<() => Locator>) {
+  //   await this.trainingLink().click();
+  //   await this.trainingCategoriesLink().click();
+  //   await this.waitForPageLoad(...elements);
+  // }
 
-  async navigateToMonthlyBilling(...elements: Array<() => Locator>) {
-    await this.lunchOrderLink().click();
-    await this.monthlyBillingLink().click();
-    await this.waitForPageLoad(...elements);
-  }
+  // async navigateToCurrentMenu(...elements: Array<() => Locator>) {
+  //   await this.lunchOrderLink().click();
+  //   await this.currentMenuLink().click();
+  //   await this.waitForPageLoad(...elements);
+  // }
+
+  // async navigateToMonthlyBilling(...elements: Array<() => Locator>) {
+  //   await this.lunchOrderLink().click();
+  //   await this.monthlyBillingLink().click();
+  //   await this.waitForPageLoad(...elements);
+  // }
 }

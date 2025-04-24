@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent, DropdownFilterComponent, FilterCriteria } from '@shared/components';
 
 /**
@@ -8,12 +8,13 @@ import { FilterComponent, DropdownFilterComponent, FilterCriteria } from '@share
 export class CategoriesFilterComponent extends FilterComponent {
   
   public readonly categoryFilter: DropdownFilterComponent;
+  readonly categoryFilterLocator = () => this.root.getByRole('combobox', { name: 'Kategorie školení' });
 
-  constructor(root: Locator) {
+  constructor(root: Locator | Page) {
     super(root);
     
     // Initialize the category dropdown filter with its specific selector
-    this.categoryFilter = new DropdownFilterComponent(root, 'select[aria-label="Kategorie školení"]');
+    this.categoryFilter = new DropdownFilterComponent(root, this.categoryFilterLocator());
   }
   
   /**
@@ -23,7 +24,7 @@ export class CategoriesFilterComponent extends FilterComponent {
    */
   async filter(categoryValue: string): Promise<void> {
     const criteria = new FilterCriteria();
-    criteria.addDropdown(categoryValue, 'select[aria-label="Kategorie školení"]');
+    criteria.addDropdown(categoryValue, this.categoryFilterLocator());
     await this.applyFilter(criteria);
   }
   

@@ -9,44 +9,60 @@ export class CategoryListItemComponent extends ListItemComponent {
    * Get the name of the category
    */
   async getName(): Promise<string | null> {
-    return this.root.locator('.category-name').textContent();
+    // The root should already be the specific TR element for this item
+    // So we just need to get the 2nd TD (index 1) within this TR
+    const name = await this.root.locator('td').nth(1).textContent();
+    
+    // Trim the name to remove any leading/trailing whitespace
+    return name ? name.trim() : name;
   }
 
-  /**
-   * Get the description of the category
-   */
-  async getDescription(): Promise<string | null> {
-    return this.root.locator('.category-description').textContent();
-  }
-
-  /**
-   * Get the number of trainings in this category
-   */
-  async getTrainingCount(): Promise<number> {
-    const countText = await this.root.locator('.training-count').textContent();
-    return countText ? parseInt(countText.replace(/\D/g, ''), 10) : 0;
-  }
-
-  /**
-   * Check if the category is active
-   */
-  async isActive(): Promise<boolean> {
-    const statusElement = this.root.locator('.category-status');
-    const statusText = await statusElement.textContent();
-    return statusText?.toLowerCase().includes('active') || false;
-  }
-
-  /**
-   * Click the view trainings button for this category
-   */
-  async clickViewTrainings(): Promise<void> {
-    await this.root.locator('.view-trainings-button').click();
-  }
+  // /**
+  //  * Click the edit button for this category
+  //  */
+  // async clickEditCategory(): Promise<void> {
+  //   await this.root.getByRole('row', { name: 'Upravit kategorii' }).getByLabel('Upravit kategorii').click();
+  // }
 
   /**
    * Click the add training button for this category
    */
-  async clickAddTraining(): Promise<void> {
-    await this.root.locator('.add-training-button').click();
+  async deleteItself(): Promise<void> {
+    // Use page.on('dialog') instead of waitForEvent for more reliable dialog handling
+    const page = this.root.page();
+    
+    // Set up a ONE-TIME dialog handler before clicking
+    const dialogHandler = async (dialog: any) => {
+      console.log('Dialog appeared with message:', dialog.message());
+      await dialog.accept();
+      console.log('Dialog accepted');
+      // Remove the handler after it's used
+      page.removeListener('dialog', dialogHandler);
+    };
+    
+    // Add the one-time handler
+    page.on('dialog', dialogHandler);
+    
+    try {
+      // Try to find the delete button using multiple strategies
+      console.log('Looking for delete button...');
+      
+      // Check if the trash icon exists and is visible
+      const trashIcon = this.root.locator('.icon-trash');
+      if (await trashIcon.isVisible()) {
+        console.log('Found visible trash icon, clicking it...');
+        await trashIcon.click({ timeout: 10000 });
+        console.log('Trash icon clicked');
+      } 
+      
+      // Wait for the deletion to complete
+      await page.waitForLoadState('networkidle');
+      console.log('Deletion completed');
+      
+    } catch (error) {
+      console.error('Error during deletion:', error);
+      throw error;
+    }
   }
+
 }

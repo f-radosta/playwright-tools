@@ -1,6 +1,5 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterCriteria, FilterCriterion } from "./filter-criteria";
-import { listSelectors } from "@shared/selectors/list.selectors";
 import { filterSelectors } from "@shared/selectors/filter.selectors";
 
 /**
@@ -9,15 +8,15 @@ import { filterSelectors } from "@shared/selectors/filter.selectors";
  * with multiple criteria.
  */
 export class FilterComponent {
-  constructor(public readonly root: Locator) {}
+  constructor(public readonly root: Locator | Page) {}
 
   /**
    * Fills a filter input field with the specified text
    * @param text Text to filter by
-   * @param textFieldSelector The selector for the filter input
+   * @param textFieldLocator The locator for the filter input
    */
-  protected async filterByText(text: string, textFieldSelector: string) {
-    await this.root.locator(textFieldSelector).fill(text);
+  protected async filterByText(text: string, textFieldLocator: Locator) {
+    await textFieldLocator.fill(text);
   }
 
   /**
@@ -30,29 +29,29 @@ export class FilterComponent {
   /**
    * Selects an option from a dropdown filter
    * @param optionText The text of the option to select
-   * @param dropdownSelector The selector for the dropdown element
+   * @param dropdownLocator The locator for the dropdown element
    */
-  protected async selectDropdownOption(optionText: string, dropdownSelector: string) {
-    await this.root.locator(dropdownSelector).click();
+  protected async selectDropdownOption(optionText: string, dropdownLocator: Locator) {
+    await dropdownLocator.click();
     await this.root.locator(`text=${optionText}`).click();
   }
 
   /**
    * Sets a date filter value
    * @param date Date string in the format expected by the date input
-   * @param dateInputSelector The selector for the date input
+   * @param dateInputLocator The locator for the date input
    */
-  protected async setDateFilter(date: string, dateInputSelector: string) {
-    await this.root.locator(dateInputSelector).fill(date);
+  protected async setDateFilter(date: string, dateInputLocator: Locator) {
+    await dateInputLocator.fill(date);
   }
 
   /**
    * Toggles a checkbox filter
-   * @param checkboxSelector The selector for the checkbox
+   * @param checkboxLocator The locator for the checkbox
    * @param state Optional desired state (checked/unchecked), toggles current state if not specified
    */
-  protected async toggleCheckbox(checkboxSelector: string, state?: boolean) {
-    const checkbox = this.root.locator(checkboxSelector);
+  protected async toggleCheckbox(checkboxLocator: Locator, state?: boolean) {
+    const checkbox = checkboxLocator;
     if (state !== undefined) {
       const isChecked = await checkbox.isChecked();
       if (isChecked !== state) {
@@ -70,16 +69,16 @@ export class FilterComponent {
   protected async applyCriterion(criterion: FilterCriterion): Promise<void> {
     switch (criterion.type) {
       case 'text':
-        await this.filterByText(criterion.value, criterion.selector);
+        await this.filterByText(criterion.value, criterion.locator);
         break;
       case 'dropdown':
-        await this.selectDropdownOption(criterion.value, criterion.selector);
+        await this.selectDropdownOption(criterion.value, criterion.locator);
         break;
       case 'date':
-        await this.setDateFilter(criterion.value, criterion.selector);
+        await this.setDateFilter(criterion.value, criterion.locator);
         break;
       case 'checkbox':
-        await this.toggleCheckbox(criterion.selector, criterion.state);
+        await this.toggleCheckbox(criterion.locator, criterion.state);
         break;
     }
   }

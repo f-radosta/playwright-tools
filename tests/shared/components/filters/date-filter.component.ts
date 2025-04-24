@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import { FilterComponent } from "@shared/components/filter.component";
 
 /**
@@ -7,11 +7,11 @@ import { FilterComponent } from "@shared/components/filter.component";
 export class DateFilterComponent extends FilterComponent {
   /**
    * @param root The root locator for the filter component
-   * @param selector The selector for the date input field
+   * @param locator The locator for the date input field
    */
   constructor(
-    root: Locator,
-    private readonly selector: string
+    root: Locator | Page,
+    private readonly locator: Locator
   ) {
     super(root);
   }
@@ -21,13 +21,13 @@ export class DateFilterComponent extends FilterComponent {
    * @param date Date string in the format expected by the date input (YYYY-MM-DD)
    */
   async setDate(date: string): Promise<void> {
-    await this.setDateFilter(date, this.selector);
+    await this.setDateFilter(date, this.locator);
   }
 
   /**
    * Clears the date filter
    */
   async clear(): Promise<void> {
-    await this.root.locator(this.selector).clear();
+    await this.locator.clear();
   }
 }
