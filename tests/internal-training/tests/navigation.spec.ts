@@ -1,4 +1,4 @@
-import { userTest } from '@shared/fixtures/auth.fixture';
+import { userTest } from 'tests/auth/auth.fixture';
 import { TrainingApp } from '@training/pages/training-app.factory';
 import { expect } from '@playwright/test';
 
