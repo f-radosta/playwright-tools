@@ -12,7 +12,8 @@
       "@shared/*": ["tests/shared/*"],
       "@components/*": ["tests/shared/components/*"],
       "@filters/*": ["tests/shared/components/filters/*"],
-      "@training/*": ["tests/internal-training/*"]
+      "@training/*": ["tests/internal-training/*"],
+      "@auth/*": ["tests/auth/*"]
     }
   },
   "include": ["tests/**/*.ts"]

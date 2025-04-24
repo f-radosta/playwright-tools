@@ -1,4 +1,4 @@
-import { userTest } from 'tests/auth/auth.fixture';
+import { userTest } from '@auth/auth.fixture';
 import { TrainingApp } from '@training/pages/training-app.factory';
 import { DuplicateCategoryError } from '@training/pages/categories.page';
 
