@@ -16,15 +16,6 @@ export class BasePage {
     this.page = page;
   }
 
-  async acceptAlert(expectedMessage?: string): Promise<void> {
-    this.page.once('dialog', async (dialog) => {
-      if (expectedMessage) {
-        expect(dialog.message()).toContain(expectedMessage);
-      }
-      await dialog.accept();
-    });
-  }
-
   // async waitForPageLoad(...elements: Array<() => Locator>) {
   //   // Wait until the page elements are visible
   //   for (const element of elements) {
