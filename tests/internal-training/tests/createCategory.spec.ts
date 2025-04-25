@@ -16,8 +16,6 @@ userTest('Create and delete category as user', async ({ trainingApp }: { trainin
     if (error instanceof DuplicateCategoryError) {
       await categoriesPage.categoriesList.deleteCategoryByName(newCategoryName);
       console.log(`Successfully deleted existing category: ${newCategoryName}`);
-      
-      await categoriesPage.page.reload();
 
       await categoriesPage.createNewCategory(newCategoryName);
       console.log(`Successfully created category: ${newCategoryName}`);
@@ -25,7 +23,7 @@ userTest('Create and delete category as user', async ({ trainingApp }: { trainin
       throw error;
     }
   }
-  
+
   // Delete the category
   await categoriesPage.categoriesList.deleteCategoryByName(newCategoryName);
   console.log(`Successfully deleted category: ${newCategoryName}`);
