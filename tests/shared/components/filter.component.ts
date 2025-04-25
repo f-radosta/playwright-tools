@@ -2,13 +2,30 @@ import { Locator, Page } from "@playwright/test";
 import { FilterCriteria, FilterCriterion } from "./filter-criteria";
 import { filterSelectors } from "@shared/selectors/filter.selectors";
 
+export { FilterCriteria, FilterCriterion };
+
 /**
- * FilterComponent provides a flexible interface for handling various filtering scenarios
- * in the application. It supports both simple text filtering and more complex filtering
- * with multiple criteria.
+ * Interface for all filter components
  */
-export class FilterComponent {
+export interface IFilter {
+  /**
+   * Resets the current filter
+   */
+  resetFilter(): Promise<void>;
+}
+
+/**
+ * Base component for all filters
+ */
+export abstract class BaseFilterComponent implements IFilter {
   constructor(public readonly root: Locator | Page) {}
+
+  /**
+   * Resets the current filter
+   */
+  async resetFilter() {
+    await this.root.getByTitle(filterSelectors.titles.reset).click();
+  }
 
   /**
    * Fills a filter input field with the specified text
@@ -17,13 +34,6 @@ export class FilterComponent {
    */
   protected async filterByText(text: string, textFieldLocator: Locator) {
     await textFieldLocator.fill(text);
-  }
-
-  /**
-   * Resets the current filter
-   */
-  async resetFilter() {
-    await this.root.getByTitle(filterSelectors.titles.reset).click();
   }
 
   /**
@@ -61,6 +71,29 @@ export class FilterComponent {
       await checkbox.click();
     }
   }
+}
+
+/**
+ * Base component for single filter controls (like dropdown, text input, etc.)
+ * These are the small, specialized filter components
+ */
+export class SingleFilterComponent extends BaseFilterComponent {
+  constructor(
+    root: Locator | Page,
+    protected readonly locator: Locator
+  ) {
+    super(root);
+  }
+}
+
+/**
+ * Component for composite filters that can apply multiple criteria
+ * These are the "big" filter components that may contain multiple smaller filters
+ */
+export class CompositeFilterComponent extends BaseFilterComponent {
+  constructor(root: Locator | Page) {
+    super(root);
+  }
 
   /**
    * Apply a single filter criterion
@@ -92,6 +125,13 @@ export class FilterComponent {
       await this.applyCriterion(criterion);
     }
   }
-  
+}
 
+/**
+ * @deprecated Use BaseFilterComponent, SingleFilterComponent, or CompositeFilterComponent instead
+ */
+export class FilterComponent extends CompositeFilterComponent {
+  constructor(root: Locator | Page) {
+    super(root);
+  }
 }

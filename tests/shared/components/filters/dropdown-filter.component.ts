@@ -1,19 +1,19 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterComponent } from "@shared/components/filter.component";
+import { SingleFilterComponent } from "../filter.component";
 
 /**
  * DropdownFilterComponent provides a specialized interface for dropdown filters
  */
-export class DropdownFilterComponent extends FilterComponent {
+export class DropdownFilterComponent extends SingleFilterComponent {
   /**
    * @param root The root locator for the filter component
    * @param locator The locator for the dropdown element
    */
   constructor(
     root: Locator | Page,
-    private readonly locator: Locator
+    locator: Locator
   ) {
-    super(root);
+    super(root, locator);
   }
 
   /**

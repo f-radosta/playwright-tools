@@ -1,11 +1,11 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterComponent, DropdownFilterComponent, FilterCriteria } from '@shared/components';
+import { CompositeFilterComponent, DropdownFilterComponent, FilterCriteria } from '@shared/components';
 
 /**
  * CategoriesFilterComponent provides a specialized interface for the categories filter panel
  * that focuses specifically on the category dropdown filter
  */
-export class CategoriesFilterComponent extends FilterComponent {
+export class CategoriesFilterComponent extends CompositeFilterComponent {
   
   public readonly categoryFilter: DropdownFilterComponent;
   readonly categoryFilterLocator = () => this.root.getByRole('combobox', { name: 'Kategorie školení' });

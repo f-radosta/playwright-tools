@@ -1,19 +1,19 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterComponent } from "@shared/components/filter.component";
+import { SingleFilterComponent } from "../filter.component";
 
 /**
- * DateFilterComponent provides a specialized interface for date filters
+ * Component for date filter controls
  */
-export class DateFilterComponent extends FilterComponent {
+export class DateFilterComponent extends SingleFilterComponent {
   /**
    * @param root The root locator for the filter component
    * @param locator The locator for the date input field
    */
   constructor(
     root: Locator | Page,
-    private readonly locator: Locator
+    locator: Locator
   ) {
-    super(root);
+    super(root, locator);
   }
 
   /**

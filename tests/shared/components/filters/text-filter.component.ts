@@ -1,19 +1,19 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterComponent } from "@shared/components/filter.component";
+import { SingleFilterComponent } from "../filter.component";
 
 /**
- * TextFilterComponent provides a specialized interface for text input filters
+ * Component for text filter controls
  */
-export class TextFilterComponent extends FilterComponent {
+export class TextFilterComponent extends SingleFilterComponent {
   /**
    * @param root The root locator for the filter component
    * @param locator The locator for the text input field
    */
   constructor(
     root: Locator | Page,
-    private readonly locator: Locator
+    locator: Locator
   ) {
-    super(root);
+    super(root, locator);
   }
 
   /**

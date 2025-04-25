@@ -1,19 +1,19 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterComponent } from "@shared/components/filter.component";
+import { SingleFilterComponent } from "../filter.component";
 
 /**
- * CheckboxFilterComponent provides a specialized interface for checkbox filters
+ * Component for checkbox filter controls
  */
-export class CheckboxFilterComponent extends FilterComponent {
+export class CheckboxFilterComponent extends SingleFilterComponent {
   /**
    * @param root The root locator for the filter component
    * @param locator The locator for the checkbox element
    */
   constructor(
     root: Locator | Page,
-    private readonly locator: Locator
+    locator: Locator
   ) {
-    super(root);
+    super(root, locator);
   }
 
   /**
