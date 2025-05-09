@@ -3,6 +3,6 @@ export const listSelectors = {
   item: '//*[@class="wrapper--content"]//tbody//tr',
   deleteButton: '//*[@class="icon-trash"]',
   titles: {
-    edit: 'Upravit kategorii',
+    edit: 'Upravit',
   },
 };

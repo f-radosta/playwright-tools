@@ -1,8 +1,9 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterCriteria, FilterCriterion } from "./filter-criteria";
+import { FilterCriteria, FilterCriterion, FILTER_TYPES } from "./filter-criteria";
 import { filterSelectors } from "@shared/selectors/filter.selectors";
 
-export { FilterCriteria, FilterCriterion };
+// Re-export to ensure they're available to importers of this file
+export { FilterCriteria, FilterCriterion, FILTER_TYPES };
 
 /**
  * Interface for all filter components
@@ -101,16 +102,16 @@ export class CompositeFilterComponent extends BaseFilterComponent {
    */
   protected async applyCriterion(criterion: FilterCriterion): Promise<void> {
     switch (criterion.type) {
-      case 'text':
+      case FILTER_TYPES.TEXT:
         await this.filterByText(criterion.value, criterion.locator);
         break;
-      case 'dropdown':
+      case FILTER_TYPES.DROPDOWN:
         await this.selectDropdownOption(criterion.value, criterion.locator);
         break;
-      case 'date':
+      case FILTER_TYPES.DATE:
         await this.setDateFilter(criterion.value, criterion.locator);
         break;
-      case 'checkbox':
+      case FILTER_TYPES.CHECKBOX:
         await this.toggleCheckbox(criterion.locator, criterion.state);
         break;
     }

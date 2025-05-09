@@ -1,70 +1,82 @@
 import { Locator } from "@playwright/test";
 
-/**
- * Base interface for all filter criteria
- */
+// Define filter types as string constants first to ensure they exist at runtime
+export const FILTER_TYPES = {
+  TEXT: 'text',
+  DROPDOWN: 'dropdown',
+  CHECKBOX: 'checkbox',
+  DATE: 'date'
+} as const;
+
+// Create a namespace object for FilterCriterion that will exist at runtime
+export const FilterCriterion = {
+  // Type guard to check if an object is a valid filter criterion
+  isFilterCriterion: (obj: any): obj is any => {
+    return obj && 
+           typeof obj === 'object' && 
+           'type' in obj && 
+           Object.values(FILTER_TYPES).includes(obj.type);
+  }
+};
+
+// Define the interfaces using the string constants
 export interface BaseFilterCriteria {
   type: string;
   [key: string]: any;
 }
 
-/**
- * Text filter criteria
- */
 export interface TextFilterCriteria extends BaseFilterCriteria {
-  type: 'text';
+  type: typeof FILTER_TYPES.TEXT;
   value: string;
   locator: Locator;
 }
 
-/**
- * Dropdown filter criteria
- */
 export interface DropdownFilterCriteria extends BaseFilterCriteria {
-  type: 'dropdown';
+  type: typeof FILTER_TYPES.DROPDOWN;
   value: string;
   locator: Locator;
 }
 
-/**
- * Date filter criteria
- */
-export interface DateFilterCriteria extends BaseFilterCriteria {
-  type: 'date';
-  value: string;
-  locator: Locator;
-}
-
-/**
- * Checkbox filter criteria
- */
 export interface CheckboxFilterCriteria extends BaseFilterCriteria {
-  type: 'checkbox';
+  type: typeof FILTER_TYPES.CHECKBOX;
   locator: Locator;
   state?: boolean;
 }
 
-/**
- * Union type of all filter criteria
- */
+export interface DateFilterCriteria extends BaseFilterCriteria {
+  type: typeof FILTER_TYPES.DATE;
+  value: string;
+  locator: Locator;
+}
+
+// Define the union type
 export type FilterCriterion = 
   | TextFilterCriteria 
   | DropdownFilterCriteria 
-  | DateFilterCriteria 
-  | CheckboxFilterCriteria;
+  | CheckboxFilterCriteria 
+  | DateFilterCriteria;
 
 /**
- * Class to manage filter criteria
+ * Class for managing multiple filter criteria
  */
 export class FilterCriteria {
   private criteria: FilterCriterion[] = [];
 
   /**
+   * Add a filter criterion
+   * @param criterion The criterion to add
+   */
+  addCriterion(criterion: FilterCriterion): FilterCriteria {
+    this.criteria.push(criterion);
+    return this;
+  }
+  
+  /**
    * Add a text filter criterion
    */
   addText(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
-      type: 'text',
+      type: FILTER_TYPES.TEXT,
       value,
       locator
     });
@@ -76,7 +88,7 @@ export class FilterCriteria {
    */
   addDropdown(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
-      type: 'dropdown',
+      type: FILTER_TYPES.DROPDOWN,
       value,
       locator
     });
@@ -88,7 +100,7 @@ export class FilterCriteria {
    */
   addDate(value: string, locator: Locator): FilterCriteria {
     this.criteria.push({
-      type: 'date',
+      type: FILTER_TYPES.DATE,
       value,
       locator
     });
@@ -100,7 +112,7 @@ export class FilterCriteria {
    */
   addCheckbox(locator: Locator, state?: boolean): FilterCriteria {
     this.criteria.push({
-      type: 'checkbox',
+      type: FILTER_TYPES.CHECKBOX,
       locator,
       state
     });
@@ -109,6 +121,7 @@ export class FilterCriteria {
 
   /**
    * Get all criteria
+   * @returns Array of filter criteria
    */
   getCriteria(): FilterCriterion[] {
     return this.criteria;
