@@ -1,5 +1,5 @@
 import { Locator, Page } from "@playwright/test";
-import { FilterCriteria, FilterCriterion, FILTER_TYPES } from "./filter-criteria";
+import { FilterCriteria, FilterCriterion, FILTER_TYPES } from "@shared/components/filter-criteria";
 import { filterSelectors } from "@shared/selectors/filter.selectors";
 
 // Re-export to ensure they're available to importers of this file
