@@ -4,8 +4,6 @@ import { DuplicateCategoryError } from '@training/pages/categories.page';
 
 userTest('Create and delete category as user', async ({ trainingApp }: { trainingApp: TrainingApp }) => {
   const categoriesPage = await trainingApp.gotoCategories();
-  await categoriesPage.expectPageHeaderVisible();
-
   const newCategoryName = 'New Category ATest';
   
   // Add new category (delete duplicate if exists)

@@ -55,11 +55,6 @@ export async function withConfirmationDialog<T>(
     // Perform the action that will trigger the dialog
     const result = await action();
     
-    // // Wait a bit to make sure the dialog has time to appear
-    // if (!dialogHandled) {
-    //   await page.waitForTimeout(1000);
-    // }
-    
     // Wait for network to be idle after dialog handling
     await page.waitForLoadState('networkidle');
     

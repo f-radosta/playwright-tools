@@ -8,19 +8,24 @@ export class TrainingApp {
 
   async gotoDashboard(): Promise<HomePage> {
     await this.page.homeLink().click();
-    return new HomePage(this.page.page);
+    const homePage = new HomePage(this.page.page);
+    await homePage.expectHomePageVisible();
+    return homePage;
   }
 
   async gotoCategories(): Promise<CategoriesPage> {
     await this.page.trainingLink().click();
     await this.page.trainingCategoriesLink().click();
-    //await this.page.waitForPageLoad(...elements);
-    return new CategoriesPage(this.page.page);
+    const categoriesPage = new CategoriesPage(this.page.page);
+    await categoriesPage.expectPageHeaderVisible();
+    return categoriesPage;
   }
 
   async gotoTraining(): Promise<TrainingHomePage> {
     await this.page.trainingLink().click();
-    return new TrainingHomePage(this.page.page);
+    const trainingHomePage = new TrainingHomePage(this.page.page);
+    await trainingHomePage.expectPageHeaderVisible();
+    return trainingHomePage;
   }
 
   // ... add more navigations as needed
