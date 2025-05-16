@@ -12,11 +12,12 @@ export class TrainingApp {
   }
 
   async gotoCategories(): Promise<CategoriesPage> {
-    await this.page.navigateToSubmenuItem('Interní školení', 'Kategorie školení');
+    await this.page.navigateToTrainingCategories();
     return new CategoriesPage(this.page.page);
   }
 
   async gotoTraining(): Promise<TrainingHomePage> {
+    // For main menu items without dropdown, we can still use the direct click
     await this.page.trainingLink().click();
     return new TrainingHomePage(this.page.page);
   }

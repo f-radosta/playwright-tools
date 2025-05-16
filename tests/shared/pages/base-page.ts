@@ -3,23 +3,18 @@ import { expect, Locator, Page } from '@playwright/test';
 export class BasePage {
   readonly page: Page;
 
-  // Navigation selectors - using data-test attributes
-  private get navItems() {
-    return this.page.getByTestId('navtab');
-  }
-
-  // Main navigation elements
-  readonly homeLink = () => this.navItems.filter({ hasText: 'Úvodní stránka' });
-  readonly trainingLink = () => this.navItems.filter({ hasText: 'Interní školení' });
-  readonly lunchOrderLink = () => this.navItems.filter({ hasText: 'Objednání obědů' });
+  // Navigation elements using data-test attributes
+  readonly homeLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Úvodní stránka' });
+  readonly trainingLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Interní školení' });
+  readonly lunchOrderLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Objednání obědů' });
 
   // Training submenu elements
-  readonly trainingListLink = () => this.navItems.filter({ hasText: 'Seznam školení' });
-  readonly trainingCategoriesLink = () => this.navItems.filter({ hasText: 'Kategorie školení' });
+  readonly trainingListLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Seznam školení' });
+  readonly trainingCategoriesLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Kategorie školení' });
   
   // Lunch ordering submenu elements
-  readonly currentMenuLink = () => this.navItems.filter({ hasText: 'Aktuální menu' });
-  readonly monthlyBillingLink = () => this.navItems.filter({ hasText: 'Měsíční vyúčtování' });
+  readonly currentMenuLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Aktuální menu' });
+  readonly monthlyBillingLink = () => this.page.getByTestId('navtab').filter({ hasText: 'Měsíční vyúčtování' });
 
   constructor(page: Page) {
     this.page = page;
@@ -42,24 +37,42 @@ export class BasePage {
   }
 
   /**
-   * Click on a dropdown toggle button to open a submenu
-   * @param menuText The text of the menu item to expand
+   * Navigate to Training Categories page through the menu
    */
-  async clickDropdownToggle(menuText: string): Promise<void> {
-    // Click the dropdown toggle button with data-test="nav-dropdown"
-    await this.page.getByTestId('nav-dropdown').filter({ hasText: menuText }).click();
+  async navigateToTrainingCategories(): Promise<void> {
+    // Find the toggle button next to the training link
+    await this.page.getByTestId('nav-toggle-training').click();
+    // Click on the categories link
+    await this.trainingCategoriesLink().click();
   }
 
   /**
-   * Navigate to a submenu item by first clicking its parent dropdown toggle
-   * @param parentText The text of the parent menu item
-   * @param childText The text of the submenu item to click
+   * Navigate to Training List page through the menu
    */
-  async navigateToSubmenuItem(parentText: string, childText: string): Promise<void> {
-    // First click the dropdown toggle to expand the menu
-    await this.clickDropdownToggle(parentText);
-    
-    // Then click the submenu item
-    await this.navItems.filter({ hasText: childText }).click();
+  async navigateToTrainingList(): Promise<void> {
+    // Find the toggle button next to the training link
+    await this.page.getByTestId('nav-toggle-training').click();
+    // Click on the training list link
+    await this.trainingListLink().click();
+  }
+
+  /**
+   * Navigate to Current Menu page through the menu
+   */
+  async navigateToCurrentMenu(): Promise<void> {
+    // Find the toggle button next to the lunch ordering link
+    await this.page.getByTestId('nav-toggle-lunch').click();
+    // Click on the current menu link
+    await this.currentMenuLink().click();
+  }
+
+  /**
+   * Navigate to Monthly Billing page through the menu
+   */
+  async navigateToMonthlyBilling(): Promise<void> {
+    // Find the toggle button next to the lunch ordering link
+    await this.page.getByTestId('nav-toggle-lunch').click();
+    // Click on the monthly billing link
+    await this.monthlyBillingLink().click();
   }
 }

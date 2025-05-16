@@ -41,7 +41,7 @@ export default defineConfig({
 
     /* Lower timeouts for faster tests */
     actionTimeout: 4000, // 4 seconds for actions like click, fill, etc.
-    navigationTimeout: 8000 // 8 seconds for navigation
+    navigationTimeout: 6000 // 6 seconds for navigation
   },
 
   /* Configure projects for major browsers */
