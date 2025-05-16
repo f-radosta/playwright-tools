@@ -12,8 +12,7 @@ export class TrainingApp {
   }
 
   async gotoCategories(): Promise<CategoriesPage> {
-    await this.page.trainingLink().click();
-    await this.page.trainingCategoriesLink().click();
+    await this.page.navigateToSubmenuItem('Interní školení', 'Kategorie školení');
     return new CategoriesPage(this.page.page);
   }
 

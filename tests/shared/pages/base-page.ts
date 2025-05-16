@@ -3,19 +3,23 @@ import { expect, Locator, Page } from '@playwright/test';
 export class BasePage {
   readonly page: Page;
 
-  // Private getter for navigation tabs
-  private get navTab() {
+  // Navigation selectors - using data-test attributes
+  private get navItems() {
     return this.page.getByTestId('navtab');
   }
 
-  // Navigation elements
-  readonly homeLink = () => this.navTab.filter({ hasText: 'Úvodní stránka' });
-  readonly trainingLink = () => this.navTab.filter({ hasText: 'Interní školení' });
-  readonly trainingListLink = () => this.navTab.filter({ hasText: 'Seznam školení' });
-  readonly trainingCategoriesLink = () => this.navTab.filter({ hasText: 'Kategorie školení' });
-  readonly lunchOrderLink = () => this.navTab.filter({ hasText: 'Objednání obědů' });
-  readonly currentMenuLink = () => this.navTab.filter({ hasText: 'Aktuální menu' });
-  readonly monthlyBillingLink = () => this.navTab.filter({ hasText: 'Měsíční vyúčtování' });
+  // Main navigation elements
+  readonly homeLink = () => this.navItems.filter({ hasText: 'Úvodní stránka' });
+  readonly trainingLink = () => this.navItems.filter({ hasText: 'Interní školení' });
+  readonly lunchOrderLink = () => this.navItems.filter({ hasText: 'Objednání obědů' });
+
+  // Training submenu elements
+  readonly trainingListLink = () => this.navItems.filter({ hasText: 'Seznam školení' });
+  readonly trainingCategoriesLink = () => this.navItems.filter({ hasText: 'Kategorie školení' });
+  
+  // Lunch ordering submenu elements
+  readonly currentMenuLink = () => this.navItems.filter({ hasText: 'Aktuální menu' });
+  readonly monthlyBillingLink = () => this.navItems.filter({ hasText: 'Měsíční vyúčtování' });
 
   constructor(page: Page) {
     this.page = page;
@@ -35,5 +39,31 @@ export class BasePage {
    */
   async expectPageHeaderVisible(): Promise<void> {
     await expect(this.pageTitle()).toBeVisible();
+  }
+
+  /**
+   * Click on a dropdown toggle button to open a submenu
+   * @param menuText The text of the menu item to expand
+   */
+  async clickDropdownToggle(menuText: string): Promise<void> {
+    // The dropdown toggle button should have data-test="nav-dropdown-toggle"
+    const menuItem = this.navItems.filter({ hasText: menuText }).first();
+    const parentContainer = menuItem.locator('xpath=./ancestor::li');
+    
+    // Find the toggle button within the parent container
+    await parentContainer.getByTestId('nav-dropdown-toggle').click();
+  }
+
+  /**
+   * Navigate to a submenu item by first clicking its parent dropdown toggle
+   * @param parentText The text of the parent menu item
+   * @param childText The text of the submenu item to click
+   */
+  async navigateToSubmenuItem(parentText: string, childText: string): Promise<void> {
+    // First click the dropdown toggle to expand the menu
+    await this.clickDropdownToggle(parentText);
+    
+    // Then click the submenu item
+    await this.navItems.filter({ hasText: childText }).click();
   }
 }
