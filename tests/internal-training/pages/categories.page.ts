@@ -30,16 +30,9 @@ export class CategoriesPage extends BasePage {
    */
   get categoriesList(): CategoriesListComponent {
     if (!this._categoriesList) {
-      this._categoriesList = new CategoriesListComponent(this.page);
+      this._categoriesList = new CategoriesListComponent(this.page.getByTestId('list'));
     }
     return this._categoriesList;
-  }
-
-  /**
-   * Verifies that the categories page is visible by checking the page header
-   */
-  async expectCategoriesPageVisible() {
-    await this.expectPageHeaderVisible();
   }
 
   // create new category

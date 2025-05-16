@@ -3,14 +3,19 @@ import { expect, Locator, Page } from '@playwright/test';
 export class BasePage {
   readonly page: Page;
 
+  // Private getter for navigation tabs
+  private get navTab() {
+    return this.page.getByTestId('navtab');
+  }
+
   // Navigation elements
-  readonly homeLink = () => this.page.getByRole('link', { name: 'Úvodní stránka' });
-  readonly trainingLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Interní školení' });
-  readonly trainingListLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Seznam školení' });
-  readonly trainingCategoriesLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Kategorie školení' });
-  readonly lunchOrderLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Objednání obědů' });
-  readonly currentMenuLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Aktuální menu' });
-  readonly monthlyBillingLink = () => this.page.getByRole('complementary').getByRole('link', { name: 'Měsíční vyúčtování' });
+  readonly homeLink = () => this.navTab.filter({ hasText: 'Úvodní stránka' });
+  readonly trainingLink = () => this.navTab.filter({ hasText: 'Interní školení' });
+  readonly trainingListLink = () => this.navTab.filter({ hasText: 'Seznam školení' });
+  readonly trainingCategoriesLink = () => this.navTab.filter({ hasText: 'Kategorie školení' });
+  readonly lunchOrderLink = () => this.navTab.filter({ hasText: 'Objednání obědů' });
+  readonly currentMenuLink = () => this.navTab.filter({ hasText: 'Aktuální menu' });
+  readonly monthlyBillingLink = () => this.navTab.filter({ hasText: 'Měsíční vyúčtování' });
 
   constructor(page: Page) {
     this.page = page;

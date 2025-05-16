@@ -1,20 +1,16 @@
-import { Locator } from "@playwright/test";
-import { ListItemComponent } from "@shared/components/list-item.component";
+import { BaseListItemComponent } from "@shared/components/base-list-item.component";
 import { withConfirmationDialog } from "@shared/utils/dialog-utils";
+import { ListItemInterface } from "@shared/components/interfaces/list-item.interface";
 
 /**
  * Specialized list item component for training categories
  */
-export class CategoryListItemComponent extends ListItemComponent {
+export class CategoryListItemComponent extends BaseListItemComponent implements ListItemInterface {
   /**
    * Get the name of the category
    */
   async getName(): Promise<string | null> {
-    // The root should already be the specific TR element for this item
-    // So we just need to get the 2nd TD (index 1) within this TR
-    const name = await this.root.locator('td').nth(1).textContent();
-    
-    // Trim the name to remove any leading/trailing whitespace
+    const name = await this.itemLocator.getByTestId('list-item-text').textContent();
     return name ? name.trim() : name;
   }
 
@@ -23,9 +19,9 @@ export class CategoryListItemComponent extends ListItemComponent {
    */
   async deleteItself(): Promise<void> {
     await withConfirmationDialog(
-      this.root.page(),
+      this.itemLocator.page(),
       async () => {
-        await this.root.locator('.icon-trash').click();
+        await this.itemLocator.getByTestId('trash').click();
       },
       true,
       'Opravdu chcete smazat záznam?'

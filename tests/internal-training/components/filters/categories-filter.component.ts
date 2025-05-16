@@ -1,31 +1,33 @@
-import { Locator, Page } from "@playwright/test";
-import { CompositeFilterComponent, DropdownFilterComponent, FilterCriteria } from '@shared/components';
+import { Locator } from "@playwright/test";
+import { DropdownFilterComponent } from '@shared/components';
+import { CompositeFilterInterface } from "@shared/components/interfaces/composite-filter.interface";
+import { BaseCompositeFilterComponent } from "@shared/components/base-composite-filter.component";
 
 /**
  * CategoriesFilterComponent provides a specialized interface for the categories filter panel
  * that focuses specifically on the category dropdown filter
  */
-export class CategoriesFilterComponent extends CompositeFilterComponent {
+export class CategoriesFilterComponent extends BaseCompositeFilterComponent implements CompositeFilterInterface<CategoryDTO> {
   
   public readonly categoryFilter: DropdownFilterComponent;
-  readonly categoryFilterLocator = () => this.root.getByRole('combobox', { name: 'Kategorie školení' });
 
-  constructor(root: Locator | Page) {
-    super(root);
-    
-    // Initialize the category dropdown filter with its specific selector
-    this.categoryFilter = new DropdownFilterComponent(root, this.categoryFilterLocator());
+  constructor(locator: Locator) {
+    super(locator);
+    this.categoryFilter = new DropdownFilterComponent(this.locator.getByLabel('Kategorie školení'));
   }
   
   /**
    * Apply a filter with a specific category value
    * This method knows that this component only handles category filtering
-   * @param categoryValue The category value to filter by
+   * @param categoryDTO The category value to filter by
    */
-  async filter(categoryValue: string): Promise<void> {
-    const criteria = new FilterCriteria();
-    criteria.addDropdown(categoryValue, this.categoryFilterLocator());
-    await this.applyFilter(criteria);
+  async filter(categoryDTO: CategoryDTO): Promise<void> {
+    await this.categoryFilter.select(categoryDTO.categoryName);
+    await this.applyFilter();
   }
   
+}
+
+type CategoryDTO = {
+  categoryName: string;
 }

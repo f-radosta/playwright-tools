@@ -8,17 +8,6 @@ import { Page } from '@playwright/test';
  * @param accept Whether to accept (true) or dismiss (false) the dialog
  * @param expectedMessage Optional message to verify in the dialog
  * @returns The result of the action function
- * 
- * @example
- * ```typescript
- * // Click a delete button that triggers a confirmation dialog
- * await withConfirmationDialog(
- *   page,
- *   async () => {
- *     await deleteButton.click();
- *   }
- * );
- * ```
  */
 export async function withConfirmationDialog<T>(
   page: Page,

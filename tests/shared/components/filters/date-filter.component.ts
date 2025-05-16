@@ -1,19 +1,16 @@
-import { Locator, Page } from "@playwright/test";
-import { SingleFilterComponent } from "../filter.component";
+import { Locator } from "@playwright/test";
+import { SingleFilterInterface } from "../interfaces/single-filter.interface";
 
 /**
  * Component for date filter controls
  */
-export class DateFilterComponent extends SingleFilterComponent {
+export class DateFilterComponent implements SingleFilterInterface {
   /**
-   * @param root The root locator for the filter component
    * @param locator The locator for the date input field
    */
   constructor(
-    root: Locator | Page,
-    locator: Locator
+    readonly locator: Locator
   ) {
-    super(root, locator);
   }
 
   /**
@@ -25,9 +22,11 @@ export class DateFilterComponent extends SingleFilterComponent {
   }
 
   /**
-   * Clears the date filter
+   * Sets a date filter value
+   * @param date Date string in the format expected by the date input
+   * @param dateInputLocator The locator for the date input
    */
-  async clear(): Promise<void> {
-    await this.locator.clear();
+  protected async setDateFilter(date: string, dateInputLocator: Locator) {
+    await dateInputLocator.fill(date);
   }
 }

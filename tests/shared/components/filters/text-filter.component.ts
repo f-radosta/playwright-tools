@@ -1,19 +1,16 @@
-import { Locator, Page } from "@playwright/test";
-import { SingleFilterComponent } from "../filter.component";
+import { Locator } from "@playwright/test";
+import { SingleFilterInterface } from "../interfaces/single-filter.interface";
 
 /**
  * Component for text filter controls
  */
-export class TextFilterComponent extends SingleFilterComponent {
+export class TextFilterComponent implements SingleFilterInterface {
   /**
-   * @param root The root locator for the filter component
    * @param locator The locator for the text input field
    */
   constructor(
-    root: Locator | Page,
-    locator: Locator
+    readonly locator: Locator
   ) {
-    super(root, locator);
   }
 
   /**
@@ -25,9 +22,11 @@ export class TextFilterComponent extends SingleFilterComponent {
   }
 
   /**
-   * Clears the text filter
+   * Fills a filter input field with the specified text
+   * @param text Text to filter by
+   * @param textFieldLocator The locator for the filter input
    */
-  async clear(): Promise<void> {
-    await this.locator.clear();
+  protected async filterByText(text: string, textFieldLocator: Locator) {
+    await textFieldLocator.fill(text);
   }
 }

@@ -1,28 +1,18 @@
-import { Locator, Page } from "@playwright/test";
-import { FilterComponent, ListItemComponent } from "@shared/components";
-import { listSelectors } from "@shared/selectors/list.selectors";
+import { Locator } from "@playwright/test";
+import { BaseListItemComponent } from "@shared/components/base-list-item.component";
 
-export class ListComponent<T extends ListItemComponent = ListItemComponent> {
-  public readonly filter: FilterComponent;
-  protected readonly itemSelector: string = listSelectors.item;
+export abstract class BaseListComponent<T extends BaseListItemComponent = BaseListItemComponent> {
+  public readonly itemLocators: Locator;
 
-  constructor(public readonly root: Locator | Page) {
-    this.filter = new FilterComponent(root);
-  }
-
-  /**
-   * Create a list item component from a locator
-   * This method can be overridden by subclasses to return specialized list item components
-   */
-  protected createListItem(locator: Locator): T {
-    return new ListItemComponent(locator) as T;
+  constructor(public readonly listLocator: Locator ) {
+    this.itemLocators = listLocator.getByTestId('list-item');
   }
 
   /**
    * Get all list items as locators
    */
   async getItemLocators(): Promise<Locator[]> {
-    return this.root.locator(this.itemSelector).all();
+    return this.itemLocators.all();
   }
 
   /**
@@ -37,7 +27,7 @@ export class ListComponent<T extends ListItemComponent = ListItemComponent> {
    * Get a specific list item by index
    */
   async getItem(index: number): Promise<T> {
-    return this.createListItem(this.root.locator(this.itemSelector).nth(index));
+    return this.createListItem(this.itemLocators.nth(index));
   }
 
   /**
@@ -79,5 +69,11 @@ export class ListComponent<T extends ListItemComponent = ListItemComponent> {
     const items = await this.getItemLocators();
     return items.length;
   }
+
+  /**
+   * Create a list item component from a locator
+   * This method must be implemented by subclasses to return specialized list item components
+   */
+  protected abstract createListItem(locator: Locator): T;
 
 }

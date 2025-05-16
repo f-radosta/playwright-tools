@@ -1,19 +1,17 @@
-import { Locator, Page } from "@playwright/test";
-import { SingleFilterComponent } from "../filter.component";
+import { Locator } from "@playwright/test";
+import { SingleFilterInterface } from "../interfaces/single-filter.interface";
 
 /**
  * Component for checkbox filter controls
  */
-export class CheckboxFilterComponent extends SingleFilterComponent {
+export class CheckboxFilterComponent implements SingleFilterInterface {
+
   /**
-   * @param root The root locator for the filter component
-   * @param locator The locator for the checkbox element
+   * @param locator The locator for the checkbox
    */
   constructor(
-    root: Locator | Page,
-    locator: Locator
+    readonly locator: Locator
   ) {
-    super(root, locator);
   }
 
   /**
@@ -37,5 +35,22 @@ export class CheckboxFilterComponent extends SingleFilterComponent {
    */
   async isChecked(): Promise<boolean> {
     return this.locator.isChecked();
+  }
+
+  /**
+   * Toggles a checkbox filter
+   * @param checkboxLocator The locator for the checkbox
+   * @param state Optional desired state (checked/unchecked), toggles current state if not specified
+   */
+  private async toggleCheckbox(checkboxLocator: Locator, state?: boolean) {
+    const checkbox = checkboxLocator;
+    if (state !== undefined) {
+      const isChecked = await checkbox.isChecked();
+      if (isChecked !== state) {
+        await checkbox.click();
+      }
+    } else {
+      await checkbox.click();
+    }
   }
 }

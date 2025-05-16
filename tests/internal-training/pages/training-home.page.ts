@@ -10,11 +10,4 @@ export class TrainingHomePage extends BasePage {
     super(page);
   }
 
-  /**
-   * Verifies that the training home page is visible by checking the page header
-   */
-  async expectTrainingPageVisible() {
-    await this.expectPageHeaderVisible();
-  }
-
 }

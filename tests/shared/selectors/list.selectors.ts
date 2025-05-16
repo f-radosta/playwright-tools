@@ -1,7 +1,10 @@
 export const listSelectors = {
-  list: '//*[@class="wrapper--content"]//tbody',
-  item: '//*[@class="wrapper--content"]//tbody//tr',
-  deleteButton: '//*[@class="icon-trash"]',
+  filter: {
+    titles: {
+      reset: 'Resetovat filtr',
+      apply: 'Aplikovat filtr'
+    }
+  },
   titles: {
     edit: 'Upravit',
   },

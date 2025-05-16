@@ -1,20 +1,22 @@
-import { Locator, Page } from "@playwright/test";
-import { ListComponent } from "@shared/components/list.component";
+import { Locator } from "@playwright/test";
+import { BaseListComponent } from "@shared/components/base-list.component";
 import { CategoryListItemComponent, CategoriesFilterComponent } from "@training/components";
+import { ListInterface } from "@shared/components/interfaces/list.interface";
 
 /**
  * Specialized list component for training categories
  */
-export class CategoriesListComponent extends ListComponent<CategoryListItemComponent> {
+export class CategoriesListComponent extends BaseListComponent<CategoryListItemComponent> implements ListInterface {
   public readonly categoriesFilter: CategoriesFilterComponent;
-  
-  constructor(root: Locator | Page) {
-    super(root);
-    // Override the default filter with our specialized categories filter
-    this.categoriesFilter = new CategoriesFilterComponent(root);
+  readonly categoryFilterLocator = () => this.listLocator.getByTestId('filter');
+
+  constructor(listLocator: Locator) {
+    super(listLocator);
+    this.categoriesFilter = new CategoriesFilterComponent(this.categoryFilterLocator());
   }
 
   /**
+   * @override
    * Override the createListItem method to return CategoryListItemComponent instances
    */
   protected createListItem(locator: Locator): CategoryListItemComponent {
@@ -26,17 +28,19 @@ export class CategoriesListComponent extends ListComponent<CategoryListItemCompo
    */
   async findCategoryByName(name: string): Promise<CategoryListItemComponent | null> {
     const allItems = await this.getItems();
-    
-    // Search from last to first (reversed order)
+    const trimmedName = name.trim();
+
+    // Search from last to first for faster search in most cases
     for (let i = allItems.length - 1; i >= 0; i--) {
       const item = allItems[i];
       const itemName = await item.getName();
-      if (itemName?.toLowerCase().trim() === name.toLowerCase().trim()) {
+
+      if (itemName && itemName.trim().localeCompare(trimmedName) === 0) {
         console.log(`Found category "${name}" at index ${i}`);
         return item;
       }
     }
-    
+
     return null;
   }
 
