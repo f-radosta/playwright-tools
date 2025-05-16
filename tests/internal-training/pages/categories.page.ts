@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { BasePage } from '@shared/pages/base-page';
-import { CategoriesListComponent } from '@training/components';
+import { CategoriesList } from '@training/components';
 
 // Custom error for duplicate category
 export class DuplicateCategoryError extends Error {
@@ -18,7 +18,7 @@ export class CategoriesPage extends BasePage {
   readonly createButton = () => this.page.getByRole('link', { name: 'Přidat' });
   
   // Component instances
-  private _categoriesList: CategoriesListComponent | null = null;
+  private _categoriesList: CategoriesList | null = null;
 
   constructor(page: Page) {
     super(page);
@@ -28,9 +28,9 @@ export class CategoriesPage extends BasePage {
    * Get the categories list component
    * Lazy-loaded to ensure the component is only created when needed
    */
-  get categoriesList(): CategoriesListComponent {
+  get categoriesList(): CategoriesList {
     if (!this._categoriesList) {
-      this._categoriesList = new CategoriesListComponent(this.page.getByTestId('list-and-filter-wrapper'));
+      this._categoriesList = new CategoriesList(this.page.getByTestId('list-and-filter-wrapper'));
     }
     return this._categoriesList;
   }

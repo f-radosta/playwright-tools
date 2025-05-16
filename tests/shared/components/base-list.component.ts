@@ -1,7 +1,8 @@
 import { Locator } from "@playwright/test";
 import { BaseListItemComponent } from "@shared/components/base-list-item.component";
+import { ListInterface } from "@shared/components/interfaces/list.interface";
 
-export abstract class BaseListComponent<T extends BaseListItemComponent = BaseListItemComponent> {
+export abstract class BaseListComponent<T extends BaseListItemComponent = BaseListItemComponent> implements ListInterface {
   public readonly itemLocators: Locator;
 
   constructor(public readonly listAndFilterWrapperLocator: Locator ) {

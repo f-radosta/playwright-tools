@@ -1,12 +1,15 @@
 import { Locator } from "@playwright/test";
+import { CompositeFilterInterface } from "@shared/components/interfaces/composite-filter.interface";
 
-export class BaseCompositeFilterComponent {
+export abstract class BaseCompositeFilterComponent<T> implements CompositeFilterInterface<T> {
 
   public readonly locator: Locator;
 
   constructor(locator: Locator) {
     this.locator = locator;
   }
+
+  abstract filter(DTO: T): Promise<void>;
 
   async resetFilter() {
     await this.locator.getByLabel('Resetovat filtr').click();

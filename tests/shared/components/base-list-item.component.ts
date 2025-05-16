@@ -1,11 +1,12 @@
 import { Locator } from "@playwright/test";
 import { listSelectors } from "@shared/selectors/list.selectors";
+import { ListItemInterface } from "@shared/components/interfaces/list-item.interface";
 
 /**
  * Base class for list item components
  * Can be extended for specific types of list items
  */
-export class BaseListItemComponent {
+export abstract class BaseListItemComponent implements ListItemInterface {
   constructor(public readonly itemLocator: Locator) { }
 
   /**

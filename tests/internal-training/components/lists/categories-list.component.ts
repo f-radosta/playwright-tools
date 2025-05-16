@@ -1,31 +1,25 @@
 import { Locator } from "@playwright/test";
 import { BaseListComponent } from "@shared/components/base-list.component";
-import { CategoryListItemComponent, CategoriesFilterComponent } from "@training/components";
+import { CategoryListItem, CategoriesCompositeFilter } from "@training/components";
 import { ListInterface } from "@shared/components/interfaces/list.interface";
 
-/**
- * Specialized list component for training categories
- */
-export class CategoriesListComponent extends BaseListComponent<CategoryListItemComponent> implements ListInterface {
-  public readonly categoriesFilter: CategoriesFilterComponent;
+export class CategoriesList extends BaseListComponent<CategoryListItem> implements ListInterface {
+  public readonly categoriesFilter: CategoriesCompositeFilter;
 
   constructor(public readonly listAndFilterWrapperLocator: Locator) {
     super(listAndFilterWrapperLocator);
-    this.categoriesFilter = new CategoriesFilterComponent(this.listAndFilterWrapperLocator.getByTestId('filter'));
+    this.categoriesFilter = new CategoriesCompositeFilter(this.listAndFilterWrapperLocator.getByTestId('filter'));
   }
 
   /**
    * @override
    * Override the createListItem method to return CategoryListItemComponent instances
    */
-  protected createListItem(locator: Locator): CategoryListItemComponent {
-    return new CategoryListItemComponent(locator);
+  protected createListItem(locator: Locator): CategoryListItem {
+    return new CategoryListItem(locator);
   }
 
-  /**
-   * Find a category by name
-   */
-  async findCategoryByName(name: string): Promise<CategoryListItemComponent | null> {
+  async findCategoryByName(name: string): Promise<CategoryListItem | null> {
     const allItems = await this.getItems();
     const trimmedName = name.trim();
 
@@ -43,9 +37,6 @@ export class CategoriesListComponent extends BaseListComponent<CategoryListItemC
     return null;
   }
 
-  /**
-   * Delete a category by name
-   */
   async deleteCategoryByName(name: string): Promise<void> {
     const category = await this.findCategoryByName(name);
     if (!category) {

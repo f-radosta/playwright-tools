@@ -3,11 +3,9 @@ import { DropdownFilterComponent, DropdownOptions, DropdownType } from '@shared/
 import { CompositeFilterInterface } from "@shared/components/interfaces/composite-filter.interface";
 import { BaseCompositeFilterComponent } from "@shared/components/base-composite-filter.component";
 
-/**
- * CategoriesFilterComponent provides a specialized interface for the categories filter panel
- * that focuses specifically on the category dropdown filter
- */
-export class CategoriesFilterComponent extends BaseCompositeFilterComponent implements CompositeFilterInterface<CategoryDTO> {
+export class CategoriesCompositeFilter
+  extends BaseCompositeFilterComponent<CategoryDTO>
+  implements CompositeFilterInterface<CategoryDTO> {
   
   public readonly categoryFilter: DropdownFilterComponent;
 
