@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { BasePage } from '@shared/pages/base-page';
 
 export class TrainingHomePage extends BasePage {
