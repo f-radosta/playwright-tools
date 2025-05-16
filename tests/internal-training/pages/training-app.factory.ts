@@ -17,7 +17,6 @@ export class TrainingApp {
   }
 
   async gotoTraining(): Promise<TrainingHomePage> {
-    // For main menu items without dropdown, we can still use the direct click
     await this.page.trainingLink().click();
     return new TrainingHomePage(this.page.page);
   }
