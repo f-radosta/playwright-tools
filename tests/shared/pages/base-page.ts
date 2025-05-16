@@ -46,12 +46,8 @@ export class BasePage {
    * @param menuText The text of the menu item to expand
    */
   async clickDropdownToggle(menuText: string): Promise<void> {
-    // The dropdown toggle button should have data-test="nav-dropdown-toggle"
-    const menuItem = this.navItems.filter({ hasText: menuText }).first();
-    const parentContainer = menuItem.locator('xpath=./ancestor::li');
-    
-    // Find the toggle button within the parent container
-    await parentContainer.getByTestId('nav-dropdown-toggle').click();
+    // Click the dropdown toggle button with data-test="nav-dropdown"
+    await this.page.getByTestId('nav-dropdown').filter({ hasText: menuText }).click();
   }
 
   /**
