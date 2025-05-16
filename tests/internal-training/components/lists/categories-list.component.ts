@@ -8,11 +8,10 @@ import { ListInterface } from "@shared/components/interfaces/list.interface";
  */
 export class CategoriesListComponent extends BaseListComponent<CategoryListItemComponent> implements ListInterface {
   public readonly categoriesFilter: CategoriesFilterComponent;
-  readonly categoryFilterLocator = () => this.listLocator.getByTestId('filter');
 
-  constructor(listLocator: Locator) {
-    super(listLocator);
-    this.categoriesFilter = new CategoriesFilterComponent(this.categoryFilterLocator());
+  constructor(public readonly listAndFilterWrapperLocator: Locator) {
+    super(listAndFilterWrapperLocator);
+    this.categoriesFilter = new CategoriesFilterComponent(this.listAndFilterWrapperLocator.getByTestId('filter'));
   }
 
   /**

@@ -4,8 +4,8 @@ import { BaseListItemComponent } from "@shared/components/base-list-item.compone
 export abstract class BaseListComponent<T extends BaseListItemComponent = BaseListItemComponent> {
   public readonly itemLocators: Locator;
 
-  constructor(public readonly listLocator: Locator ) {
-    this.itemLocators = listLocator.getByTestId('list-item');
+  constructor(public readonly listAndFilterWrapperLocator: Locator ) {
+    this.itemLocators = this.listAndFilterWrapperLocator.getByTestId('list').getByTestId('list-item');
   }
 
   /**

@@ -30,7 +30,7 @@ export class CategoriesPage extends BasePage {
    */
   get categoriesList(): CategoriesListComponent {
     if (!this._categoriesList) {
-      this._categoriesList = new CategoriesListComponent(this.page.getByTestId('list'));
+      this._categoriesList = new CategoriesListComponent(this.page.getByTestId('list-and-filter-wrapper'));
     }
     return this._categoriesList;
   }

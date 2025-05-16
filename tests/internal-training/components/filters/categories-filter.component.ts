@@ -1,5 +1,5 @@
 import { Locator } from "@playwright/test";
-import { DropdownFilterComponent } from '@shared/components';
+import { DropdownFilterComponent, DropdownOptions, DropdownType } from '@shared/components';
 import { CompositeFilterInterface } from "@shared/components/interfaces/composite-filter.interface";
 import { BaseCompositeFilterComponent } from "@shared/components/base-composite-filter.component";
 
@@ -11,9 +11,20 @@ export class CategoriesFilterComponent extends BaseCompositeFilterComponent impl
   
   public readonly categoryFilter: DropdownFilterComponent;
 
-  constructor(locator: Locator) {
-    super(locator);
-    this.categoryFilter = new DropdownFilterComponent(this.locator.getByLabel('Kategorie školení'));
+  constructor(public readonly compositeFilterLocator: Locator) {
+    super(compositeFilterLocator);
+    
+    // Configure dropdown options for TomSelect
+    const dropdownOptions: DropdownOptions = {
+      type: DropdownType.TOMSELECT,
+      parentLocator: this.compositeFilterLocator
+    };
+    
+    // Use ID selector to specifically target the input element
+    this.categoryFilter = new DropdownFilterComponent(
+      this.compositeFilterLocator.locator('#course_category_filter_courseCategories-ts-control'),
+      dropdownOptions
+    );
   }
   
   /**

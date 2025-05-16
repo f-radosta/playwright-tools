@@ -1,5 +1,4 @@
 import { Locator } from "@playwright/test";
-import { listSelectors } from "@shared/selectors/list.selectors";
 
 export class BaseCompositeFilterComponent {
 
@@ -10,11 +9,27 @@ export class BaseCompositeFilterComponent {
   }
 
   async resetFilter() {
-    await this.locator.getByTitle(listSelectors.filter.titles.reset).click();
+    await this.locator.getByLabel('Resetovat filtr').click();
   }
 
-  async applyFilter() {
-    await this.locator.getByTitle(listSelectors.filter.titles.apply).click();
+  /**
+   * Apply the filter and wait for the filtering operation to complete
+   * This ensures that the filtered results are ready before proceeding
+   */
+  protected async applyFilter() {
+    const page = this.locator.page();
+    
+    // Create a promise that will resolve when navigation/network is complete
+    const navigationPromise = page.waitForLoadState('networkidle');
+    
+    // Click the filter button
+    await this.locator.getByLabel('Filtrovat').click();
+    
+    // Wait for navigation to complete or network to become idle
+    await navigationPromise;
+    
+    // Additional wait to ensure DOM is fully rendered
+    await page.waitForTimeout(500);
   }
 
 }
