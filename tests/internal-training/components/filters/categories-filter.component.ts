@@ -1,7 +1,8 @@
 import { Locator } from "@playwright/test";
-import { DropdownFilterComponent, DropdownOptions, DropdownType } from '@shared/components';
+import { DropdownFilterComponent, DropdownType } from '@shared/components';
 import { CompositeFilterInterface } from "@shared/components/interfaces/composite-filter.interface";
 import { BaseCompositeFilterComponent } from "@shared/components/base-composite-filter.component";
+import { trainingSelectors } from "@training/selectors/training.selectors";
 
 export class CategoriesCompositeFilter
   extends BaseCompositeFilterComponent<CategoryDTO>
@@ -12,24 +13,12 @@ export class CategoriesCompositeFilter
   constructor(public readonly compositeFilterLocator: Locator) {
     super(compositeFilterLocator);
     
-    // Configure dropdown options for TomSelect
-    const dropdownOptions: DropdownOptions = {
-      type: DropdownType.TOMSELECT,
-      parentLocator: this.compositeFilterLocator
-    };
-    
-    // Use ID selector to specifically target the input element
     this.categoryFilter = new DropdownFilterComponent(
-      this.compositeFilterLocator.locator('#course_category_filter_courseCategories-ts-control'),
-      dropdownOptions
+      this.compositeFilterLocator.locator(trainingSelectors.filter.category),
+      DropdownType.TOMSELECT
     );
   }
   
-  /**
-   * Apply a filter with a specific category value
-   * This method knows that this component only handles category filtering
-   * @param categoryDTO The category value to filter by
-   */
   async filter(categoryDTO: CategoryDTO): Promise<void> {
     await this.categoryFilter.select(categoryDTO.categoryName);
     await this.applyFilter();

@@ -27,6 +27,12 @@ export class DateFilterComponent implements SingleFilterInterface {
    * @param dateInputLocator The locator for the date input
    */
   protected async setDateFilter(date: string, dateInputLocator: Locator) {
+    // Remove the readonly attribute before filling
+    await dateInputLocator.evaluate((element) => {
+      element.removeAttribute('readonly');
+    });
+    
+    // Fill the date input
     await dateInputLocator.fill(date);
   }
 }

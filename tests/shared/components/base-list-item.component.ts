@@ -1,6 +1,7 @@
 import { Locator } from "@playwright/test";
 import { listSelectors } from "@shared/selectors/list.selectors";
 import { ListItemInterface } from "@shared/components/interfaces/list-item.interface";
+import { withConfirmationDialog } from "@shared/utils/dialog-utils";
 
 /**
  * Base class for list item components
@@ -12,7 +13,7 @@ export abstract class BaseListItemComponent implements ListItemInterface {
   /**
    * Get the text content of the list item
    */
-  async getText(): Promise<string | null> {
+  async getAllText(): Promise<string | null> {
     return this.itemLocator.textContent();
   }
 
@@ -42,6 +43,37 @@ export abstract class BaseListItemComponent implements ListItemInterface {
    */
   async isVisible(): Promise<boolean> {
     return this.itemLocator.isVisible();
+  }
+
+  /**
+   * Delete the list item
+   */
+  async deleteItself(): Promise<void> {
+    await withConfirmationDialog(
+      this.itemLocator.page(),
+      async () => {
+        await this.itemLocator.getByTestId('trash').click();
+      },
+      true,
+      'Opravdu chcete smazat záznam?'
+    );
+  }
+
+  // get text of i elemnt of list-item-content
+  async getTextOfItemContentByIndex(indexOfContent: number): Promise<string | null> {
+    return this.itemLocator.getByTestId('list-item-content').nth(indexOfContent).textContent();
+  }
+  // click on i elemnt of list-item-content
+  async clickOnItemContentByIndex(indexOfContent: number): Promise<void> {
+    await this.itemLocator.getByTestId('list-item-content').nth(indexOfContent).click();
+  }
+  // get text of i elemnt of list-item-text
+  async getTextOfItemByIndex(indexOfText: number): Promise<string | null> {
+    return this.itemLocator.getByTestId('list-item-text').nth(indexOfText).textContent();
+  }
+  // get text of i elemnt of list-item-label
+  async getTextOfItemLabelByIndex(indexOfLabel: number): Promise<string | null> {
+    return this.itemLocator.getByTestId('list-item-label').nth(indexOfLabel).textContent();
   }
 
   /**

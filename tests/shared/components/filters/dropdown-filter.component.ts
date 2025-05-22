@@ -13,14 +13,20 @@ export enum DropdownType {
  * DropdownFilterComponent provides a specialized interface for dropdown filters
  */
 export class DropdownFilterComponent implements SingleFilterInterface {
+
+  private readonly controlLocator: Locator;
+  private readonly dropdownLocator: Locator;
+
   /**
    * @param locator The locator for the dropdown element
-   * @param options Optional configuration for the dropdown
+   * @param dropdownType The type of dropdown
    */
   constructor(
     readonly locator: Locator,
-    private readonly options: DropdownOptions = {}
+    private readonly dropdownType: DropdownType = DropdownType.STANDARD
   ) {
+    this.controlLocator = this.locator.locator('..').locator('//*[contains(@id, "ts-control")]');
+    this.dropdownLocator = this.locator.locator('..').locator('//*[contains(@id, "ts-dropdown")]');
   }
 
   /**
@@ -28,28 +34,20 @@ export class DropdownFilterComponent implements SingleFilterInterface {
    * @param optionText The text of the option to select
    */
   async select(optionText: string): Promise<void> {
-    if (this.options.type === DropdownType.TOMSELECT) {
+    if (this.dropdownType === DropdownType.TOMSELECT) {
       await this.selectTomSelectOption(optionText);
     } else {
-      await this.selectDropdownOption(optionText, this.locator);
+      await this.selectDropdownOption(optionText);
     }
-  }
-
-  /**
-   * Gets the currently selected option text
-   */
-  async getSelectedOption(): Promise<string | null> {
-    return this.locator.textContent();
   }
 
   /**
    * Selects an option from a standard dropdown filter
    * @param optionText The text of the option to select
-   * @param dropdownLocator The locator for the dropdown element
    */
-  protected async selectDropdownOption(optionText: string, dropdownLocator: Locator) {
-    await dropdownLocator.click();
-    await dropdownLocator.locator(`text=${optionText}`).click();
+  protected async selectDropdownOption(optionText: string) {
+    await this.controlLocator.click();
+    await this.dropdownLocator.locator(`text=${optionText}`).click();
   }
 
   /**
@@ -58,37 +56,60 @@ export class DropdownFilterComponent implements SingleFilterInterface {
    */
   protected async selectTomSelectOption(optionText: string): Promise<void> {
     // Click on the input to open the dropdown
-    await this.locator.click();
-    
-    // Type the search term in the input field
-    await this.locator.fill(optionText);
-    
-    // Get the parent element that contains both the input and dropdown
-    const parentLocator = this.options.parentLocator || this.locator.locator('..');
-    
-    // Wait for the dropdown to be visible
-    const dropdownContent = parentLocator.locator('.ts-dropdown-content');
-    await dropdownContent.waitFor({ state: 'visible' });
-    
-    // Find and click the option with the matching text
-    const option = dropdownContent.locator(`div.option:has-text("${optionText}")`);
-    await option.waitFor({ state: 'visible' });
-    await option.click();
-  }
-}
+    await this.controlLocator.click();
 
-/**
- * Configuration options for the dropdown component
- */
-export interface DropdownOptions {
-  /**
-   * The type of dropdown
-   */
-  type?: DropdownType;
-  
-  /**
-   * Optional parent locator to use for finding dropdown elements
-   * Useful when the dropdown options are not direct children of the input element
-   */
-  parentLocator?: Locator;
+    // Type the search term in the input field
+    await this.controlLocator.fill(optionText);
+
+    // Wait for the dropdown to be visible
+    await this.dropdownLocator.waitFor({ state: 'visible' });
+    
+    // Wait for any spinner to disappear before proceeding
+    const spinner = this.dropdownLocator.locator('.spinner');
+    if (await spinner.count() > 0) {
+      try {
+        // Wait for spinner to disappear with a reasonable timeout
+        await spinner.waitFor({ state: 'hidden', timeout: 5000 });
+      } catch (error) {
+        console.warn('Spinner did not disappear within timeout, proceeding anyway');
+      }
+    }
+
+    // Get all available options
+    const options = this.dropdownLocator.locator('div.option');
+    const count = await options.count();
+    
+    // First try to find an exact match (case-insensitive and trimmed)
+    let found = false;
+    const trimmedOptionText = optionText.trim();
+    
+    for (let i = 0; i < count; i++) {
+      const option = options.nth(i);
+      const text = await option.textContent() || '';
+      const trimmedText = text.trim();
+      
+      // Check for exact match (case-insensitive)
+      if (trimmedText.toLowerCase() === trimmedOptionText.toLowerCase()) {
+        // Check again for spinner before clicking
+        if (await spinner.count() > 0 && await spinner.isVisible()) {
+          await spinner.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+        await option.click();
+        found = true;
+        break;
+      }
+    }
+    
+    // If no exact match found, fall back to the first partial match
+    if (!found) {
+      const partialOption = this.dropdownLocator.locator(`div.option:has-text("${optionText}")`).first();
+      await partialOption.waitFor({ state: 'visible' });
+      
+      // Check again for spinner before clicking
+      if (await spinner.count() > 0 && await spinner.isVisible()) {
+        await spinner.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+      }
+      await partialOption.click();
+    }
+  }
 }

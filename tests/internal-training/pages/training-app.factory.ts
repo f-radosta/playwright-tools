@@ -2,6 +2,7 @@ import { HomePage } from '@shared/pages/home-page.page';
 import { CategoriesPage } from './categories.page';
 import { BasePage } from '@shared/pages/base-page';
 import { TrainingHomePage } from './training-home.page';
+import { TrainingListPage } from './training-list.page';
 
 export class TrainingApp {
   constructor(public readonly page: BasePage) {}
@@ -22,6 +23,12 @@ export class TrainingApp {
     await this.page.trainingLink().click();
     await this.page.page.waitForLoadState('networkidle');
     return new TrainingHomePage(this.page.page);
+  }
+
+  async gotoTrainingList(): Promise<TrainingListPage> {
+    await this.page.navigateToTrainingList();
+    await this.page.page.waitForLoadState('networkidle');
+    return new TrainingListPage(this.page.page);
   }
 
 }
