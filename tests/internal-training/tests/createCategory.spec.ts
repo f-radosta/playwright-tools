@@ -15,6 +15,8 @@ userTest('Create and delete category as user', async ({ trainingApp }: { trainin
       await categoriesPage.categoriesList.deleteCategoryByName(newCategoryName);
       console.log(`Successfully deleted existing category: ${newCategoryName}`);
 
+      await categoriesPage.page.reload();
+
       await categoriesPage.createNewCategory(newCategoryName);
       console.log(`Successfully created category: ${newCategoryName}`);
     } else {
