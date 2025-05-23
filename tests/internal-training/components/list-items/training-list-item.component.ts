@@ -1,10 +1,12 @@
-import { BaseListItemComponent } from "@shared/components/base-list-item.component";
-import { ListItemInterface } from "@shared/components/interfaces/list-item.interface";
-import { Locator } from "@playwright/test";
-import { TrainingPage } from "@training/pages/training.page";
+import {BaseListItemComponent} from '@shared/components/base-list-item.component';
+import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
+import {Locator} from '@playwright/test';
+import {TrainingPage} from '@training/pages/training.page';
 
-export class TrainingListItem extends BaseListItemComponent implements ListItemInterface {
-
+export class TrainingListItem
+    extends BaseListItemComponent
+    implements ListItemInterface
+{
     constructor(public readonly itemLocator: Locator) {
         super(itemLocator);
     }
@@ -45,5 +47,4 @@ export class TrainingListItem extends BaseListItemComponent implements ListItemI
     async clickCourseSignButton(): Promise<void> {
         await this.clickOnElementByTestId('sign-cell');
     }
-
 }

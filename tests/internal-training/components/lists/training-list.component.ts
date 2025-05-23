@@ -1,14 +1,19 @@
-import { Locator } from "@playwright/test";
-import { BaseListComponent } from "@shared/components/base-list.component";
-import { TrainingCompositeFilter, TrainingListItem } from "@training/components";
-import { ListInterface } from "@shared/components/interfaces/list.interface";
+import {Locator} from '@playwright/test';
+import {BaseListComponent} from '@shared/components/base-list.component';
+import {TrainingCompositeFilter, TrainingListItem} from '@training/components';
+import {ListInterface} from '@shared/components/interfaces/list.interface';
 
-export class TrainingsList extends BaseListComponent<TrainingListItem> implements ListInterface {
+export class TrainingsList
+    extends BaseListComponent<TrainingListItem>
+    implements ListInterface
+{
     public readonly trainingFilter: TrainingCompositeFilter;
 
     constructor(public readonly listAndFilterWrapperLocator: Locator) {
         super(listAndFilterWrapperLocator);
-        this.trainingFilter = new TrainingCompositeFilter(this.listAndFilterWrapperLocator.getByTestId('filter'));
+        this.trainingFilter = new TrainingCompositeFilter(
+            this.listAndFilterWrapperLocator.getByTestId('filter')
+        );
     }
 
     /**
@@ -44,5 +49,4 @@ export class TrainingsList extends BaseListComponent<TrainingListItem> implement
         }
         await training.deleteItself();
     }
-
 }

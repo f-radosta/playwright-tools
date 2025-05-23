@@ -1,5 +1,5 @@
 export const listSelectors = {
-  titles: {
-    edit: 'Upravit',
-  },
+    titles: {
+        edit: 'Upravit'
+    }
 };

@@ -1,14 +1,14 @@
-import { Locator } from "@playwright/test";
-import { DailyMenuList, MenuCompositeFilter } from "@meal/components";
+import {Locator} from '@playwright/test';
+import {DailyMenuList, MenuCompositeFilter} from '@meal/components';
 
 export class CompositeMenuList {
     public readonly menuFilter: MenuCompositeFilter;
     private listLocator: Locator;
 
-    constructor(
-        public readonly listAndFilterWrapperLocator: Locator
-    ) {
-        this.menuFilter = new MenuCompositeFilter(this.listAndFilterWrapperLocator.getByTestId('filter'));
+    constructor(public readonly listAndFilterWrapperLocator: Locator) {
+        this.menuFilter = new MenuCompositeFilter(
+            this.listAndFilterWrapperLocator.getByTestId('filter')
+        );
         this.listLocator = this.listAndFilterWrapperLocator.getByTestId('list');
     }
 
@@ -18,18 +18,22 @@ export class CompositeMenuList {
     public async getDailyMenuLists(): Promise<DailyMenuList[]> {
         // Always fetch fresh locators
         const allListLocators = await this.listLocator.all();
-        
+
         // Create a new array of DailyMenuList objects
         const lists: DailyMenuList[] = [];
         for (const locator of allListLocators) {
             lists.push(new DailyMenuList(locator));
         }
-        
+
         // If no lists were found, create a single one from the main list locator
         if (lists.length === 0) {
-            lists.push(new DailyMenuList(this.listAndFilterWrapperLocator.getByTestId('list')));
+            lists.push(
+                new DailyMenuList(
+                    this.listAndFilterWrapperLocator.getByTestId('list')
+                )
+            );
         }
-        
+
         return lists;
     }
 
@@ -43,7 +47,7 @@ export class CompositeMenuList {
         }
         return lists[index];
     }
-    
+
     /**
      * Get today's menu list
      */
@@ -56,7 +60,7 @@ export class CompositeMenuList {
         }
         return null;
     }
-    
+
     /**
      * Get tomorrow's menu list
      */
@@ -69,7 +73,7 @@ export class CompositeMenuList {
         }
         return null;
     }
-    
+
     /**
      * Get yesterday's menu list
      */
@@ -82,7 +86,7 @@ export class CompositeMenuList {
         }
         return null;
     }
-    
+
     /**
      * Get a menu list for a specific date
      * @param date The date to find a list for
@@ -91,9 +95,11 @@ export class CompositeMenuList {
         const lists = await this.getDailyMenuLists();
         for (const list of lists) {
             const listDate = await list.getDate();
-            if (listDate.getDate() === date.getDate() && 
-                listDate.getMonth() === date.getMonth() && 
-                listDate.getFullYear() === date.getFullYear()) {
+            if (
+                listDate.getDate() === date.getDate() &&
+                listDate.getMonth() === date.getMonth() &&
+                listDate.getFullYear() === date.getFullYear()
+            ) {
                 return list;
             }
         }
