@@ -29,7 +29,7 @@ export class TrainingsList extends BaseListComponent<TrainingListItem> implement
             const itemName = await item.getName();
 
             if (itemName && itemName.trim().localeCompare(trimmedName) === 0) {
-                console.log(`Found training "${name}" at index ${i}`);
+                //console.log(`Found training "${name}" at index ${i}`);
                 return item;
             }
         }
