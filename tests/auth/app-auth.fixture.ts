@@ -1,7 +1,7 @@
 import { test as baseTest, chromium } from '@playwright/test';
 
-// Import the TrainingApp fixture
-import { test as trainingTest } from '@training/fixtures/training-app.fixture';
+// Import the unified App fixture
+import { test as appTest } from '@shared/fixtures/app.fixture';
 
 import fs from 'fs';
 import path from 'path';
@@ -52,31 +52,31 @@ export const test = baseTest;
 
 // Admin test - create a test function with admin auth
 export function adminTest(title: string, testFn: Function) {
-  trainingTest.describe('Admin', () => {
+  appTest.describe('Admin', () => {
     // Run login before tests in this group
-    trainingTest.beforeAll(async () => {
+    appTest.beforeAll(async () => {
       await loginAsAdmin();
     });
     
     // Use the saved authentication state
-    trainingTest.use({ storageState: path.join(authDir, 'tool-admin.json') });
+    appTest.use({ storageState: path.join(authDir, 'tool-admin.json') });
     
-    trainingTest(title, testFn as any);
+    appTest(title, testFn as any);
   });
 }
 
 // User test - create a test function with user auth
 export function userTest(title: string, testFn: Function) {
-  trainingTest.describe('User', () => {
+  appTest.describe('User', () => {
     // Run login before tests in this group
-    trainingTest.beforeAll(async () => {
+    appTest.beforeAll(async () => {
       await loginAsUser();
     });
     
     // Use the saved authentication state
-    trainingTest.use({ storageState: path.join(authDir, 'user.json') });
+    appTest.use({ storageState: path.join(authDir, 'user.json') });
     
-    trainingTest(title, testFn as any);
+    appTest(title, testFn as any);
   });
 }
 

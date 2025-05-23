@@ -1,10 +1,10 @@
-import { userTest } from '@auth/auth.fixture';
-import { TrainingApp } from '@training/pages/training-app.factory';
+import { userTest } from '@auth/app-auth.fixture';
+import { AppFactory } from '@shared/pages/app.factory';
 import { NewTrainingFormDTO } from '@training/pages/training-list.page';
 
-userTest('Create and delete training as user', async ({ trainingApp }: { trainingApp: TrainingApp }) => {
+userTest('Create and delete training as user', async ({ app }: { app: AppFactory }) => {
 
-    const trainingListPage = await trainingApp.gotoTrainingList();
+    const trainingListPage = await app.gotoTrainingList();
     const newTrainingDTO: NewTrainingFormDTO = {
         category: 'ATesting-kategorie-skoleni',
         name: 'New Training ATest',

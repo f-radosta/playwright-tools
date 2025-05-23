@@ -1,9 +1,9 @@
-import { userTest } from '@auth/auth.fixture';
-import { TrainingApp } from '@training/pages/training-app.factory';
+import { userTest } from '@auth/app-auth.fixture';
+import { AppFactory } from '@shared/pages/app.factory';
 import { DuplicateCategoryError } from '@training/pages/categories.page';
 
-userTest('Create and delete category as user', async ({ trainingApp }: { trainingApp: TrainingApp }) => {
-  const categoriesPage = await trainingApp.gotoCategories();
+userTest('Create and delete category as user', async ({ app }: { app: AppFactory }) => {
+  const categoriesPage = await app.gotoCategories();
   const newCategoryName = 'New Category ATest';
   
   // Add new category (delete duplicate if exists)

@@ -1,18 +1,24 @@
 import { HomePage } from '@shared/pages/home-page.page';
-import { CategoriesPage } from './categories.page';
 import { BasePage } from '@shared/pages/base-page';
-import { TrainingHomePage } from './training-home.page';
-import { TrainingListPage } from './training-list.page';
+// Training imports
+import { CategoriesPage } from '@training/pages/categories.page';
+import { TrainingHomePage } from '@training/pages/training-home.page';
+import { TrainingListPage } from '@training/pages/training-list.page';
+// Meal ordering imports
+import { CurrentMenuPage } from '@meal/pages/current-menu.page';
+import { MonthlyBillingPage } from '@meal/pages/monthly-billing.page';
 
-export class TrainingApp {
+export class AppFactory {
   constructor(public readonly page: BasePage) {}
 
+  // Common navigation
   async gotoDashboard(): Promise<HomePage> {
     await this.page.homeLink().click();
     await this.page.page.waitForLoadState('networkidle');
     return new HomePage(this.page.page);
   }
 
+  // Training navigation methods
   async gotoCategories(): Promise<CategoriesPage> {
     await this.page.navigateToTrainingCategories();
     await this.page.page.waitForLoadState('networkidle');
@@ -31,4 +37,16 @@ export class TrainingApp {
     return new TrainingListPage(this.page.page);
   }
 
+  // Meal ordering navigation methods
+  async gotoCurrentMenu(): Promise<CurrentMenuPage> {
+    await this.page.navigateToCurrentMenu();
+    await this.page.page.waitForLoadState('networkidle');
+    return new CurrentMenuPage(this.page.page);
+  }
+
+  async gotoMonthlyBilling(): Promise<MonthlyBillingPage> {
+    await this.page.navigateToMonthlyBilling();
+    await this.page.page.waitForLoadState('networkidle');
+    return new MonthlyBillingPage(this.page.page);
+  }
 }
