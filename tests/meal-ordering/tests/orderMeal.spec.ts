@@ -5,7 +5,7 @@ userTest('Order a meal as user', async ({ app }: { app: AppFactory }) => {
 
     const currentMenuPage = await app.gotoCurrentMenu();
 
-    const availableMeals = await currentMenuPage.getAvailableMeals();
+    //const availableMeals = await currentMenuPage.getAvailableMeals();
 
 
 });
