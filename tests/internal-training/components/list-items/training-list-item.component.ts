@@ -1,10 +1,7 @@
 import { BaseListItemComponent } from "@shared/components/base-list-item.component";
-import { withConfirmationDialog } from "@shared/utils/dialog-utils";
 import { ListItemInterface } from "@shared/components/interfaces/list-item.interface";
-import { trainingSelectors } from "@training/selectors/training.selectors";
 import { Locator } from "@playwright/test";
 import { TrainingPage } from "@training/pages/training.page";
-
 
 export class TrainingListItem extends BaseListItemComponent implements ListItemInterface {
 
@@ -13,40 +10,40 @@ export class TrainingListItem extends BaseListItemComponent implements ListItemI
     }
 
     async getName(): Promise<string | null> {
-        return this.getTextOfItemContentByIndex(1);
+        return this.getTextOfElementByTestId('name-cell');
     }
 
     async goToTrainingPage(): Promise<TrainingPage> {
-        await this.clickOnItemContentByIndex(0);
+        await this.clickOnElementByTestId('edit-cell');
         return new TrainingPage(this.itemLocator.page());
     }
 
     async getDateTime(): Promise<string | null> {
-        return this.getTextOfItemContentByIndex(2);
+        return this.getTextOfElementByTestId('date-cell');
     }
 
     async getTrainer(): Promise<string | null> {
-        return this.getTextOfItemByIndex(0);
+        return this.getTextOfElementByTestId('trainer-cell');
     }
 
     async getDepartment(): Promise<string | null> {
-        return this.getTextOfItemContentByIndex(3);
+        return this.getTextOfElementByTestId('department-cell');
     }
 
     async getCategory(): Promise<string | null> {
-        return this.getTextOfItemContentByIndex(4);
+        return this.getTextOfElementByTestId('category-cell');
     }
 
     async getCapacity(): Promise<string | null> {
-        return this.getTextOfItemContentByIndex(5);
+        return this.getTextOfElementByTestId('capacity-cell');
     }
 
     async getOnline(): Promise<string | null> {
-        return this.getTextOfItemByIndex(1);
+        return this.getTextOfElementByTestId('online-cell');
     }
 
     async clickCourseSignButton(): Promise<void> {
-        await this.itemLocator.locator('//*[contains(@id, "courseSignButton")]').getByRole('button').click();
+        await this.clickOnElementByTestId('sign-cell');
     }
 
 }

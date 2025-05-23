@@ -59,6 +59,14 @@ export abstract class BaseListItemComponent implements ListItemInterface {
     );
   }
 
+  async getTextOfElementByTestId(testId: string): Promise<string | null> {
+    return this.itemLocator.getByTestId(testId).textContent();
+  }
+
+  async clickOnElementByTestId(testId: string): Promise<void> {
+    await this.itemLocator.getByTestId(testId).click();
+  }
+
   // get text of i elemnt of list-item-content
   async getTextOfItemContentByIndex(indexOfContent: number): Promise<string | null> {
     return this.itemLocator.getByTestId('list-item-content').nth(indexOfContent).textContent();

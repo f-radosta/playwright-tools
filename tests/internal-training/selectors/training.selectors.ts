@@ -9,8 +9,6 @@ export const trainingSelectors = {
         participant: '//*[@id="training_course_filter_participants"]',
     },
 
-
-
     category: '//*[@id="training_course_courseCategories"]',
     trainer: '//*[@id="training_course_teacher"]',
     department: '//*[@id="training_course_departments"]',
