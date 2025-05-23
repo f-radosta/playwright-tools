@@ -36,7 +36,7 @@ export abstract class BaseListComponent<T extends BaseListItemComponent = BaseLi
    */
   async getItemText(index: number): Promise<string | null> {
     const item = await this.getItem(index);
-    return item.getText();
+    return item.getAllText();
   }
 
   /**
