@@ -1,10 +1,12 @@
 import {BasePage} from '@shared/pages/base-page';
-import {Page} from '@playwright/test';
+import {Locator, Page} from '@playwright/test';
 import {CompositeMenuList} from '@meal/components';
+import {PageInterface} from '@shared/pages/page.interface';
 
-export class CurrentMenuPage extends BasePage {
-    readonly pageTitle = () =>
-        this.page.getByRole('heading', {name: 'Aktuální jídelní menu'});
+export class CurrentMenuPage extends BasePage implements PageInterface {
+    pageTitle(): Locator {
+        return this.page.getByRole('heading', {name: 'Aktuální jídelní menu'});
+    }
 
     // Component instances
     private _menuList: CompositeMenuList | null = null;

@@ -1,6 +1,7 @@
 import {Locator, Page} from '@playwright/test';
 import {BasePage} from '@shared/pages/base-page';
 import {CategoriesList} from '@training/components';
+import {PageInterface} from '@shared/pages/page.interface';
 
 // Custom error for duplicate category
 export class DuplicateCategoryError extends Error {
@@ -10,9 +11,9 @@ export class DuplicateCategoryError extends Error {
     }
 }
 
-export class CategoriesPage extends BasePage {
+export class CategoriesPage extends BasePage implements PageInterface {
     // Categories page specific elements
-    override pageTitle(): Locator {
+    pageTitle(): Locator {
         return this.page
             .getByRole('heading', {name: 'Kategorie školení'})
             .locator('span');

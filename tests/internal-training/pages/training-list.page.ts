@@ -8,10 +8,11 @@ import {
     RichTextInputComponent
 } from '@shared/components';
 import {trainingSelectors} from '@training/selectors/training.selectors';
+import {PageInterface} from '@shared/pages/page.interface';
 
-export class TrainingListPage extends BasePage {
+export class TrainingListPage extends BasePage implements PageInterface {
     // Training list page specific elements
-    override pageTitle(): Locator {
+    pageTitle(): Locator {
         return this.page
             .getByRole('heading', {name: 'Vypsaná školení'})
             .locator('span');

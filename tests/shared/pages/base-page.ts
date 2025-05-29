@@ -1,6 +1,7 @@
 import {expect, Locator, Page} from '@playwright/test';
+import {PageInterface} from './page.interface';
 
-export class BasePage {
+export abstract class BasePage implements PageInterface {
     readonly page: Page;
 
     // Navigation elements using data-test attributes
@@ -31,9 +32,7 @@ export class BasePage {
      * Gets the page title locator - to be overridden by subclasses
      * @returns Locator for the page title
      */
-    pageTitle(): Locator {
-        throw new Error('pageTitle() method must be implemented by subclass');
-    }
+    abstract pageTitle(): Locator;
 
     /**
      * Verifies that the page is visible by checking the page title in the header
