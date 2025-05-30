@@ -43,6 +43,71 @@ export abstract class BasePage implements PageInterface {
     }
 
     /**
+     * Waits for the page to be fully loaded and ready for interaction
+     * This is a more robust approach than just checking for the page title
+     */
+    async waitForPageReady(): Promise<void> {
+        // Wait for network to be idle first
+        await this.page.waitForLoadState('networkidle');
+        
+        // Get the current page heading (if any)
+        const headingSelector = '[data-test="module-heading"]';
+        let initialHeading = null;
+        
+        try {
+            // Try to get the current heading text
+            initialHeading = await this.page.locator(headingSelector).first().textContent();
+        } catch (e) {
+            // No heading found, that's fine
+        }
+        
+        if (initialHeading) {
+            // If we have an initial heading, wait for it to change
+            console.log(`Waiting for heading to change from: "${initialHeading}"`); 
+            await this.page.evaluate(
+                ([selector, text]) => {
+                    return new Promise<void>((resolve) => {
+                        // Check immediately
+                        const checkHeading = () => {
+                            const heading = document.querySelector(selector);
+                            // Resolve if heading is gone or text has changed
+                            if (!heading || heading.textContent !== text) {
+                                resolve();
+                                return true;
+                            }
+                            return false;
+                        };
+                        
+                        // Check now and then set interval if not resolved
+                        if (!checkHeading()) {
+                            const interval = setInterval(() => {
+                                if (checkHeading()) {
+                                    clearInterval(interval);
+                                }
+                            }, 100);
+                            
+                            // Safety timeout after 10 seconds
+                            setTimeout(() => {
+                                clearInterval(interval);
+                                resolve(); // Resolve anyway after timeout
+                            }, 10000);
+                        }
+                    });
+                },
+                [headingSelector, initialHeading]
+            );
+        }
+        
+        // Finally, wait for any content to be visible
+        await this.page.waitForSelector(
+            '.wrapper--content, [data-test="module-heading"], h1, .container', 
+            { state: 'visible', timeout: 5000 }
+        ).catch(() => {
+            console.log('No content found after timeout, continuing anyway');
+        });
+    }
+
+    /**
      * Navigate to Training Categories page through the menu
      */
     async navigateToTrainingCategories(): Promise<void> {

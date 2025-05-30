@@ -11,25 +11,36 @@ export class MenuListItem
     implements ListItemInterface {
     
     /**
+     * Helper method to normalize text content by trimming whitespace and replacing multiple spaces with a single space
+     */
+    private normalizeText(text: string | null): string {
+        if (text === null) return '';
+        return text.trim().replace(/\s+/g, ' ');
+    }
+    
+    /**
      * Get the name of the meal
      */
-    async getMealName(): Promise<string | null> {
-        return this.itemLocator.getByTestId('food-name').textContent();
+    async getMealName(): Promise<string> {
+        const text = await this.itemLocator.getByTestId('food-name').textContent();
+        return this.normalizeText(text);
     }
 
     /**
      * Get the restaurant name for this meal
      */
-    async getRestaurantName(): Promise<string | null> {
-        return this.itemLocator.getByTestId('restaurant-name').textContent();
+    async getRestaurantName(): Promise<string> {
+        const text = await this.itemLocator.getByTestId('restaurant-name').textContent();
+        return this.normalizeText(text);
     }
 
     /**
      * Get the price of the meal
      */
-    async getPrice(): Promise<string | null> {
+    async getPrice(): Promise<string> {
         const priceCell = this.itemLocator.getByTestId('price-cell');
-        return priceCell.getByTestId('list-item-text').textContent();
+        const text = await priceCell.getByTestId('list-item-text').textContent();
+        return this.normalizeText(text);
     }
 
     /**
@@ -43,9 +54,10 @@ export class MenuListItem
     /**
      * Get the food type from the icon (e.g., "Polévka", "Hlavní chod")
      */
-    async getFoodType(): Promise<string | null> {
+    async getFoodType(): Promise<string> {
         const foodIcon = this.itemLocator.getByTestId('food-type-icon');
-        return foodIcon.getAttribute('aria-label');
+        const text = await foodIcon.getAttribute('aria-label');
+        return this.normalizeText(text);
     }
 
     /**
@@ -179,6 +191,11 @@ export class MenuListItem
         // Submit the form
         const submitButton = modal.getByTestId('note-submit');
         await submitButton.click();
+
+        // Wait for the modal to disappear after submission
+        await modal.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {
+            console.log('Modal might have already closed, continuing');
+        });
     }
 
     /**

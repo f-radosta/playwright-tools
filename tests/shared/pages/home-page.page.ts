@@ -2,6 +2,9 @@ import {Locator, Page, expect} from '@playwright/test';
 import {BasePage} from './base-page';
 
 export class HomePage extends BasePage {
+    pageTitle(): Locator {
+        return this.page.getByRole('link', {name: 'Interní tooly'});
+    }
     // Home page specific elements
     readonly internalTrainingLink = () =>
         this.page.getByRole('link', {name: 'Interní školení'}).nth(2);
