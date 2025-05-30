@@ -12,10 +12,10 @@ export class CategoriesList
 {
     public readonly categoriesFilter: CategoriesCompositeFilter;
 
-    constructor(public readonly listAndFilterWrapperLocator: Locator) {
-        super(listAndFilterWrapperLocator);
+    constructor(public readonly listLocator: Locator) {
+        super(listLocator);
         this.categoriesFilter = new CategoriesCompositeFilter(
-            this.listAndFilterWrapperLocator.getByTestId('filter')
+            this.listLocator.getByTestId('filter')
         );
     }
 

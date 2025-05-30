@@ -22,7 +22,7 @@ export class CurrentMenuPage extends BasePage implements PageInterface {
     get menuList(): CompositeMenuList {
         if (!this._menuList) {
             this._menuList = new CompositeMenuList(
-                this.page.getByTestId('list-and-filter-wrapper')
+                this.page.locator('.wrapper--content')
             );
         }
         return this._menuList;

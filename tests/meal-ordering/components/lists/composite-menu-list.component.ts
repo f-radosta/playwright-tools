@@ -9,11 +9,14 @@ export class CompositeMenuList {
         this.menuFilter = new MenuCompositeFilter(
             this.listAndFilterWrapperLocator.getByTestId('filter')
         );
-        this.listLocator = this.listAndFilterWrapperLocator.getByTestId('list');
+
+        this.listLocator =
+            this.listAndFilterWrapperLocator.getByTestId('daily-menu-list');
     }
 
     /**
      * Get all DailyMenuLists in this composite
+     * Always fetches fresh locators to ensure we have the latest data
      */
     public async getDailyMenuLists(): Promise<DailyMenuList[]> {
         // Always fetch fresh locators
@@ -23,15 +26,6 @@ export class CompositeMenuList {
         const lists: DailyMenuList[] = [];
         for (const locator of allListLocators) {
             lists.push(new DailyMenuList(locator));
-        }
-
-        // If no lists were found, create a single one from the main list locator
-        if (lists.length === 0) {
-            lists.push(
-                new DailyMenuList(
-                    this.listAndFilterWrapperLocator.getByTestId('list')
-                )
-            );
         }
 
         return lists;

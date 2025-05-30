@@ -8,8 +8,8 @@ export abstract class BaseListComponent<
 {
     public readonly itemLocators: Locator;
 
-    constructor(public readonly listAndFilterWrapperLocator: Locator) {
-        this.itemLocators = this.listAndFilterWrapperLocator
+    constructor(public readonly listLocator: Locator) {
+        this.itemLocators = this.listLocator
             .getByTestId('list')
             .getByTestId('list-item');
     }

@@ -1,4 +1,4 @@
-import {Locator} from '@playwright/test';
+import {Locator, expect} from '@playwright/test';
 import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
 
 export abstract class BaseCompositeFilterComponent<T>
@@ -22,14 +22,17 @@ export abstract class BaseCompositeFilterComponent<T>
      */
     protected async applyFilter() {
         const page = this.locator.page();
+        const filterButton = this.locator.getByLabel('Filtrovat');
 
         // Create a promise that will resolve when navigation/network is complete
         const navigationPromise = page.waitForLoadState('networkidle');
 
-        // Click the filter button
-        await this.locator.getByLabel('Filtrovat').click();
+        await filterButton.click();
 
-        // Wait for navigation to complete or network to become idle
+        await expect(filterButton).not.toHaveAttribute('disabled', '', {
+            timeout: 10000
+        });
+
         await navigationPromise;
 
         // Additional wait to ensure DOM is fully rendered

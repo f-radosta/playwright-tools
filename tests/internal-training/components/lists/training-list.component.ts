@@ -9,10 +9,10 @@ export class TrainingsList
 {
     public readonly trainingFilter: TrainingCompositeFilter;
 
-    constructor(public readonly listAndFilterWrapperLocator: Locator) {
-        super(listAndFilterWrapperLocator);
+    constructor(public readonly listLocator: Locator) {
+        super(listLocator);
         this.trainingFilter = new TrainingCompositeFilter(
-            this.listAndFilterWrapperLocator.getByTestId('filter')
+            this.listLocator.getByTestId('filter')
         );
     }
 
