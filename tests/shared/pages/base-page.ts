@@ -1,7 +1,7 @@
 import {expect, Locator, Page} from '@playwright/test';
 import {PageInterface} from './page.interface';
 
-export abstract class BasePage implements PageInterface {
+export class BasePage implements PageInterface {
     readonly page: Page;
 
     // Navigation elements using data-test attributes
@@ -32,7 +32,9 @@ export abstract class BasePage implements PageInterface {
      * Gets the page title locator - to be overridden by subclasses
      * @returns Locator for the page title
      */
-    abstract pageTitle(): Locator;
+    pageTitle(): Locator {
+        throw new Error(' pageTitle() must be implemented by subclasses');
+    }
 
     /**
      * Verifies that the page is visible by checking the page title in the header
@@ -43,68 +45,81 @@ export abstract class BasePage implements PageInterface {
     }
 
     /**
-     * Waits for the page to be fully loaded and ready for interaction
-     * This is a more robust approach than just checking for the page title
+     * Performs navigation and waits for the page to be ready
+     * This captures the URL before navigation and ensures proper waiting after navigation
+     * @param navigationFn Function that performs the actual navigation action
+     * @param requireRedirect If true, will throw an error if the URL doesn't change after navigation
      */
-    async waitForPageReady(): Promise<void> {
-        // Wait for network to be idle first
+    async navigateAndWait(
+        navigationFn: () => Promise<void>,
+        requireRedirect = true
+    ): Promise<void> {
+        // Capture the current URL before navigation
+        const startUrl = this.page.url();
+        //console.log(`XXX Starting navigation from URL: ${startUrl}`);
+
+        // Perform the navigation action
+        await navigationFn();
+
+        // Wait for network to be idle
         await this.page.waitForLoadState('networkidle');
-        
-        // Get the current page heading (if any)
-        const headingSelector = '[data-test="module-heading"]';
-        let initialHeading = null;
-        
-        try {
-            // Try to get the current heading text
-            initialHeading = await this.page.locator(headingSelector).first().textContent();
-        } catch (e) {
-            // No heading found, that's fine
+
+        // Check if URL has changed
+        let currentUrl = this.page.url();
+        if (currentUrl !== startUrl) {
+            //console.log(`XXX URL changed to: ${currentUrl}`);
+        } else {
+            //console.log(`XXX URL remained the same: ${currentUrl}`);
+
+            // If redirect is required but URL didn't change, wait a bit more and check again
+            if (requireRedirect) {
+                //console.log('XXX Waiting for potential delayed redirect...');
+
+                // Try waiting for URL changes for up to 5 seconds
+                const maxWaitTime = 5000;
+                const startWaitTime = Date.now();
+
+                while (Date.now() - startWaitTime < maxWaitTime) {
+                    // Wait a bit
+                    await this.page.waitForTimeout(300);
+
+                    // Check URL again
+                    currentUrl = this.page.url();
+                    if (currentUrl !== startUrl) {
+                        //console.log(`XXX URL changed after waiting to: ${currentUrl}`);
+                        break;
+                    }
+
+                    // Also check for network activity
+                    await this.page
+                        .waitForLoadState('networkidle', {timeout: 500})
+                        .catch(() => {});
+                }
+
+                // If URL still hasn't changed after waiting, throw error
+                if (currentUrl === startUrl) {
+                    throw new Error(
+                        `Navigation failed: URL did not change from ${startUrl} after waiting`
+                    );
+                }
+            }
         }
-        
-        if (initialHeading) {
-            // If we have an initial heading, wait for it to change
-            console.log(`Waiting for heading to change from: "${initialHeading}"`); 
-            await this.page.evaluate(
-                ([selector, text]) => {
-                    return new Promise<void>((resolve) => {
-                        // Check immediately
-                        const checkHeading = () => {
-                            const heading = document.querySelector(selector);
-                            // Resolve if heading is gone or text has changed
-                            if (!heading || heading.textContent !== text) {
-                                resolve();
-                                return true;
-                            }
-                            return false;
-                        };
-                        
-                        // Check now and then set interval if not resolved
-                        if (!checkHeading()) {
-                            const interval = setInterval(() => {
-                                if (checkHeading()) {
-                                    clearInterval(interval);
-                                }
-                            }, 100);
-                            
-                            // Safety timeout after 10 seconds
-                            setTimeout(() => {
-                                clearInterval(interval);
-                                resolve(); // Resolve anyway after timeout
-                            }, 10000);
-                        }
-                    });
-                },
-                [headingSelector, initialHeading]
-            );
-        }
-        
-        // Finally, wait for any content to be visible
-        await this.page.waitForSelector(
-            '.wrapper--content, [data-test="module-heading"], h1, .container', 
-            { state: 'visible', timeout: 5000 }
-        ).catch(() => {
-            console.log('No content found after timeout, continuing anyway');
-        });
+
+        // Wait for content to be visible
+        //console.log('XXX Waiting for content to be visible...');
+        await this.page
+            .waitForSelector('.wrapper--content', {
+                state: 'visible',
+                timeout: 5000
+            })
+            .catch(() => {
+                //console.log('XXX No content found after timeout, continuing anyway');
+            });
+
+        // Additional wait for any animations to complete
+        await this.page.waitForTimeout(300);
+
+        //console.log('XXX Page is ready for interaction');
     }
 
     /**

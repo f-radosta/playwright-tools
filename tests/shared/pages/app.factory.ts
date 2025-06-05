@@ -13,47 +13,56 @@ export class AppFactory {
     constructor(public readonly page: BasePage) {}
 
     // Common navigation
-    async gotoDashboard(): Promise<HomePage> {
-        await this.page.homeLink().click();
-        await this.page.waitForPageReady();
+    async gotoDashboard(requireRedirect = true): Promise<HomePage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.homeLink().click();
+        }, requireRedirect);
         return new HomePage(this.page.page);
     }
 
     // Training navigation methods
-    async gotoCategories(): Promise<CategoriesPage> {
-        await this.page.navigateToTrainingCategories();
-        await this.page.waitForPageReady();
+    async gotoCategories(requireRedirect = true): Promise<CategoriesPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.navigateToTrainingCategories();
+        }, requireRedirect);
         return new CategoriesPage(this.page.page);
     }
 
-    async gotoTrainingHome(): Promise<TrainingHomePage> {
-        await this.page.trainingLink().click();
-        await this.page.waitForPageReady();
+    async gotoTrainingHome(requireRedirect = true): Promise<TrainingHomePage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.trainingLink().click();
+        }, requireRedirect);
         return new TrainingHomePage(this.page.page);
     }
 
-    async gotoTrainingList(): Promise<TrainingListPage> {
-        await this.page.navigateToTrainingList();
-        await this.page.waitForPageReady();
+    async gotoTrainingList(requireRedirect = true): Promise<TrainingListPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.navigateToTrainingList();
+        }, requireRedirect);
         return new TrainingListPage(this.page.page);
     }
 
     // Meal ordering navigation methods
-    async gotoMealOrderHP(): Promise<MealOrderHPPage> {
-        await this.page.lunchOrderLink().click();
-        await this.page.waitForPageReady();
+    async gotoMealOrderHP(requireRedirect = true): Promise<MealOrderHPPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.lunchOrderLink().click();
+        }, requireRedirect);
         return new MealOrderHPPage(this.page.page);
     }
-    
-    async gotoCurrentMenu(): Promise<CurrentMenuPage> {
-        await this.page.navigateToCurrentMenu();
-        await this.page.waitForPageReady();
+
+    async gotoCurrentMenu(requireRedirect = true): Promise<CurrentMenuPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.navigateToCurrentMenu();
+        }, requireRedirect);
         return new CurrentMenuPage(this.page.page);
     }
 
-    async gotoMonthlyBilling(): Promise<MonthlyBillingPage> {
-        await this.page.navigateToMonthlyBilling();
-        await this.page.waitForPageReady();
+    async gotoMonthlyBilling(
+        requireRedirect = true
+    ): Promise<MonthlyBillingPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.navigateToMonthlyBilling();
+        }, requireRedirect);
         return new MonthlyBillingPage(this.page.page);
     }
 }

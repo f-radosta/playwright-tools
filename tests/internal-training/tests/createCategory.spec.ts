@@ -16,9 +16,7 @@ userTest(
                 await categoriesPage.categoriesList.deleteCategoryByName(
                     newCategoryName
                 );
-
                 await categoriesPage.page.reload();
-
                 await categoriesPage.createNewCategory(newCategoryName);
             } else {
                 throw error;

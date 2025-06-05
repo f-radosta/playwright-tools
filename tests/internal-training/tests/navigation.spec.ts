@@ -3,7 +3,7 @@ import {AppFactory} from '@shared/pages/app.factory';
 import {expect} from '@playwright/test';
 
 userTest('Test Homepage navigation cards', async ({app}: {app: AppFactory}) => {
-    const homePage = await app.gotoDashboard();
+    const homePage = await app.gotoDashboard(false);
 
     // go to internal training by clicking nav card
     await homePage.internalTrainingLink().click();

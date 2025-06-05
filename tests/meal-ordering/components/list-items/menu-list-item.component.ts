@@ -1,15 +1,18 @@
 import {BaseListItemComponent} from '@shared/components/base-list-item.component';
 import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
 import {Locator} from '@playwright/test';
-import {DropdownFilterComponent, DropdownType} from '@shared/components/filters/dropdown-filter.component';
+import {
+    DropdownFilterComponent,
+    DropdownType
+} from '@shared/components/filters/dropdown-filter.component';
 
 /**
  * Represents a menu item in the meal ordering system
  */
 export class MenuListItem
     extends BaseListItemComponent
-    implements ListItemInterface {
-    
+    implements ListItemInterface
+{
     /**
      * Helper method to normalize text content by trimming whitespace and replacing multiple spaces with a single space
      */
@@ -17,12 +20,14 @@ export class MenuListItem
         if (text === null) return '';
         return text.trim().replace(/\s+/g, ' ');
     }
-    
+
     /**
      * Get the name of the meal
      */
     async getMealName(): Promise<string> {
-        const text = await this.itemLocator.getByTestId('food-name').textContent();
+        const text = await this.itemLocator
+            .getByTestId('food-name')
+            .textContent();
         return this.normalizeText(text);
     }
 
@@ -30,7 +35,9 @@ export class MenuListItem
      * Get the restaurant name for this meal
      */
     async getRestaurantName(): Promise<string> {
-        const text = await this.itemLocator.getByTestId('restaurant-name').textContent();
+        const text = await this.itemLocator
+            .getByTestId('restaurant-name')
+            .textContent();
         return this.normalizeText(text);
     }
 
@@ -39,7 +46,9 @@ export class MenuListItem
      */
     async getPrice(): Promise<string> {
         const priceCell = this.itemLocator.getByTestId('price-cell');
-        const text = await priceCell.getByTestId('list-item-text').textContent();
+        const text = await priceCell
+            .getByTestId('list-item-text')
+            .textContent();
         return this.normalizeText(text);
     }
 
@@ -93,84 +102,92 @@ export class MenuListItem
      */
     async setQuantity(quantity: number): Promise<void> {
         const quantityInput = this.itemLocator.getByTestId('quantity-input');
-        
+
         // Clear the input and set the new value
         await quantityInput.fill(quantity.toString());
     }
-    
+
     /**
      * Increment the quantity by clicking the + button
      */
     async incrementQuantity(): Promise<void> {
-        const incrementButton = this.itemLocator.getByTestId('increment-button');
+        const incrementButton =
+            this.itemLocator.getByTestId('increment-button');
         await incrementButton.click();
     }
-    
+
     /**
      * Decrement the quantity by clicking the - button
      */
     async decrementQuantity(): Promise<void> {
-        const decrementButton = this.itemLocator.getByTestId('decrement-button');
+        const decrementButton =
+            this.itemLocator.getByTestId('decrement-button');
         await decrementButton.click();
     }
-    
+
     /**
      * Select a time slot for the meal
      * @param timeValue The value of the time slot to select (e.g., "1100", "1130")
      */
     async selectTimeSlot(timeValue: string): Promise<void> {
         const timeSelect = this.itemLocator.getByTestId('time-select');
-        
+
         // First try the standard selectOption approach
         try {
             await timeSelect.selectOption(timeValue);
             return;
         } catch (error) {
-            console.log('Standard selectOption failed, trying alternative approach');
+            console.log(
+                'Standard selectOption failed, trying alternative approach'
+            );
         }
-        
+
         // If standard approach fails, try clicking the select and then the option
         try {
             // Click to open the dropdown
             await timeSelect.click();
-            
+
             // Find and click the option with the matching value
             const option = timeSelect.locator(`option[value="${timeValue}"]`);
             await option.click();
             return;
         } catch (error) {
-            console.log('Alternative approach failed, trying direct option selection');
+            console.log(
+                'Alternative approach failed, trying direct option selection'
+            );
         }
-        
+
         // If all else fails, try to set the value directly
         await timeSelect.evaluate((element, value) => {
             (element as HTMLSelectElement).value = value;
             // Dispatch a change event to trigger any listeners
-            const event = new Event('change', { bubbles: true });
+            const event = new Event('change', {bubbles: true});
             element.dispatchEvent(event);
         }, timeValue);
     }
-    
+
     /**
      * Get available time slots
      * @returns Array of objects with time slot value and text
      */
-    async getAvailableTimeSlots(): Promise<Array<{value: string, text: string}>> {
+    async getAvailableTimeSlots(): Promise<
+        Array<{value: string; text: string}>
+    > {
         const timeSelect = this.itemLocator.getByTestId('time-select');
-        
+
         // Get all option elements
         const options = await timeSelect.locator('option').all();
         const timeSlots = [];
-        
+
         for (const option of options) {
-            const value = await option.getAttribute('value') || '';
-            const text = await option.textContent() || '';
-            timeSlots.push({ value, text: text.trim() });
+            const value = (await option.getAttribute('value')) || '';
+            const text = (await option.textContent()) || '';
+            timeSlots.push({value, text: text.trim()});
         }
-        
+
         return timeSlots;
     }
-    
+
     /**
      * Add a note to the meal order
      * @param note The note text to add
@@ -179,23 +196,40 @@ export class MenuListItem
         // Click the note button to open the modal
         const noteButton = this.itemLocator.getByTestId('note-button');
         await noteButton.click();
-        
+
         // Wait for the modal to appear
         const modal = this.itemLocator.page().locator('.modal.show');
-        await modal.waitFor({ state: 'visible' });
-        
+        await modal.waitFor({state: 'visible'});
+
         // Fill in the note
         const textarea = modal.getByTestId('note-textarea');
         await textarea.fill(note);
-        
+
         // Submit the form
         const submitButton = modal.getByTestId('note-submit');
         await submitButton.click();
 
-        // Wait for the modal to disappear after submission
-        await modal.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {
-            console.log('Modal might have already closed, continuing');
-        });
+        // Wait for the modal to be properly closed
+        const page = this.itemLocator.page();
+
+        // Wait for the modal to have display: none style
+        // This is the most reliable indicator that the modal is closed
+        await page
+            .waitForFunction(
+                () => {
+                    const modal = document.querySelector('.modal');
+                    return (
+                        modal &&
+                        window.getComputedStyle(modal).display === 'none'
+                    );
+                },
+                {timeout: 5000}
+            )
+            .catch(() => {
+                console.log(
+                    'Could not verify modal display style, continuing anyway'
+                );
+            });
     }
 
     /**
@@ -204,15 +238,19 @@ export class MenuListItem
      * @param timeSlot Optional time slot value (e.g., "1100", "1130")
      * @param note Optional note for the order
      */
-    async orderMeal(quantity: number = 1, timeSlot?: string, note?: string): Promise<void> {
+    async orderMeal(
+        quantity: number = 1,
+        timeSlot?: string,
+        note?: string
+    ): Promise<void> {
         // Set the quantity
         await this.setQuantity(quantity);
-        
+
         // Select time slot if provided
         if (timeSlot) {
             await this.selectTimeSlot(timeSlot);
         }
-        
+
         // Add note if provided
         if (note) {
             await this.addNote(note);

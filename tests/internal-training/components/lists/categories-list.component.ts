@@ -37,7 +37,6 @@ export class CategoriesList
             const itemName = await item.getName();
 
             if (itemName && itemName.trim().localeCompare(trimmedName) === 0) {
-                //console.log(`Found category "${name}" at index ${i}`);
                 return item;
             }
         }

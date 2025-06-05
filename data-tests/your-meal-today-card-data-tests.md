@@ -8,7 +8,7 @@ Based on the provided section of the meal order page, here are the data-test att
 ```html
 <div
     class="rounded-xl border bg-card text-card-foreground shadow-sm mb-8 svg--wrapper !border-brand border-2"
-    data-test="meal-card"
+    data-test="list-and-filter-wrapper"
 >
     <!-- Card content -->  
 </div>
@@ -16,7 +16,7 @@ Based on the provided section of the meal order page, here are the data-test att
 
 ### Card Header with Title
 ```html
-<div class="flex flex-col space-y-1.5 p-3 md:p-6 pb-0" data-test="meal-card-header">
+<div class="flex flex-col space-y-1.5 p-3 md:p-6 pb-0" data-test="header">
     <div class="infoTile outline" data-test="meal-card-title-container">
         <div class="infoTile__icon">
             <svg class="icon-coffee">
