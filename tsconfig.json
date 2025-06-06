@@ -13,6 +13,7 @@
       "@components/*": ["tests/shared/components/*"],
       "@filters/*": ["tests/shared/components/filters/*"],
       "@training/*": ["tests/internal-training/*"],
+      "@meal/*": ["tests/meal-ordering/*"],
       "@auth/*": ["tests/auth/*"]
     }
   },
