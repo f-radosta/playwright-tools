@@ -3,6 +3,7 @@ import {DropdownFilterComponent, DropdownType} from '@shared/components';
 import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
 import {BaseCompositeFilterComponent} from '@shared/components/base-composite-filter.component';
 import {trainingSelectors} from '@training/selectors/training.selectors';
+import {CategoryDTO} from '@training/models/training.types';
 
 export class CategoriesCompositeFilter
     extends BaseCompositeFilterComponent<CategoryDTO>
@@ -26,7 +27,3 @@ export class CategoriesCompositeFilter
         await this.applyFilter();
     }
 }
-
-type CategoryDTO = {
-    categoryName: string;
-};

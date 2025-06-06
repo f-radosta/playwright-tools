@@ -1,10 +1,11 @@
-import {BaseListItemComponent} from '@shared/components/base-list-item.component';
-import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
 import {Locator} from '@playwright/test';
+import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
 import {TrainingPage} from '@training/pages/training.page';
+import {BaseTrainingComponent} from '@training/components/base/base-training.component';
+import {DateTimeUtils, ParsedDateTimeInfo} from '@shared/utils/date-utils';
 
 export class TrainingListItem
-    extends BaseListItemComponent
+    extends BaseTrainingComponent
     implements ListItemInterface
 {
     constructor(public readonly itemLocator: Locator) {
@@ -12,7 +13,8 @@ export class TrainingListItem
     }
 
     async getName(): Promise<string | null> {
-        return this.getTextOfElementByTestId('name-cell');
+        const nameCell = this.itemLocator.getByTestId('name-cell');
+        return this.safeGetText(nameCell);
     }
 
     async goToTrainingPage(): Promise<TrainingPage> {
@@ -21,30 +23,66 @@ export class TrainingListItem
     }
 
     async getDateTime(): Promise<string | null> {
-        return this.getTextOfElementByTestId('date-cell');
+        const dateCell = this.itemLocator.getByTestId('date-cell');
+        return this.safeGetText(dateCell);
     }
 
     async getTrainer(): Promise<string | null> {
-        return this.getTextOfElementByTestId('trainer-cell');
+        const trainerCell = this.itemLocator.getByTestId('trainer-cell');
+        return this.safeGetText(trainerCell);
     }
 
     async getDepartment(): Promise<string | null> {
-        return this.getTextOfElementByTestId('department-cell');
+        const departmentCell = this.itemLocator.getByTestId('department-cell');
+        return this.safeGetText(departmentCell);
     }
 
     async getCategory(): Promise<string | null> {
-        return this.getTextOfElementByTestId('category-cell');
+        const categoryCell = this.itemLocator.getByTestId('category-cell');
+        return this.safeGetText(categoryCell);
     }
 
-    async getCapacity(): Promise<string | null> {
-        return this.getTextOfElementByTestId('capacity-cell');
+    async getCapacity(): Promise<number | null> {
+        const capacityCell = this.itemLocator.getByTestId('capacity-cell');
+        const capacityText = await this.safeGetText(capacityCell);
+        if (!capacityText) return null;
+
+        // Extract numeric value from text (e.g., "10 / 20" -> 20)
+        const match = capacityText.match(/\d+\s*\/\s*(\d+)/);
+        if (match && match[1]) {
+            return parseInt(match[1], 10);
+        } else if (match) {
+            return parseInt(match[0], 10);
+        }
+        return null;
     }
 
     async getOnline(): Promise<string | null> {
-        return this.getTextOfElementByTestId('online-cell');
+        const onlineCell = this.itemLocator.getByTestId('online-cell');
+        return this.safeGetText(onlineCell);
     }
 
     async clickCourseSignButton(): Promise<void> {
         await this.clickOnElementByTestId('sign-cell');
+    }
+
+    /**
+     * Parse date and time information from different formats using shared utility
+     *
+     * @returns ParsedDateTimeInfo object with startDate, endDate, times and format info
+     */
+    async parseDateTimes(): Promise<ParsedDateTimeInfo> {
+        const dateText = await this.getDateTime();
+        return DateTimeUtils.parseDateTimes(dateText);
+    }
+
+    async getStartDate(): Promise<Date | null> {
+        const {startDate} = await this.parseDateTimes();
+        return startDate;
+    }
+
+    async getEndDate(): Promise<Date | null> {
+        const {endDate} = await this.parseDateTimes();
+        return endDate;
     }
 }

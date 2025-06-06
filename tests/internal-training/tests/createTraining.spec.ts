@@ -1,6 +1,6 @@
 import {userTest} from '@auth/app-auth.fixture';
 import {AppFactory} from '@shared/pages/app.factory';
-import {NewTrainingFormDTO} from '@training/pages/training-list.page';
+import {NewTrainingFormDTO} from '@training/models/training.types';
 
 userTest(
     'Create and delete training as user',

@@ -8,6 +8,7 @@ import {
 import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
 import {BaseCompositeFilterComponent} from '@shared/components/base-composite-filter.component';
 import {trainingSelectors} from '@training/selectors/training.selectors';
+import {TrainingFilterDTO} from '@training/models/training.types';
 
 export class TrainingCompositeFilter
     extends BaseCompositeFilterComponent<TrainingFilterDTO>
@@ -86,13 +87,3 @@ export class TrainingCompositeFilter
         await this.applyFilter();
     }
 }
-
-export type TrainingFilterDTO = {
-    category?: string;
-    name?: string;
-    trainer?: string;
-    participant?: string;
-    department?: string;
-    online?: boolean;
-    includePast?: boolean;
-};

@@ -9,6 +9,7 @@ import {
 } from '@shared/components';
 import {trainingSelectors} from '@training/selectors/training.selectors';
 import {PageInterface} from '@shared/pages/page.interface';
+import {NewTrainingFormDTO} from '@training/models/training.types';
 
 export class TrainingListPage extends BasePage implements PageInterface {
     // Training list page specific elements
@@ -91,19 +92,3 @@ export class TrainingListPage extends BasePage implements PageInterface {
         await this.expectPageHeaderVisible();
     }
 }
-
-export type NewTrainingFormDTO = {
-    category: string;
-    name: string;
-    description: string;
-    trainer: string;
-    department: string;
-    capacity: number;
-    issueId?: string;
-    roomName?: string;
-    online?: boolean;
-    startDate: string;
-    endDate: string;
-    registrationDeadline?: string;
-    reasonForClosingTheRegistration?: string;
-};
