@@ -1,26 +1,13 @@
-import {BaseListItemComponent} from '@shared/components/base-list-item.component';
-import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
 import {Locator} from '@playwright/test';
+import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
 import {
     DropdownFilterComponent,
     DropdownType
 } from '@shared/components/filters/dropdown-filter.component';
+import {MenuMeal} from '@meal/models/meal-ordering.types';
+import {BaseMealComponent} from '@meal/components/base/base-meal.component';
 
-/**
- * Represents a menu item in the meal ordering system
- */
-export class MenuListItem
-    extends BaseListItemComponent
-    implements ListItemInterface
-{
-    /**
-     * Helper method to normalize text content by trimming whitespace and replacing multiple spaces with a single space
-     */
-    private normalizeText(text: string | null): string {
-        if (text === null) return '';
-        return text.trim().replace(/\s+/g, ' ');
-    }
-
+export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
      * Get the name of the meal
      */
@@ -53,6 +40,13 @@ export class MenuListItem
     }
 
     /**
+     * Get the price per unit (aliased to getPrice for interface compatibility)
+     */
+    async getPricePerUnit(): Promise<string> {
+        return this.getPrice();
+    }
+
+    /**
      * Get the order deadline status
      */
     async getOrderDeadlineStatus(): Promise<string | null> {
@@ -63,7 +57,7 @@ export class MenuListItem
     /**
      * Get the food type from the icon (e.g., "Polévka", "Hlavní chod")
      */
-    async getFoodType(): Promise<string> {
+    async getMealType(): Promise<string> {
         const foodIcon = this.itemLocator.getByTestId('food-type-icon');
         const text = await foodIcon.getAttribute('aria-label');
         return this.normalizeText(text);
@@ -72,7 +66,7 @@ export class MenuListItem
     /**
      * Get the current quantity value
      */
-    async getQuantity(): Promise<number> {
+    async getMealQuantity(): Promise<number> {
         const quantityInput = this.itemLocator.getByTestId('quantity-input');
         const value = await quantityInput.inputValue();
         return value ? parseInt(value.trim(), 10) : 0;
@@ -85,6 +79,59 @@ export class MenuListItem
         const status = await this.getOrderDeadlineStatus();
         // 'available' means orders are open, 'ordered' means orders are closed
         return status === 'available';
+    }
+
+    /**
+     * Get the meal time
+     */
+    async getMealTime(): Promise<string | null> {
+        const timeSelect = this.itemLocator.getByTestId('time-select');
+
+        // Check if time select exists and is visible
+        if ((await timeSelect.count()) === 0) return null;
+
+        // Get the selected option
+        const selectedOption = timeSelect.locator('option:checked');
+        if ((await selectedOption.count()) === 0) return null;
+
+        const text = (await selectedOption.textContent()) || '';
+        return this.normalizeText(text);
+    }
+
+    /**
+     * Check if the meal has a note
+     */
+    async hasNote(): Promise<boolean> {
+        // Check if the note indicator is present
+        const noteIndicator = this.itemLocator.getByTestId('note-indicator');
+        return (
+            (await noteIndicator.count()) > 0 &&
+            (await noteIndicator.isVisible())
+        );
+    }
+
+    /**
+     * Get the meal note
+     */
+    async getNote(): Promise<string | null> {
+        if (!(await this.hasNote())) {
+            return null;
+        }
+
+        // Try to get note from tooltip or indicator
+        const noteIndicator = this.itemLocator.getByTestId('note-indicator');
+
+        // First try to get note from tooltip
+        const tooltipText = await noteIndicator.getAttribute(
+            'data-bs-original-title'
+        );
+        if (tooltipText) {
+            return this.normalizeText(tooltipText);
+        }
+
+        // If no tooltip, try to get visible text (may be truncated)
+        const visibleText = await noteIndicator.textContent();
+        return visibleText ? this.normalizeText(visibleText) : null;
     }
 
     /**

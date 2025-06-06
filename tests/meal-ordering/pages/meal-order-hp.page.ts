@@ -2,6 +2,7 @@ import {BasePage} from '@shared/pages/base-page';
 import {Locator, Page} from '@playwright/test';
 import {PageInterface} from '@shared/pages/page.interface';
 import {OrderList} from '@meal/components/lists/order-list.component';
+import {TodayMealCard} from '@meal/components/cards/today-meal-card.component';
 
 export class MealOrderHPPage extends BasePage implements PageInterface {
     pageTitle(): Locator {
@@ -11,6 +12,7 @@ export class MealOrderHPPage extends BasePage implements PageInterface {
     // Component instances
     private _cartList: OrderList | null = null;
     private _orderedUnbilledList: OrderList | null = null;
+    private _todayMealCard: TodayMealCard | null = null;
 
     constructor(page: Page) {
         super(page);
@@ -40,5 +42,18 @@ export class MealOrderHPPage extends BasePage implements PageInterface {
             );
         }
         return this._orderedUnbilledList;
+    }
+
+    /**
+     * Get the Today's Meal card component
+     * Lazy-loaded to ensure the component is only created when needed
+     */
+    getTodayMealCard(): TodayMealCard {
+        if (!this._todayMealCard) {
+            this._todayMealCard = new TodayMealCard(
+                this.page.locator('[data-test="list-and-filter-wrapper"]')
+            );
+        }
+        return this._todayMealCard;
     }
 }
