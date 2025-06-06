@@ -126,8 +126,17 @@ export class BasePage implements PageInterface {
      * Navigate to Training Categories page through the menu
      */
     async navigateToTrainingCategories(): Promise<void> {
-        // Find the toggle button next to the training link
-        await this.page.getByTestId('nav-toggle-training').click();
+        // Check if the categories link is already visible
+        const isVisible = await this.trainingCategoriesLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId('nav-toggle-training').click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
         // Click on the categories link
         await this.trainingCategoriesLink().click();
     }
@@ -136,8 +145,17 @@ export class BasePage implements PageInterface {
      * Navigate to Training List page through the menu
      */
     async navigateToTrainingList(): Promise<void> {
-        // Find the toggle button next to the training link
-        await this.page.getByTestId('nav-toggle-training').click();
+        // Check if the training list link is already visible
+        const isVisible = await this.trainingListLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId('nav-toggle-training').click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
         // Click on the training list link
         await this.trainingListLink().click();
     }
@@ -146,8 +164,17 @@ export class BasePage implements PageInterface {
      * Navigate to Current Menu page through the menu
      */
     async navigateToCurrentMenu(): Promise<void> {
-        // Find the toggle button next to the lunch ordering link
-        await this.page.getByTestId('nav-toggle-lunch').click();
+        // Check if the current menu link is already visible
+        const isVisible = await this.currentMenuLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId('nav-toggle-lunch').click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
         // Click on the current menu link
         await this.currentMenuLink().click();
     }
@@ -156,8 +183,17 @@ export class BasePage implements PageInterface {
      * Navigate to Monthly Billing page through the menu
      */
     async navigateToMonthlyBilling(): Promise<void> {
-        // Find the toggle button next to the lunch ordering link
-        await this.page.getByTestId('nav-toggle-lunch').click();
+        // Check if the monthly billing link is already visible
+        const isVisible = await this.monthlyBillingLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId('nav-toggle-lunch').click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
         // Click on the monthly billing link
         await this.monthlyBillingLink().click();
     }

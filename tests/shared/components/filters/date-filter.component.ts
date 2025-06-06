@@ -58,16 +58,78 @@ export class DateFilterComponent implements SingleFilterInterface {
     }
 
     /**
-     * Generate a date range string for today and the next N days
-     * @param daysToInclude Number of days to include in the range (including today)
+     * Generate a date range string starting from an offset day and spanning for N days
+     * @param daysToInclude Number of days to include in the range
+     * @param startOffset Number of days to offset from today (0 = today, 1 = tomorrow, etc.)
      * @returns A formatted date range string
      */
-    static generateDateRangeForDays(daysToInclude: number = 4): string {
-        const today = new Date();
-        const endDate = new Date();
-        endDate.setDate(today.getDate() + daysToInclude - 1); // -1 because we include today
+    static generateDateRangeForDays(daysToInclude: number = 4, startOffset: number = 0): string {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + startOffset);
         
-        return this.generateDateRangeString(today, endDate);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + daysToInclude - 1); // -1 because we count the start day
+        
+        return this.generateDateRangeString(startDate, endDate);
+    }
+    
+    /**
+     * Generate a date range string for only tomorrow
+     * @returns A formatted date range for tomorrow only
+     */
+    static generateTomorrowDateRange(): string {
+        return this.generateDateRangeForDays(1, 1);
+    }
+    
+    /**
+     * Generate a date range string for only the day after tomorrow
+     * @returns A formatted date range for the day after tomorrow only
+     */
+    static generateDayAfterTomorrowDateRange(): string {
+        return this.generateDateRangeForDays(1, 2);
+    }
+    
+    /**
+     * Calculate days until next weekend (Saturday)
+     * @param nextWeekend If true, get days to the weekend after the next one
+     * @returns Number of days until next Saturday
+     */
+    static getDaysToNextWeekend(nextWeekend: boolean = false): number {
+        const today = new Date();
+        const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
+        
+        // Calculate days until next Saturday
+        let daysToSaturday = (6 - currentDay) % 7;
+        if (daysToSaturday === 0 && today.getHours() >= 12) {
+            // If it's already Saturday afternoon, target next weekend
+            daysToSaturday = 7;
+        }
+        
+        // If we want the weekend after the next one
+        if (nextWeekend) {
+            daysToSaturday += 7;
+        }
+        
+        return daysToSaturday;
+    }
+    
+    /**
+     * Generate a date range for the weekend (Saturday and Sunday)
+     * @param nextWeekend If true, get the weekend after this coming weekend
+     * @returns A formatted date range for the weekend
+     */
+    static generateWeekendDateRange(nextWeekend: boolean = false): string {
+        const today = new Date();
+        const daysToSaturday = this.getDaysToNextWeekend(nextWeekend);
+        
+        // Create date range from Saturday to Sunday
+        const saturday = new Date(today);
+        saturday.setDate(today.getDate() + daysToSaturday);
+        
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+        
+        return this.generateDateRangeString(saturday, sunday);
     }
 
     /**

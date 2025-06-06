@@ -284,6 +284,66 @@ export class MealOrderingHelper {
         return {success: foundOrderedMeal, mealOrderHP};
     }
 
+    /**
+     * Clean up meal orders by resetting filters and setting quantities to 0
+     * This ensures that tests don't leave behind orders that could affect other tests
+     * @param app The AppFactory instance
+     * @returns True if cleanup was successful, false otherwise
+     */
+    static async cleanupMealOrders(app: AppFactory): Promise<boolean> {
+        try {
+            console.log('Cleaning up meal orders...');
+            
+            // Navigate to current menu page where we can reset filters and quantities
+            console.log('Navigating to current menu page...');
+            const currentMenuPage = await app.gotoCurrentMenu();
+            
+            // Reset filters first
+            console.log('Resetting menu filters...');
+            // Create empty filter criteria
+            const emptyFilter: MenuDTO = {};
+            await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
+            
+            // Get the today's list
+            console.log('Getting today\'s menu list...');
+            const todayList = await currentMenuPage.menuList.getTodayList();
+            if (todayList) {
+                // Get all meals from today's list
+                const todayMeals = await todayList.getAvailableMeals();
+                console.log(`Found ${todayMeals.length} meals in today's list. Setting all quantities to 0...`);
+                
+                // Set quantity to 0 for each meal
+                for (const meal of todayMeals) {
+                    const mealName = await meal.getMealName();
+                    console.log(`Setting quantity to 0 for "${mealName}"...`);
+                    await meal.setQuantity(0);
+                }
+            }
+            
+            // Get the tomorrow's list
+            console.log('Getting tomorrow\'s menu list...');
+            const tomorrowList = await currentMenuPage.menuList.getTomorrowList();
+            if (tomorrowList) {
+                // Get all meals from tomorrow's list
+                const tomorrowMeals = await tomorrowList.getAvailableMeals();
+                console.log(`Found ${tomorrowMeals.length} meals in tomorrow's list. Setting all quantities to 0...`);
+                
+                // Set quantity to 0 for each meal
+                for (const meal of tomorrowMeals) {
+                    const mealName = await meal.getMealName();
+                    console.log(`Setting quantity to 0 for "${mealName}"...`);
+                    await meal.setQuantity(0);
+                }
+            }
+            
+            console.log('Meal order cleanup completed successfully.');
+            return true;
+        } catch (error) {
+            console.error('Failed to clean up meal orders:', error);
+            return false;
+        }
+    }
+
     static async verifyTodayMeal(app: AppFactory) {
         // Navigate to the meal order homepage where Today's Meal card would be shown
         const mealOrderHP = await app.gotoMealOrderHP();
