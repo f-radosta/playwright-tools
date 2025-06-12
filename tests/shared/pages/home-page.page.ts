@@ -1,5 +1,5 @@
 import {Locator, Page, expect} from '@playwright/test';
-import {BasePage} from './base-page';
+import {BasePage} from '@shared-pages/base-page';
 
 export class HomePage extends BasePage {
     pageTitle(): Locator {

@@ -1,7 +1,8 @@
 import {Locator} from '@playwright/test';
-import {BaseListComponent} from '@shared/components/base-list.component';
-import {ListInterface} from '@shared/components/interfaces/list.interface';
-import {MenuListItem} from '@meal/components';
+import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
+import {BaseListComponent} from '@shared-components/base-list.component';
+import {ListInterface} from '@shared-interfaces/list.interface';
+import {MenuListItem} from '@meal-components/index';
 
 export class DailyMenuList
     extends BaseListComponent<MenuListItem>
@@ -29,24 +30,13 @@ export class DailyMenuList
     private async initializeDate(): Promise<void> {
         try {
             // Try to find a date indicator in the list header
-            const headerLocator = this.listLocator.getByTestId('date-label');
+            const headerLocator = this.listLocator.getByTestId(MEAL_SELECTORS.DATE_LABEL);
             const headerText = await headerLocator.textContent();
 
             if (headerText) {
                 // Extract date from header text - this will need to be adjusted based on your actual format
                 this._date = this.extractDateFromText(headerText);
             } else {
-                // // If no header text, try to get it from the list title or other element
-                // const titleLocator =
-                //     this.listAndFilterWrapperLocator.getByTestId('list-title');
-                // const titleText = await titleLocator.textContent();
-
-                // if (titleText) {
-                //     this._date = this.extractDateFromText(titleText);
-                // } else {
-                //     // Fallback to current date if no date information is found
-                //     this._date = new Date();
-                // }
                 throw new Error('Failed to extract date from list');
             }
         } catch (error) {

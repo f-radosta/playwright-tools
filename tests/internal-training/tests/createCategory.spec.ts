@@ -1,6 +1,6 @@
 import {userTest} from '@auth/app-auth.fixture';
-import {AppFactory} from '@shared/pages/app.factory';
-import {DuplicateCategoryError} from '@training/pages/categories.page';
+import {AppFactory} from '@shared-pages/app.factory';
+import {DuplicateCategoryError} from '@training-pages/categories.page';
 
 userTest(
     'Create and delete category as user',

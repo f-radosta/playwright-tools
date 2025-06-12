@@ -1,5 +1,5 @@
 import {Locator} from '@playwright/test';
-import {SingleFilterInterface} from '../interfaces/single-filter.interface';
+import {SingleFilterInterface} from '@shared-interfaces/single-filter.interface';
 
 /**
  * Enum for dropdown types
@@ -54,38 +54,34 @@ export class DropdownFilterComponent implements SingleFilterInterface {
     }
 
     /**
-     * Selects an option from a TomSelect dropdown
-     * @param optionText The text of the option to select
+     * Waits for the spinner to disappear if it's visible
+     * @param spinner The spinner locator
      */
-    protected async selectTomSelectOption(optionText: string): Promise<void> {
-        // Click on the input to open the dropdown
-        await this.controlLocator.click();
-
-        // Type the search term in the input field
-        await this.controlLocator.fill(optionText);
-
-        // Wait for the dropdown to be visible
-        await this.dropdownLocator.waitFor({state: 'visible'});
-
-        // Wait for any spinner to disappear before proceeding
-        const spinner = this.dropdownLocator.locator('.spinner');
-        if ((await spinner.count()) > 0) {
-            try {
-                // Wait for spinner to disappear with a reasonable timeout
-                await spinner.waitFor({state: 'hidden', timeout: 5000});
-            } catch (error) {
-                console.warn(
-                    'Spinner did not disappear within timeout, proceeding anyway'
-                );
-            }
+    private async waitForSpinner(spinner: Locator): Promise<void> {
+        if ((await spinner.count()) > 0 && (await spinner.isVisible())) {
+            await spinner
+                .waitFor({state: 'hidden', timeout: 5000})
+                .catch(() => {
+                    console.warn(
+                        'Spinner did not disappear within timeout, proceeding anyway'
+                    );
+                });
         }
+    }
 
-        // Get all available options
-        const options = this.dropdownLocator.locator('div.option');
+    /**
+     * Tries to find and select an exact match for the option text
+     * @param options Locator for all options
+     * @param spinner Spinner locator
+     * @param optionText Text to search for
+     * @returns true if an exact match was found and selected, false otherwise
+     */
+    private async trySelectExactMatch(
+        options: Locator,
+        spinner: Locator,
+        optionText: string
+    ): Promise<boolean> {
         const count = await options.count();
-
-        // First try to find an exact match (case-insensitive and trimmed)
-        let found = false;
         const trimmedOptionText = optionText.trim();
 
         for (let i = 0; i < count; i++) {
@@ -93,37 +89,59 @@ export class DropdownFilterComponent implements SingleFilterInterface {
             const text = (await option.textContent()) || '';
             const trimmedText = text.trim();
 
-            // Check for exact match (case-insensitive)
             if (trimmedText.toLowerCase() === trimmedOptionText.toLowerCase()) {
-                // Check again for spinner before clicking
-                if (
-                    (await spinner.count()) > 0 &&
-                    (await spinner.isVisible())
-                ) {
-                    await spinner
-                        .waitFor({state: 'hidden', timeout: 5000})
-                        .catch(() => {});
-                }
+                await this.waitForSpinner(spinner);
                 await option.click();
-                found = true;
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        // If no exact match found, fall back to the first partial match
-        if (!found) {
-            const partialOption = this.dropdownLocator
-                .locator(`div.option:has-text("${optionText}")`)
-                .first();
-            await partialOption.waitFor({state: 'visible'});
+    /**
+     * Selects the first partial match for the option text
+     * @param optionText Text to search for
+     * @param spinner Spinner locator
+     */
+    private async selectPartialMatch(
+        optionText: string,
+        spinner: Locator
+    ): Promise<void> {
+        const partialOption = this.dropdownLocator
+            .locator(`div.option:has-text("${optionText}")`)
+            .first();
 
-            // Check again for spinner before clicking
-            if ((await spinner.count()) > 0 && (await spinner.isVisible())) {
-                await spinner
-                    .waitFor({state: 'hidden', timeout: 5000})
-                    .catch(() => {});
-            }
-            await partialOption.click();
+        await partialOption.waitFor({state: 'visible'});
+        await this.waitForSpinner(spinner);
+        await partialOption.click();
+    }
+
+    /**
+     * Selects an option from a TomSelect dropdown
+     * @param optionText The text of the option to select
+     */
+    protected async selectTomSelectOption(optionText: string): Promise<void> {
+        await this.controlLocator.click();
+
+        await this.controlLocator.fill(optionText);
+
+        await this.dropdownLocator.waitFor({state: 'visible'});
+
+        // Get spinner and wait for it to disappear if present
+        const spinner = this.dropdownLocator.locator('.spinner');
+        await this.waitForSpinner(spinner);
+
+        const options = this.dropdownLocator.locator('div.option');
+
+        const exactMatchFound = await this.trySelectExactMatch(
+            options,
+            spinner,
+            optionText
+        );
+
+        // If no exact match found, fall back to partial match
+        if (!exactMatchFound) {
+            await this.selectPartialMatch(optionText, spinner);
         }
     }
 }

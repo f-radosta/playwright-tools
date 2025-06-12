@@ -1,14 +1,12 @@
 import {userTest} from '@auth/app-auth.fixture';
-import {AppFactory} from '@shared/pages/app.factory';
+import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
-import {TrainingHelper} from '@training/helpers/training-helper';
-import {TrainingTestCase} from '@training/models/training.types';
-import {TrainingTestDataProvider} from '@training/test-data/training-test-data';
+import {TrainingHelper} from '@training/testers/training-tester';
+import {TrainingTestCase} from '@training-models/training.types';
+import {getTestCases} from '@training-test-data/training-test-data';
 
-// Get all test cases
-const testCases = TrainingTestDataProvider.getTestCases();
+const testCases = getTestCases();
 
-// Run each test case
 testCases.forEach((testCase: TrainingTestCase) => {
     userTest(testCase.testName, async ({app}: {app: AppFactory}) => {
         // Step 1: Navigate and filter trainings if criteria provided

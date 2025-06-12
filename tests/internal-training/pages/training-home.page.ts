@@ -1,6 +1,6 @@
 import {Locator, Page} from '@playwright/test';
-import {BasePage} from '@shared/pages/base-page';
-import {PageInterface} from '@shared/pages/page.interface';
+import {BasePage} from '@shared-pages/base-page';
+import {PageInterface} from '@shared-pages/page.interface';
 
 export class TrainingHomePage extends BasePage implements PageInterface {
     pageTitle(): Locator {

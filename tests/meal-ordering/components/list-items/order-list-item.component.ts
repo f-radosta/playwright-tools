@@ -1,7 +1,8 @@
 import {Locator} from '@playwright/test';
-import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
-import {OrderListItem as OrderListItemInterface} from '@meal/models/meal-ordering.types';
-import {BaseMealComponent} from '@meal/components/base/base-meal.component';
+import {ListItemInterface} from '@shared-components/interfaces/list-item.interface';
+import {OrderListItem as OrderListItemInterface} from '@meal-models/meal-ordering.types';
+import {BaseMealComponent} from '@meal-base/base-meal.component';
+import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 
 export class OrderListItem
     extends BaseMealComponent
@@ -47,25 +48,25 @@ export class OrderListItem
     }
 
     public async getDate(): Promise<string> {
-        const dateLocator = this.itemLocator.getByTestId('order-date');
+        const dateLocator = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.DATE);
         const text = (await dateLocator.textContent()) || '';
         return this.normalizeText(text);
     }
 
     public async isToday(): Promise<boolean> {
         const todayIndicator = this.itemLocator.getByTestId(
-            'order-date-today-indicator'
+            MEAL_SELECTORS.ORDER_ITEM.TODAY_INDICATOR
         );
         return await todayIndicator.isVisible();
     }
 
     public async getMealTypeIcon(): Promise<Locator> {
-        return this.itemLocator.getByTestId('order-meal-type-icon');
+        return this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_TYPE_ICON);
     }
 
     public async getMealQuantity(): Promise<number> {
         const quantityLocator = this.dataRowLocator.getByTestId(
-            'order-meal-quantity'
+            MEAL_SELECTORS.ORDER_ITEM.QUANTITY
         );
         const quantityText = (await quantityLocator.textContent()) || '';
         // Extract the number from text like "2x"
@@ -74,14 +75,14 @@ export class OrderListItem
     }
 
     public async getMealName(): Promise<string> {
-        const nameLocator = this.dataRowLocator.getByTestId('order-meal-name');
+        const nameLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_NAME);
         const text = (await nameLocator.textContent()) || '';
         return this.normalizeText(text);
     }
 
     public async getRestaurantName(): Promise<string> {
         const restaurantLocator = this.dataRowLocator.getByTestId(
-            'order-restaurant-name'
+            MEAL_SELECTORS.ORDER_ITEM.RESTAURANT_NAME
         );
         const text = (await restaurantLocator.textContent()) || '';
         return this.normalizeText(text);
@@ -92,7 +93,7 @@ export class OrderListItem
      * @returns Time string or null
      */
     public async getMealTime(): Promise<string | null> {
-        const timeLocator = this.dataRowLocator.getByTestId('order-time');
+        const timeLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.TIME);
         const text = (await timeLocator.textContent()) || '';
         const normalizedText = this.normalizeText(text);
         return normalizedText || null;
@@ -100,7 +101,7 @@ export class OrderListItem
 
     public async hasNote(): Promise<boolean> {
         const noteContainer = this.dataRowLocator.getByTestId(
-            'order-note-container'
+            MEAL_SELECTORS.ORDER_ITEM.NOTE.CONTAINER
         );
         return await noteContainer.isVisible();
     }
@@ -110,14 +111,14 @@ export class OrderListItem
             return null;
         }
 
-        const noteLocator = this.dataRowLocator.getByTestId('order-note-text');
+        const noteLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.NOTE.TEXT);
         const text = (await noteLocator.textContent()) || '';
         return this.normalizeText(text);
     }
 
     public async getPricePerUnit(): Promise<string> {
         const priceLocator = this.dataRowLocator.getByTestId(
-            'order-price-per-unit'
+            MEAL_SELECTORS.ORDER_ITEM.PRICE_PER_UNIT
         );
         const text = (await priceLocator.textContent()) || '';
         return this.normalizeText(text);
@@ -125,14 +126,14 @@ export class OrderListItem
 
     public async getTotalPrice(): Promise<string | null> {
         const totalPriceLocator =
-            this.dataRowLocator.getByTestId('order-total-price');
+            this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.TOTAL_PRICE);
         const text = (await totalPriceLocator.textContent()) || '';
         const normalizedText = this.normalizeText(text);
         return normalizedText || null;
     }
 
     public async getMealType(): Promise<string> {
-        const foodIcon = this.itemLocator.getByTestId('food-type-icon');
+        const foodIcon = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_TYPE_ICON);
         const text = (await foodIcon.getAttribute('aria-label')) || '';
         return this.normalizeText(text);
     }
@@ -142,7 +143,7 @@ export class OrderListItem
      * @returns Date object or null if date cannot be parsed
      */
     public async getMealDate(): Promise<Date | null> {
-        const dateLocator = this.itemLocator.getByTestId('order-date');
+        const dateLocator = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.DATE);
         const text = (await dateLocator.textContent()) || '';
         const normalizedText = this.normalizeText(text);
 

@@ -1,10 +1,12 @@
 import {Locator} from '@playwright/test';
-import {BaseListComponent} from '@shared/components/base-list.component';
+import {BaseListComponent} from '@shared-components/base-list.component';
 import {
     CategoryListItem,
     CategoriesCompositeFilter
-} from '@training/components';
-import {ListInterface} from '@shared/components/interfaces/list.interface';
+} from '@training-components/index';
+import {ListInterface} from '@shared-interfaces/list.interface';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {findItemByName} from '@training-helpers/training-helper';
 
 export class CategoriesList
     extends BaseListComponent<CategoryListItem>
@@ -15,7 +17,7 @@ export class CategoriesList
     constructor(public readonly listLocator: Locator) {
         super(listLocator);
         this.categoriesFilter = new CategoriesCompositeFilter(
-            this.listLocator.getByTestId('filter')
+            this.listLocator.getByTestId(SHARED_SELECTORS.LIST.FILTER)
         );
     }
 
@@ -28,20 +30,7 @@ export class CategoriesList
     }
 
     async findCategoryByName(name: string): Promise<CategoryListItem | null> {
-        const allItems = await this.getItems();
-        const trimmedName = name.trim();
-
-        // Search from last to first for faster search in most cases
-        for (let i = allItems.length - 1; i >= 0; i--) {
-            const item = allItems[i];
-            const itemName = await item.getName();
-
-            if (itemName && itemName.trim().localeCompare(trimmedName) === 0) {
-                return item;
-            }
-        }
-
-        return null;
+        return findItemByName<CategoryListItem>(this, name);
     }
 
     async deleteCategoryByName(name: string): Promise<void> {

@@ -1,5 +1,6 @@
 import {Locator} from '@playwright/test';
-import {DailyMenuList, MenuCompositeFilter} from '@meal/components';
+import {DailyMenuList, MenuCompositeFilter} from '@meal-components/index';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 
 export class CompositeMenuList {
     public readonly menuFilter: MenuCompositeFilter;
@@ -7,11 +8,11 @@ export class CompositeMenuList {
 
     constructor(public readonly listAndFilterWrapperLocator: Locator) {
         this.menuFilter = new MenuCompositeFilter(
-            this.listAndFilterWrapperLocator.getByTestId('filter')
+            this.listAndFilterWrapperLocator.getByTestId(SHARED_SELECTORS.LIST.FILTER)
         );
 
         this.listLocator =
-            this.listAndFilterWrapperLocator.getByTestId('daily-menu-list');
+            this.listAndFilterWrapperLocator.getByTestId(SHARED_SELECTORS.LIST);
     }
 
     /**

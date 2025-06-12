@@ -1,13 +1,13 @@
-import {HomePage} from '@shared/pages/home-page.page';
-import {BasePage} from '@shared/pages/base-page';
+import {HomePage} from '@shared-pages/home-page.page';
+import {BasePage} from '@shared-pages/base-page';
 // Training imports
-import {CategoriesPage} from '@training/pages/categories.page';
-import {TrainingHomePage} from '@training/pages/training-home.page';
-import {TrainingListPage} from '@training/pages/training-list.page';
+import {CategoriesPage} from '@training-pages/categories.page';
+import {TrainingHomePage} from '@training-pages/training-home.page';
+import {TrainingListPage} from '@training-pages/training-list.page';
 // Meal ordering imports
-import {CurrentMenuPage} from '@meal/pages/current-menu.page';
-import {MonthlyBillingPage} from '@meal/pages/monthly-billing.page';
-import {MealOrderHPPage} from '@meal/pages/meal-order-hp.page';
+import {CurrentMenuPage} from '@meal-pages/current-menu.page';
+import {MonthlyBillingPage} from '@meal-pages/monthly-billing.page';
+import {MealOrderHPPage} from '@meal-pages/meal-order-hp.page';
 
 export class AppFactory {
     constructor(public readonly page: BasePage) {}

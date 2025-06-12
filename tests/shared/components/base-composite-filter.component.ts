@@ -1,5 +1,5 @@
 import {Locator, expect} from '@playwright/test';
-import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
+import {CompositeFilterInterface} from '@shared-interfaces/composite-filter.interface';
 
 export abstract class BaseCompositeFilterComponent<T>
     implements CompositeFilterInterface<T>

@@ -1,7 +1,9 @@
 import {Locator} from '@playwright/test';
-import {BaseListComponent} from '@shared/components/base-list.component';
-import {ListInterface} from '@shared/components/interfaces/list.interface';
-import {OrderListItem} from '../list-items/order-list-item.component';
+import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {BaseListComponent} from '@shared-components/base-list.component';
+import {ListInterface} from '@shared-interfaces/list.interface';
+import {OrderListItem} from '@meal-components/index';
 
 export class OrderList
     extends BaseListComponent<OrderListItem>
@@ -13,8 +15,8 @@ export class OrderList
         super(listLocator);
         // Override the default itemLocators to use our new data-test attribute
         this.itemLocators = this.listLocator
-            .getByTestId('list')
-            .getByTestId('list-item-date-row');
+            .getByTestId(SHARED_SELECTORS.LIST)
+            .getByTestId(MEAL_SELECTORS.ORDER_ITEM.LIST_ITEM_DATE_ROW);
     }
 
     /**
@@ -31,8 +33,8 @@ export class OrderList
     public async getOrderItems(): Promise<OrderListItem[]> {
         // Find all rows with date information using the specific data-test attribute
         const dateRows = await this.listLocator
-            .getByTestId('list')
-            .getByTestId('list-item-date-row')
+            .getByTestId(SHARED_SELECTORS.LIST)
+            .getByTestId(MEAL_SELECTORS.ORDER_ITEM.LIST_ITEM_DATE_ROW)
             .all();
         
         // Create OrderListItem instances from these date rows
@@ -54,7 +56,7 @@ export class OrderList
      * Get the total price of all items in the order list
      */
     public async getTotalPrice(): Promise<string> {
-        const totalPriceLocator = this.listLocator.getByTestId('order-summary-total-price');
+        const totalPriceLocator = this.listLocator.getByTestId(MEAL_SELECTORS.PAGE.ORDER_SUMMARY_TOTAL_PRICE);
         return (await totalPriceLocator.textContent()) || '';
     }
 

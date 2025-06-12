@@ -1,13 +1,11 @@
 import {expect} from '@playwright/test';
-import {AppFactory} from '@shared/pages/app.factory';
-import {MenuDTO} from '@meal/components/filters/menu-filter.component';
+import {AppFactory} from '@shared-pages/app.factory';
+import {MenuDTO} from '@meal-filters/menu-filter.component';
 import {
-    BaseMeal,
     DailyMenuList,
-    OrderListItem as OrderListItemInterface,
-    TodayMealInfo
-} from '@meal/models/meal-ordering.types';
-import {OrderListItem as OrderListItemComponent} from '@meal/components/list-items/order-list-item.component';
+    OrderListItem as OrderListItemInterface
+} from '@meal-models/meal-ordering.types';
+import {OrderListItem as OrderListItemComponent} from '@meal-list-items/order-list-item.component';
 
 /**
  * Type adapter helpers to convert between component instances and model interfaces
@@ -36,6 +34,26 @@ export class MealTypeAdapter {
 export enum MealListType {
     TODAY = 'today',
     TOMORROW = 'tomorrow'
+}
+
+export interface VerifyTodayMealResult {
+    success: boolean;
+    cardTitle: string | null;
+    meals: Array<{
+        name: string | null;
+        quantity: number | null;
+        type: string | null;
+        restaurantName?: string | null;
+        time?: string | null;
+        price?: string | null;
+        hasNote?: boolean;
+        note?: string | null;
+    }>;
+    restaurantName: string | null;
+    mealTime: string | null;
+    mealPrice: string | null;
+    hasNote: boolean;
+    noteText: string | null;
 }
 
 export class MealOrderingHelper {
@@ -76,7 +94,6 @@ export class MealOrderingHelper {
         filterCriteria: MenuDTO,
         listType: MealListType
     ) {
-        // Navigate to the current menu page
         const currentMenuPage = await app.gotoCurrentMenu();
 
         // Get the appropriate menu list based on type
@@ -99,7 +116,6 @@ export class MealOrderingHelper {
             return {success: false, currentMenuPage, filteredList: null};
         }
 
-        // Apply filters
         await currentMenuPage.menuList.menuFilter.filter(filterCriteria);
 
         // Get fresh reference after filtering
@@ -122,7 +138,6 @@ export class MealOrderingHelper {
         quantity: number = 1,
         note?: string
     ) {
-        // Get available meals
         const availableMeals = await filteredList.getAvailableMeals();
 
         expect(
@@ -134,21 +149,20 @@ export class MealOrderingHelper {
             return {success: false};
         }
 
-        // Get the meal to order
         const meal = availableMeals[mealIndex];
 
-        // Get and log meal details
-        const mealName = await meal.getMealName();
-        const restaurantName = await meal.getRestaurantName();
-        const price = await meal.getPricePerUnit();
-        const foodType = await meal.getMealType();
+        const [mealName, restaurantName, price, foodType, timeSlots] =
+            await Promise.all([
+                meal.getMealName(),
+                meal.getRestaurantName(),
+                meal.getPricePerUnit(),
+                meal.getMealType(),
+                meal.getAvailableTimeSlots()
+            ]);
 
         console.log(
             `Ordering meal: ${mealName} from ${restaurantName} (${foodType}) for ${price}`
         );
-
-        // Get time slots
-        const timeSlots = await meal.getAvailableTimeSlots();
         expect(
             timeSlots.length,
             'At least one time slot should be available'
@@ -158,13 +172,10 @@ export class MealOrderingHelper {
             return {success: false};
         }
 
-        // Select first time slot
         const selectedTimeSlot = timeSlots[0].value;
 
-        // Order the meal
         await meal.orderMeal(quantity, selectedTimeSlot, note);
 
-        // Verify order placement
         const orderedQuantity = await meal.getMealQuantity();
         expect(orderedQuantity).toBe(quantity);
 
@@ -190,7 +201,6 @@ export class MealOrderingHelper {
             note?: string;
         }
     ) {
-        // Navigate to meal order homepage
         console.log('Navigating to meal order homepage to check cart...');
         const mealOrderHP = await app.gotoMealOrderHP();
 
@@ -203,20 +213,16 @@ export class MealOrderingHelper {
             'Cart should have at least one item'
         ).toBeGreaterThan(0);
 
-        // Find our ordered meal
         let foundOrderedMeal = false;
 
         for (const cartItem of cartItems) {
             const cartItemName = await cartItem.getMealName();
             const cartItemQuantity = await cartItem.getMealQuantity();
 
-            // Log details for debugging
             console.log(`Cart item name: "${cartItemName}"`);
             console.log(`Meal name: "${mealDetails.mealName}"`);
             console.log(`Cart item quantity: ${cartItemQuantity}`);
             console.log(`Quantity: ${mealDetails.quantity}`);
-
-            // Check if this is our meal
             const nameMatches = mealDetails.mealName === cartItemName;
             const quantityMatches = cartItemQuantity === mealDetails.quantity;
 
@@ -227,10 +233,8 @@ export class MealOrderingHelper {
             if (nameMatches && quantityMatches) {
                 foundOrderedMeal = true;
 
-                // Verify additional details
                 const cartItemRestaurant = await cartItem.getRestaurantName();
 
-                // Log restaurant names for debugging
                 console.log(`Cart item restaurant: "${cartItemRestaurant}"`);
                 console.log(`Menu restaurant: "${mealDetails.restaurantName}"`);
 
@@ -239,7 +243,6 @@ export class MealOrderingHelper {
                 const cartItemTime = await cartItem.getMealTime();
                 expect(cartItemTime).toBeTruthy();
 
-                // Check if note is present
                 const hasNote = await cartItem.hasNote();
                 if (mealDetails.note) {
                     expect(hasNote).toBeTruthy();
@@ -250,7 +253,6 @@ export class MealOrderingHelper {
                     }
                 }
 
-                // Check price information
                 const pricePerUnit = await cartItem.getPricePerUnit();
                 expect(pricePerUnit).toBeTruthy();
 
@@ -269,12 +271,9 @@ export class MealOrderingHelper {
             'The ordered meal should be found in the cart'
         ).toBeTruthy();
 
-        // Verify the total price in the cart
         const cartTotalPrice = await mealOrderHP.cartList.getTotalPrice();
         expect(cartTotalPrice).toContain('Kč');
         console.log(`Cart total price: ${cartTotalPrice}`);
-
-        // Check the ordered-unbilled list as well
         console.log('Checking ordered-unbilled list...');
         const orderedItems = await mealOrderHP.orderedUnbilledList.getItems();
         console.log(
@@ -293,49 +292,43 @@ export class MealOrderingHelper {
     static async cleanupMealOrders(app: AppFactory): Promise<boolean> {
         try {
             console.log('Cleaning up meal orders...');
-            
-            // Navigate to current menu page where we can reset filters and quantities
-            console.log('Navigating to current menu page...');
             const currentMenuPage = await app.gotoCurrentMenu();
-            
-            // Reset filters first
+
             console.log('Resetting menu filters...');
-            // Create empty filter criteria
             const emptyFilter: MenuDTO = {};
             await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
-            
-            // Get the today's list
-            console.log('Getting today\'s menu list...');
+
+            console.log("Getting today's menu list...");
             const todayList = await currentMenuPage.menuList.getTodayList();
             if (todayList) {
-                // Get all meals from today's list
                 const todayMeals = await todayList.getAvailableMeals();
-                console.log(`Found ${todayMeals.length} meals in today's list. Setting all quantities to 0...`);
-                
-                // Set quantity to 0 for each meal
+                console.log(
+                    `Found ${todayMeals.length} meals in today's list. Setting all quantities to 0...`
+                );
+
                 for (const meal of todayMeals) {
                     const mealName = await meal.getMealName();
                     console.log(`Setting quantity to 0 for "${mealName}"...`);
                     await meal.setQuantity(0);
                 }
             }
-            
-            // Get the tomorrow's list
-            console.log('Getting tomorrow\'s menu list...');
-            const tomorrowList = await currentMenuPage.menuList.getTomorrowList();
+
+            console.log("Getting tomorrow's menu list...");
+            const tomorrowList =
+                await currentMenuPage.menuList.getTomorrowList();
             if (tomorrowList) {
-                // Get all meals from tomorrow's list
                 const tomorrowMeals = await tomorrowList.getAvailableMeals();
-                console.log(`Found ${tomorrowMeals.length} meals in tomorrow's list. Setting all quantities to 0...`);
-                
-                // Set quantity to 0 for each meal
+                console.log(
+                    `Found ${tomorrowMeals.length} meals in tomorrow's list. Setting all quantities to 0...`
+                );
+
                 for (const meal of tomorrowMeals) {
                     const mealName = await meal.getMealName();
                     console.log(`Setting quantity to 0 for "${mealName}"...`);
                     await meal.setQuantity(0);
                 }
             }
-            
+
             console.log('Meal order cleanup completed successfully.');
             return true;
         } catch (error) {
@@ -344,24 +337,30 @@ export class MealOrderingHelper {
         }
     }
 
-    static async verifyTodayMeal(app: AppFactory) {
-        // Navigate to the meal order homepage where Today's Meal card would be shown
-        const mealOrderHP = await app.gotoMealOrderHP();
 
-        // Get the Today's Meal card component
+
+    static async verifyTodayMeal(app: AppFactory): Promise<VerifyTodayMealResult> {
+        const mealOrderHP = await app.gotoMealOrderHP();
         const todayMealCard = mealOrderHP.getTodayMealCard();
 
-        // Check if Today's Meal card exists
         expect(
             todayMealCard,
             "Today's meal card should be visible"
         ).toBeTruthy();
 
         if (!todayMealCard) {
-            return {success: false};
+            return {
+                success: false,
+                cardTitle: null,
+                meals: [],
+                restaurantName: null,
+                mealTime: null,
+                mealPrice: null,
+                hasNote: false,
+                noteText: null
+            };
         }
 
-        // Verify card title
         const cardTitle = await todayMealCard.getTitle();
         expect(
             cardTitle,
@@ -369,7 +368,6 @@ export class MealOrderingHelper {
         ).toBeTruthy();
         console.log(`Card title: ${cardTitle}`);
 
-        // Get all meal rows
         const mealRows = await todayMealCard.getMealRows();
         expect(
             mealRows.length,
@@ -377,13 +375,10 @@ export class MealOrderingHelper {
         ).toBeGreaterThan(0);
         console.log(`Found ${mealRows.length} meals on the card`);
 
-        // Collect comprehensive meal information using the extractMealData helper
         const meals = [];
         for (let i = 0; i < mealRows.length; i++) {
-            // Get all meal data at once
             const mealData = await todayMealCard.extractMealData(i);
 
-            // Validate required fields
             expect(
                 mealData.name,
                 `Meal name should be present for meal at index ${i}`
@@ -416,44 +411,44 @@ export class MealOrderingHelper {
             meals.push(mealData);
         }
 
-        // Extract detailed information from the first meal for compatibility with existing tests
-        let restaurantName = null;
-        let mealTime = null;
-        let mealPrice = null;
-        let hasNote = false;
-        let noteText = null;
-
-        if (meals.length > 0) {
-            const firstMeal = meals[0];
-
-            // Verify restaurant name
-            restaurantName = firstMeal.restaurantName;
-            expect(restaurantName).toBeTruthy();
-            console.log(`Restaurant: ${restaurantName}`);
-
-            // Verify meal time
-            mealTime = firstMeal.time;
-            expect(mealTime).toBeTruthy();
-            console.log(`Meal time: ${mealTime}`);
-
-            // Verify meal price
-            mealPrice = firstMeal.price;
-            expect(mealPrice).toBeTruthy();
-            console.log(`Meal price: ${mealPrice}`);
-
-            // Check note information
-            hasNote = firstMeal.hasNote;
-            noteText = firstMeal.note;
-
-            if (hasNote && noteText) {
-                console.log(`Note: ${noteText}`);
-            }
-        }
-
-        return {
+        const defaultResult = {
             success: true,
             cardTitle,
             meals,
+            restaurantName: null,
+            mealTime: null,
+            mealPrice: null,
+            hasNote: false,
+            noteText: null
+        };
+
+        if (meals.length === 0) {
+            return defaultResult;
+        }
+        const firstMeal = meals[0];
+        const {
+            restaurantName,
+            time: mealTime,
+            price: mealPrice,
+            hasNote,
+            note: noteText
+        } = firstMeal;
+
+        expect(
+            restaurantName,
+            'Restaurant name should be present'
+        ).toBeTruthy();
+        expect(mealTime, 'Meal time should be present').toBeTruthy();
+        expect(mealPrice, 'Meal price should be present').toBeTruthy();
+        console.log(`Restaurant: ${restaurantName}`);
+        console.log(`Meal time: ${mealTime}`);
+        console.log(`Meal price: ${mealPrice}`);
+
+        if (hasNote && noteText) {
+            console.log(`Note: ${noteText}`);
+        }
+        return {
+            ...defaultResult,
             restaurantName,
             mealTime,
             mealPrice,

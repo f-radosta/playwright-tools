@@ -1,28 +1,29 @@
 import {expect, Locator, Page} from '@playwright/test';
-import {PageInterface} from './page.interface';
+import {PageInterface} from '@shared-pages/page.interface';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 
 export class BasePage implements PageInterface {
     readonly page: Page;
 
     // Navigation elements using data-test attributes
     readonly homeLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Úvodní stránka'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Úvodní stránka'});
     readonly trainingLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Interní školení'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Interní školení'});
     readonly lunchOrderLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Objednání obědů'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Objednání obědů'});
 
     // Training submenu elements
     readonly trainingListLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Seznam školení'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Seznam školení'});
     readonly trainingCategoriesLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Kategorie školení'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Kategorie školení'});
 
     // Lunch ordering submenu elements
     readonly currentMenuLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Aktuální menu'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Aktuální menu'});
     readonly monthlyBillingLink = () =>
-        this.page.getByTestId('navtab').filter({hasText: 'Měsíční vyúčtování'});
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Měsíční vyúčtování'});
 
     constructor(page: Page) {
         this.page = page;
@@ -132,7 +133,7 @@ export class BasePage implements PageInterface {
         
         // Only toggle if the link isn't already visible
         if (!isVisible) {
-            await this.page.getByTestId('nav-toggle-training').click();
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_TRAINING).click();
             // Small wait to allow menu to expand
             await this.page.waitForTimeout(100);
         }
@@ -151,7 +152,7 @@ export class BasePage implements PageInterface {
         
         // Only toggle if the link isn't already visible
         if (!isVisible) {
-            await this.page.getByTestId('nav-toggle-training').click();
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_TRAINING).click();
             // Small wait to allow menu to expand
             await this.page.waitForTimeout(100);
         }
@@ -170,7 +171,7 @@ export class BasePage implements PageInterface {
         
         // Only toggle if the link isn't already visible
         if (!isVisible) {
-            await this.page.getByTestId('nav-toggle-lunch').click();
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_LUNCH).click();
             // Small wait to allow menu to expand
             await this.page.waitForTimeout(100);
         }
@@ -189,7 +190,7 @@ export class BasePage implements PageInterface {
         
         // Only toggle if the link isn't already visible
         if (!isVisible) {
-            await this.page.getByTestId('nav-toggle-lunch').click();
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_LUNCH).click();
             // Small wait to allow menu to expand
             await this.page.waitForTimeout(100);
         }

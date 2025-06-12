@@ -2,12 +2,11 @@ import {Locator} from '@playwright/test';
 import {
     DropdownFilterComponent,
     DropdownType,
-    TextFilterComponent,
     DateFilterComponent
-} from '@shared/components';
-import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
-import {BaseCompositeFilterComponent} from '@shared/components/base-composite-filter.component';
-import {mealSelectors} from '@meal/selectors/meals.selectors';
+} from '@shared-components/index';
+import {CompositeFilterInterface} from '@shared-interfaces/index';
+import {BaseCompositeFilterComponent} from '@shared-components/index';
+import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 
 export class MenuCompositeFilter
     extends BaseCompositeFilterComponent<MenuDTO>
@@ -22,18 +21,18 @@ export class MenuCompositeFilter
 
         this.restaurantFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                mealSelectors.filter.restaurant
+                MEAL_SELECTORS.XPATH_SELECTOR.FILTER.RESTAURANT
             ),
             DropdownType.TOMSELECT
         );
 
         this.foodTypeFilter = new DropdownFilterComponent(
-            this.compositeFilterLocator.locator(mealSelectors.filter.foodType),
+            this.compositeFilterLocator.locator(MEAL_SELECTORS.XPATH_SELECTOR.FILTER.FOOD_TYPE),
             DropdownType.STANDARD
         );
 
         this.dateFilter = new DateFilterComponent(
-            this.compositeFilterLocator.locator(mealSelectors.filter.date)
+            this.compositeFilterLocator.locator(MEAL_SELECTORS.XPATH_SELECTOR.FILTER.DATE)
         );
     }
 

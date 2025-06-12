@@ -1,6 +1,7 @@
 import {Locator} from '@playwright/test';
-import {BaseListItemComponent} from '@shared/components/base-list-item.component';
-import {ListInterface} from '@shared/components/interfaces/list.interface';
+import {BaseListItemComponent} from '@shared-components/base-list-item.component';
+import {ListInterface} from '@shared-interfaces/list.interface';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 
 export abstract class BaseListComponent<
     T extends BaseListItemComponent = BaseListItemComponent
@@ -10,8 +11,8 @@ export abstract class BaseListComponent<
 
     constructor(public readonly listLocator: Locator) {
         this.itemLocators = this.listLocator
-            .getByTestId('list')
-            .getByTestId('list-item');
+            .getByTestId(SHARED_SELECTORS.LIST)
+            .getByTestId(SHARED_SELECTORS.LIST.ITEM);
     }
 
     /**

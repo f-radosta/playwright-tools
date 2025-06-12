@@ -1,6 +1,6 @@
 import {Locator} from '@playwright/test';
-import {BaseListItemComponent} from '@shared/components/base-list-item.component';
-import {BaseTraining} from '@training/models/training.types';
+import {BaseListItemComponent} from '@shared-components/base-list-item.component';
+import {BaseTraining} from '@training-models/training.types';
 
 /**
  * Base component providing common training functionality implementations

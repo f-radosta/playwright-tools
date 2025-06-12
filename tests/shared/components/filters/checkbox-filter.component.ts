@@ -1,5 +1,5 @@
 import {Locator} from '@playwright/test';
-import {SingleFilterInterface} from '../interfaces/single-filter.interface';
+import {SingleFilterInterface} from '@shared-interfaces/single-filter.interface';
 
 /**
  * Component for checkbox filter controls

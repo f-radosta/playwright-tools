@@ -1,9 +1,9 @@
 import {Locator} from '@playwright/test';
-import {DropdownFilterComponent, DropdownType} from '@shared/components';
-import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
-import {BaseCompositeFilterComponent} from '@shared/components/base-composite-filter.component';
-import {trainingSelectors} from '@training/selectors/training.selectors';
-import {CategoryDTO} from '@training/models/training.types';
+import {DropdownFilterComponent, DropdownType} from '@shared-filters/dropdown-filter.component';
+import {CompositeFilterInterface} from '@shared-interfaces/composite-filter.interface';
+import {BaseCompositeFilterComponent} from '@shared-components/base-composite-filter.component';
+import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
+import {CategoryDTO} from '@training-models/training.types';
 
 export class CategoriesCompositeFilter
     extends BaseCompositeFilterComponent<CategoryDTO>
@@ -16,7 +16,7 @@ export class CategoriesCompositeFilter
 
         this.categoryFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.category
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.CATEGORY
             ),
             DropdownType.TOMSELECT
         );

@@ -1,8 +1,9 @@
 import {Locator} from '@playwright/test';
-import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
-import {TrainingPage} from '@training/pages/training.page';
-import {BaseTrainingComponent} from '@training/components/base/base-training.component';
-import {DateTimeUtils, ParsedDateTimeInfo} from '@shared/utils/date-utils';
+import {ListItemInterface} from '@shared-interfaces/list-item.interface';
+import {TrainingPage} from '@training-pages/training.page';
+import {BaseTrainingComponent} from '@training-components/base/base-training.component';
+import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
+import {DateTimeUtils, ParsedDateTimeInfo} from '@shared-utils/date-utils';
 
 export class TrainingListItem
     extends BaseTrainingComponent
@@ -12,39 +13,38 @@ export class TrainingListItem
         super(itemLocator);
     }
 
+    private async getCellText(cellId: string): Promise<string | null> {
+        const cell = this.itemLocator.getByTestId(cellId);
+        return this.safeGetText(cell);
+    }
+
     async getName(): Promise<string | null> {
-        const nameCell = this.itemLocator.getByTestId('name-cell');
-        return this.safeGetText(nameCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.NAME);
     }
 
     async goToTrainingPage(): Promise<TrainingPage> {
-        await this.clickOnElementByTestId('edit-cell');
+        await this.clickOnElementByTestId(TRAINING_SELECTORS.CELL.EDIT);
         return new TrainingPage(this.itemLocator.page());
     }
 
     async getDateTime(): Promise<string | null> {
-        const dateCell = this.itemLocator.getByTestId('date-cell');
-        return this.safeGetText(dateCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.DATE);
     }
 
     async getTrainer(): Promise<string | null> {
-        const trainerCell = this.itemLocator.getByTestId('trainer-cell');
-        return this.safeGetText(trainerCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.TRAINER);
     }
 
     async getDepartment(): Promise<string | null> {
-        const departmentCell = this.itemLocator.getByTestId('department-cell');
-        return this.safeGetText(departmentCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.DEPARTMENT);
     }
 
     async getCategory(): Promise<string | null> {
-        const categoryCell = this.itemLocator.getByTestId('category-cell');
-        return this.safeGetText(categoryCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.CATEGORY);
     }
 
     async getCapacity(): Promise<number | null> {
-        const capacityCell = this.itemLocator.getByTestId('capacity-cell');
-        const capacityText = await this.safeGetText(capacityCell);
+        const capacityText = await this.getCellText(TRAINING_SELECTORS.CELL.CAPACITY);
         if (!capacityText) return null;
 
         // Extract numeric value from text (e.g., "10 / 20" -> 20)
@@ -58,12 +58,11 @@ export class TrainingListItem
     }
 
     async getOnline(): Promise<string | null> {
-        const onlineCell = this.itemLocator.getByTestId('online-cell');
-        return this.safeGetText(onlineCell);
+        return this.getCellText(TRAINING_SELECTORS.CELL.ONLINE);
     }
 
     async clickCourseSignButton(): Promise<void> {
-        await this.clickOnElementByTestId('sign-cell');
+        await this.clickOnElementByTestId(TRAINING_SELECTORS.CELL.SIGN);
     }
 
     /**

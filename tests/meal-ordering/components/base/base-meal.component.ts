@@ -1,6 +1,6 @@
 import {Locator} from '@playwright/test';
-import {BaseListItemComponent} from '@shared/components/base-list-item.component';
-import {BaseMeal} from '@meal/models/meal-ordering.types';
+import {BaseListItemComponent} from '@shared-components/base-list-item.component';
+import {BaseMeal} from '@meal-models/meal-ordering.types';
 
 /**
  * Base component providing common meal functionality implementations

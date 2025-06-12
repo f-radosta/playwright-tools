@@ -1,7 +1,8 @@
 import {Locator, Page} from '@playwright/test';
-import {BasePage} from '@shared/pages/base-page';
-import {CategoriesList} from '@training/components';
-import {PageInterface} from '@shared/pages/page.interface';
+import {BasePage} from '@shared-pages/base-page';
+import {CategoriesList} from '@training-components/index';
+import {PageInterface} from '@shared-pages/page.interface';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 
 // Custom error for duplicate category
 export class DuplicateCategoryError extends Error {
@@ -12,7 +13,6 @@ export class DuplicateCategoryError extends Error {
 }
 
 export class CategoriesPage extends BasePage implements PageInterface {
-    // Categories page specific elements
     pageTitle(): Locator {
         return this.page
             .getByRole('heading', {name: 'Kategorie školení'})
@@ -20,7 +20,6 @@ export class CategoriesPage extends BasePage implements PageInterface {
     }
     readonly createButton = () => this.page.getByRole('link', {name: 'Přidat'});
 
-    // Component instances
     private _categoriesList: CategoriesList | null = null;
 
     constructor(page: Page) {
@@ -34,13 +33,14 @@ export class CategoriesPage extends BasePage implements PageInterface {
     get categoriesList(): CategoriesList {
         if (!this._categoriesList) {
             this._categoriesList = new CategoriesList(
-                this.page.getByTestId('list-and-filter-wrapper')
+                this.page.getByTestId(
+                    SHARED_SELECTORS.LIST.LIST_AND_FILTER_WRAPPER
+                )
             );
         }
         return this._categoriesList;
     }
 
-    // create new category
     async createNewCategory(name: string): Promise<void> {
         await this.createButton().click();
         await this.page.getByLabel('Název kategorie školení:').fill(name);

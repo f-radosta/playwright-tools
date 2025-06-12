@@ -1,5 +1,5 @@
 import {Locator} from '@playwright/test';
-import {BaseMeal} from '@meal/models/meal-ordering.types';
+import {BaseMeal} from '@meal-models/meal-ordering.types';
 
 /**
  * Class representing the "Your Meal Today" card component

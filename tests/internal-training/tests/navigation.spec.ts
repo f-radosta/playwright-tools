@@ -1,5 +1,5 @@
 import {userTest} from '@auth/app-auth.fixture';
-import {AppFactory} from '@shared/pages/app.factory';
+import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
 
 userTest('Test Homepage navigation cards', async ({app}: {app: AppFactory}) => {

@@ -4,11 +4,11 @@ import {
     DropdownType,
     TextFilterComponent,
     CheckboxFilterComponent
-} from '@shared/components';
-import {CompositeFilterInterface} from '@shared/components/interfaces/composite-filter.interface';
-import {BaseCompositeFilterComponent} from '@shared/components/base-composite-filter.component';
-import {trainingSelectors} from '@training/selectors/training.selectors';
-import {TrainingFilterDTO} from '@training/models/training.types';
+} from '@shared-filters/index';
+import {CompositeFilterInterface} from '@shared-interfaces/index';
+import {BaseCompositeFilterComponent} from '@shared-components/index';
+import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
+import {TrainingFilterDTO} from '@training-models/training.types';
 
 export class TrainingCompositeFilter
     extends BaseCompositeFilterComponent<TrainingFilterDTO>
@@ -27,37 +27,39 @@ export class TrainingCompositeFilter
 
         this.categoryFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.category
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.CATEGORY
             ),
             DropdownType.TOMSELECT
         );
         this.nameFilter = new TextFilterComponent(
-            this.compositeFilterLocator.locator(trainingSelectors.filter.name)
+            this.compositeFilterLocator.locator(TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.NAME)
         );
         this.trainerFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.trainer
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.TRAINER
             ),
             DropdownType.TOMSELECT
         );
         this.participantFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.participant
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.PARTICIPANT
             ),
             DropdownType.TOMSELECT
         );
         this.departmentFilter = new DropdownFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.department
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.DEPARTMENT
             ),
             DropdownType.TOMSELECT
         );
         this.onlineFilter = new CheckboxFilterComponent(
-            this.compositeFilterLocator.locator(trainingSelectors.filter.online)
+            this.compositeFilterLocator.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.ONLINE
+            )
         );
         this.includePastFilter = new CheckboxFilterComponent(
             this.compositeFilterLocator.locator(
-                trainingSelectors.filter.includePast
+                TRAINING_SELECTORS.XPATH_SELECTOR.FILTER.INCLUDE_PAST
             )
         );
     }

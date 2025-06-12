@@ -1,7 +1,7 @@
 import {Locator} from '@playwright/test';
-import {listSelectors} from '@shared/selectors/list.selectors';
-import {ListItemInterface} from '@shared/components/interfaces/list-item.interface';
-import {withConfirmationDialog} from '@shared/utils/dialog-utils';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {ListItemInterface} from '@shared-interfaces/list-item.interface';
+import {withConfirmationDialog} from '@shared-utils/dialog-utils';
 
 /**
  * Base class for list item components
@@ -28,14 +28,14 @@ export abstract class BaseListItemComponent implements ListItemInterface {
      * Click the edit button on the list item
      */
     async clickEdit(): Promise<void> {
-        await this.itemLocator.getByTitle(listSelectors.titles.edit).click();
+        await this.itemLocator.getByTitle(SHARED_SELECTORS.LIST.TITLES.EDIT).click();
     }
 
     /**
      * Click the delete button on the list item
      */
     async clickDelete(): Promise<void> {
-        await this.itemLocator.getByTestId('trash').click();
+        await this.itemLocator.getByTestId(SHARED_SELECTORS.ACTIONS.TRASH).click();
     }
 
     /**
@@ -52,7 +52,7 @@ export abstract class BaseListItemComponent implements ListItemInterface {
         await withConfirmationDialog(
             this.itemLocator.page(),
             async () => {
-                await this.itemLocator.getByTestId('trash').click();
+                await this.itemLocator.getByTestId(SHARED_SELECTORS.ACTIONS.TRASH).click();
             },
             true,
             'Opravdu chcete smazat záznam?'
@@ -72,21 +72,21 @@ export abstract class BaseListItemComponent implements ListItemInterface {
         indexOfContent: number
     ): Promise<string | null> {
         return this.itemLocator
-            .getByTestId('list-item-content')
+            .getByTestId(SHARED_SELECTORS.LIST.ITEM.CONTENT)
             .nth(indexOfContent)
             .textContent();
     }
     // click on i elemnt of list-item-content
     async clickOnItemContentByIndex(indexOfContent: number): Promise<void> {
         await this.itemLocator
-            .getByTestId('list-item-content')
+            .getByTestId(SHARED_SELECTORS.LIST.ITEM.CONTENT)
             .nth(indexOfContent)
             .click();
     }
     // get text of i elemnt of list-item-text
     async getTextOfItemByIndex(indexOfText: number): Promise<string | null> {
         return this.itemLocator
-            .getByTestId('list-item-text')
+            .getByTestId(SHARED_SELECTORS.LIST.ITEM.TEXT)
             .nth(indexOfText)
             .textContent();
     }
@@ -95,7 +95,7 @@ export abstract class BaseListItemComponent implements ListItemInterface {
         indexOfLabel: number
     ): Promise<string | null> {
         return this.itemLocator
-            .getByTestId('list-item-label')
+            .getByTestId(SHARED_SELECTORS.LIST.ITEM.LABEL)
             .nth(indexOfLabel)
             .textContent();
     }

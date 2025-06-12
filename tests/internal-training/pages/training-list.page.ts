@@ -1,18 +1,18 @@
 import {Locator, Page, expect} from '@playwright/test';
-import {BasePage} from '@shared/pages/base-page';
-import {TrainingsList} from '@training/components';
+import {BasePage} from '@shared-pages/base-page';
+import {TrainingsList} from '@training-components/index';
 import {
     DateFilterComponent,
     DropdownFilterComponent,
     DropdownType,
     RichTextInputComponent
-} from '@shared/components';
-import {trainingSelectors} from '@training/selectors/training.selectors';
-import {PageInterface} from '@shared/pages/page.interface';
-import {NewTrainingFormDTO} from '@training/models/training.types';
+} from '@shared-components/index';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
+import {PageInterface} from '@shared-pages/page.interface';
+import {NewTrainingFormDTO} from '@training-models/training.types';
 
 export class TrainingListPage extends BasePage implements PageInterface {
-    // Training list page specific elements
     pageTitle(): Locator {
         return this.page
             .getByRole('heading', {name: 'Vypsaná školení'})
@@ -23,7 +23,6 @@ export class TrainingListPage extends BasePage implements PageInterface {
     readonly formSaveButton = () =>
         this.page.getByRole('button', {name: 'Uložit'});
 
-    // Component instances
     private _trainingsList: TrainingsList | null = null;
 
     constructor(page: Page) {
@@ -37,7 +36,9 @@ export class TrainingListPage extends BasePage implements PageInterface {
     get trainingsList(): TrainingsList {
         if (!this._trainingsList) {
             this._trainingsList = new TrainingsList(
-                this.page.getByTestId('list-and-filter-wrapper')
+                this.page.getByTestId(
+                    SHARED_SELECTORS.LIST.LIST_AND_FILTER_WRAPPER
+                )
             );
         }
         return this._trainingsList;
@@ -53,15 +54,21 @@ export class TrainingListPage extends BasePage implements PageInterface {
         const formContainer = this.page.locator('form[name="training_course"]');
 
         const categoryDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.category),
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.CATEGORY
+            ),
             DropdownType.TOMSELECT
         );
         const trainerDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.trainer),
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.TRAINER
+            ),
             DropdownType.TOMSELECT
         );
         const departmentDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.department),
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.DEPARTMENT
+            ),
             DropdownType.TOMSELECT
         );
         const startDateInput = new DateFilterComponent(

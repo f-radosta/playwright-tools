@@ -1,11 +1,8 @@
-/**
- * Training system type definitions
- */
 
 /**
  * Data transfer object for the new training form
  */
-export interface NewTrainingFormDTO {
+export type NewTrainingFormDTO = {
     category: string;
     name: string;
     description: string;
@@ -19,12 +16,12 @@ export interface NewTrainingFormDTO {
     online?: boolean;
     registrationDeadline?: string;
     reasonForClosingTheRegistration?: string;
-}
+};
 
 /**
- * Interface for a training item in the list
+ * Type for a training item in the list
  */
-export interface Training {
+export type Training = {
     name: string;
     category: string;
     description: string;
@@ -35,12 +32,12 @@ export interface Training {
     endDate: Date | string;
     participants?: number;
     online?: boolean;
-}
+};
 
 /**
  * Filter criteria for training list
  */
-export interface TrainingFilterDTO {
+export type TrainingFilterDTO = {
     category?: string;
     name?: string;
     trainer?: string;
@@ -50,14 +47,14 @@ export interface TrainingFilterDTO {
     participant?: string;
     online?: boolean;
     includePast?: boolean;
-}
+};
 
 /**
  * Simple DTO for category filtering
  */
-export interface CategoryDTO {
+export type CategoryDTO = {
     categoryName: string;
-}
+};
 
 /**
  * Base interface for a component that displays training details
@@ -75,10 +72,10 @@ export interface BaseTraining {
 /**
  * Test case definition for training
  */
-export interface TrainingTestCase {
+export type TrainingTestCase = {
     testName: string;
     filterCriteria?: TrainingFilterDTO;
     trainingData: NewTrainingFormDTO;
     shouldDelete?: boolean;
     shouldVerifyDetails?: boolean;
-}
+};

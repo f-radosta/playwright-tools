@@ -1,14 +1,14 @@
 import {userTest} from '@auth/app-auth.fixture';
-import {AppFactory} from '@shared/pages/app.factory';
+import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
-import {MealOrderingHelper} from '@meal/helpers/meal-ordering-helper';
+import {MealOrderingHelper} from '@meal/testers/meal-tester';
 import {
-    MealTestDataProvider,
+    getTestCases,
     MealOrderingTestCase
 } from '@meal/test-data/meal-test-data';
 
 // Get all test cases
-const testCases = MealTestDataProvider.getTestCases();
+const testCases = getTestCases();
 
 // Create a test for each case
 testCases.forEach((testCase: MealOrderingTestCase) => {

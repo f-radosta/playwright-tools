@@ -1,6 +1,6 @@
 import {test as base} from '@playwright/test';
-import {AppFactory} from '@shared/pages/app.factory';
-import {BasePage} from '@shared/pages/base-page';
+import {AppFactory} from '@shared-pages/app.factory';
+import {BasePage} from '@shared-pages/base-page';
 
 // Extend the test fixtures with app
 type AppFixtures = {
