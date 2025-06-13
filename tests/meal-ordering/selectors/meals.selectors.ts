@@ -1,5 +1,6 @@
 export const MEAL_SELECTORS = {
     DATE_LABEL: 'date-label',
+    DAILY_MENU_LIST: 'daily-menu-list',
 
     PAGE: {
         BASKET_CARD: 'basket-card',
@@ -38,7 +39,7 @@ export const MEAL_SELECTORS = {
         DATE: 'order-date',
         TODAY_INDICATOR: 'order-today-indicator',
         MEAL_TYPE_ICON: 'order-meal-type-icon',
-        QUANTITY: 'order-quantity',
+        QUANTITY: 'order-meal-quantity',
         MEAL_NAME: 'order-meal-name',
         LIST_ITEM_DATE_ROW: 'list-item-date-row',
         TIME: 'order-time',

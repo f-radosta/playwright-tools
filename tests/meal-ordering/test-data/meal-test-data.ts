@@ -1,17 +1,34 @@
-import {generateDateRangeForDays, getDaysToNextWeekend} from '@shared-utils/date-utils';
+import {
+    generateDateRangeForDays,
+    getDaysToNextWeekend
+} from '@shared-utils/date-utils';
 import {MenuDTO} from '@meal-filters/menu-filter.component';
 
-export interface MealOrderingTestCase {
+// Common time slots for testing
+const TIME_SLOTS = [
+    '11:00 - 11:30',
+    '11:30 - 12:00',
+    '12:00 - 12:30',
+    '12:30 - 13:00'
+];
+
+// Helper to get a random time slot
+export function getRandomTimeSlot(): string {
+    return TIME_SLOTS[Math.floor(Math.random() * TIME_SLOTS.length)];
+}
+
+export type MealOrderingTestCase = {
     testName: string;
     filterCriteria: MenuDTO;
     mealSelectionIndex?: number; // Which meal to select, default 0
     orderQuantity: number;
     orderNote?: string;
+    timeSlot?: string;
     verifyCart?: boolean;
     verifyTodayMeal?: boolean;
-}
+};
 
-interface FilterCriteriaOptions {
+type FilterCriteriaOptions = {
     includeRestaurant?: boolean;
     includeFoodType?: boolean;
     includeDateRange?: boolean;
@@ -19,14 +36,18 @@ interface FilterCriteriaOptions {
     startOffset?: number;
     restaurant?: string;
     foodType?: string;
-}
+    requiresTimeSlot?: boolean;
+};
 
 /**
  * Complete filter with all three criteria
  * @param daysToInclude Number of days to include in range
  * @param startOffset Days to offset from today (0=today, 1=tomorrow)
  */
-export function getDefaultFilterCriteria(daysToInclude: number = 4, startOffset: number = 0): MenuDTO {
+export function getDefaultFilterCriteria(
+    daysToInclude: number = 4,
+    startOffset: number = 0
+): MenuDTO {
     return {
         restaurantName: 'Interní restaurace',
         foodType: 'Hlavní chod',
@@ -40,28 +61,29 @@ export function getDefaultFilterCriteria(daysToInclude: number = 4, startOffset:
  * @returns A MenuDTO with requested filters
  */
 export function getCustomFilterCriteria({
-    includeRestaurant = false, 
-    includeFoodType = false, 
+    includeRestaurant = false,
+    includeFoodType = false,
     includeDateRange = false,
     daysToInclude = 4,
     startOffset = 0,
     restaurant = 'Interní restaurace',
-    foodType = 'Hlavní chod'
+    foodType = 'Hlavní chod',
+    requiresTimeSlot = true
 }: FilterCriteriaOptions = {}): MenuDTO {
     const filter: MenuDTO = {};
-    
+
     if (includeRestaurant) {
         filter.restaurantName = restaurant;
     }
-    
+
     if (includeFoodType) {
         filter.foodType = foodType;
     }
-    
+
     if (includeDateRange) {
         filter.date = generateDateRangeForDays(daysToInclude, startOffset);
     }
-    
+
     return filter;
 }
 
@@ -73,7 +95,7 @@ export function getAlternateRestaurantFilter(): MenuDTO {
         includeRestaurant: true,
         includeFoodType: true,
         includeDateRange: true,
-        restaurant: 'eŠlichta'
+        restaurant: "Tommy's" // eŠlichta
     });
 }
 
@@ -109,7 +131,7 @@ export function getWeekendFilter(): MenuDTO {
         includeRestaurant: true,
         includeFoodType: true,
         includeDateRange: true,
-        daysToInclude: 2, 
+        daysToInclude: 2,
         startOffset: getDaysToNextWeekend()
     });
 }
@@ -137,48 +159,50 @@ export function getTestCases(): MealOrderingTestCase[] {
             orderQuantity: 1,
             verifyCart: true
         },
-        
+
         // Scenario 2: Single filter - only restaurant name
         {
             testName: 'Filter by restaurant name only',
-            filterCriteria: getCustomFilterCriteria({ includeRestaurant: true }),
+            filterCriteria: getCustomFilterCriteria({includeRestaurant: true}),
             mealSelectionIndex: 0,
             orderQuantity: 2,
             orderNote: 'Testing restaurant-only filter',
+            timeSlot: getRandomTimeSlot(),
             verifyCart: true
         },
-        
+
         // Scenario 3: Single filter - only food type
         {
             testName: 'Filter by food type only',
-            filterCriteria: getCustomFilterCriteria({ includeFoodType: true }),
+            filterCriteria: getCustomFilterCriteria({includeFoodType: true}),
             mealSelectionIndex: 1,
             orderQuantity: 1,
             verifyCart: true
         },
-        
+
         // Scenario 4: Single filter - only date range
         {
             testName: 'Filter by date range only',
-            filterCriteria: getCustomFilterCriteria({ includeDateRange: true }),
+            filterCriteria: getCustomFilterCriteria({includeDateRange: true}),
             mealSelectionIndex: 0,
             orderQuantity: 3,
             orderNote: 'Date-filtered meals for team',
+            timeSlot: getRandomTimeSlot(),
             verifyCart: true
         },
-        
+
         // Scenario 5: Dual filters - restaurant and food type
         {
             testName: 'Filter by restaurant and food type (no date)',
-            filterCriteria: getCustomFilterCriteria({ 
-                includeRestaurant: true, 
-                includeFoodType: true 
+            filterCriteria: getCustomFilterCriteria({
+                includeRestaurant: true,
+                includeFoodType: true
             }),
             mealSelectionIndex: 0,
             orderQuantity: 2,
             verifyCart: true
         },
-        
+
         // Scenario 6: All filters for tomorrow only
         {
             testName: 'Order meal for tomorrow only',
@@ -186,9 +210,10 @@ export function getTestCases(): MealOrderingTestCase[] {
             mealSelectionIndex: 0,
             orderQuantity: 1,
             orderNote: 'Testing tomorrow filter',
+            timeSlot: getRandomTimeSlot(),
             verifyCart: true
         },
-        
+
         // Scenario 7: Order from a different restaurant
         {
             testName: 'Order from external restaurant',
@@ -204,6 +229,7 @@ export function getTestCases(): MealOrderingTestCase[] {
             mealSelectionIndex: 0,
             orderQuantity: 3,
             orderNote: 'No sugar please',
+            timeSlot: getRandomTimeSlot(),
             verifyCart: true
         },
 
@@ -224,6 +250,7 @@ export function getTestCases(): MealOrderingTestCase[] {
             mealSelectionIndex: 0,
             orderQuantity: 2,
             orderNote: 'Bez cibule prosím',
+            timeSlot: getRandomTimeSlot(),
             verifyCart: true
         }
     ];

@@ -28,7 +28,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the price of the meal
      */
     async getPrice(): Promise<string> {
-        const priceCell = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.PRICE_CELL);
+        const priceCell = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.PRICE_CELL
+        );
         const text = await priceCell
             .getByTestId(SHARED_SELECTORS.LIST.ITEM.TEXT)
             .textContent();
@@ -46,7 +48,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the order deadline status
      */
     async getOrderDeadlineStatus(): Promise<string | null> {
-        const deadlineTimer = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.DEADLINE_TIMER);
+        const deadlineTimer = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.DEADLINE_TIMER
+        );
         return deadlineTimer.getAttribute('data-test-order-status');
     }
 
@@ -54,7 +58,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the food type from the icon (e.g., "Polévka", "Hlavní chod")
      */
     async getMealType(): Promise<string> {
-        const foodIcon = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.MEAL_TYPE_ICON);
+        const foodIcon = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.MEAL_TYPE_ICON
+        );
         const text = await foodIcon.getAttribute('aria-label');
         return this.normalizeText(text);
     }
@@ -63,7 +69,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the current quantity value
      */
     async getMealQuantity(): Promise<number> {
-        const quantityInput = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.QUANTITY_INPUT);
+        const quantityInput = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.QUANTITY_INPUT
+        );
         const value = await quantityInput.inputValue();
         return value ? parseInt(value.trim(), 10) : 0;
     }
@@ -81,7 +89,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the meal time
      */
     async getMealTime(): Promise<string | null> {
-        const timeSelect = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.TIME_SELECT);
+        const timeSelect = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
+        );
 
         // Check if time select exists and is visible
         if ((await timeSelect.count()) === 0) return null;
@@ -99,7 +109,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      */
     async hasNote(): Promise<boolean> {
         // Check if the note indicator is present
-        const noteIndicator = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.NOTE.INDICATOR);
+        const noteIndicator = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.NOTE.INDICATOR
+        );
         return (
             (await noteIndicator.count()) > 0 &&
             (await noteIndicator.isVisible())
@@ -115,7 +127,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         }
 
         // Try to get note from tooltip or indicator
-        const noteIndicator = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.NOTE.INDICATOR);
+        const noteIndicator = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.NOTE.INDICATOR
+        );
 
         // First try to get note from tooltip
         const tooltipText = await noteIndicator.getAttribute(
@@ -134,8 +148,12 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Get the restaurant link URL
      */
     async getRestaurantLink(): Promise<string | null> {
-        const restaurantCell = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.RESTAURANT_CELL);
-        const link = restaurantCell.getByTestId(MEAL_SELECTORS.MENU_ITEM.RESTAURANT_LINK);
+        const restaurantCell = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.RESTAURANT_CELL
+        );
+        const link = restaurantCell.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.RESTAURANT_LINK
+        );
         return link.getAttribute('href');
     }
 
@@ -144,9 +162,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * @param quantity The quantity to set
      */
     async setQuantity(quantity: number): Promise<void> {
-        const quantityInput = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.QUANTITY_INPUT);
-
-        // Clear the input and set the new value
+        const quantityInput = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.QUANTITY_INPUT
+        );
         await quantityInput.fill(quantity.toString());
     }
 
@@ -154,8 +172,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Increment the quantity by clicking the + button
      */
     async incrementQuantity(): Promise<void> {
-        const incrementButton =
-            this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.INCREMENT_BUTTON);
+        const incrementButton = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.INCREMENT_BUTTON
+        );
         await incrementButton.click();
     }
 
@@ -163,8 +182,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * Decrement the quantity by clicking the - button
      */
     async decrementQuantity(): Promise<void> {
-        const decrementButton =
-            this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.DECREMENT_BUTTON);
+        const decrementButton = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.DECREMENT_BUTTON
+        );
         await decrementButton.click();
     }
 
@@ -173,7 +193,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * @param timeValue The value of the time slot to select (e.g., "1100", "1130")
      */
     async selectTimeSlot(timeValue: string): Promise<void> {
-        const timeSelect = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.TIME_SELECT);
+        const timeSelect = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
+        );
 
         // First try the standard selectOption approach
         try {
@@ -216,7 +238,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
     async getAvailableTimeSlots(): Promise<
         Array<{value: string; text: string}>
     > {
-        const timeSelect = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.TIME_SELECT);
+        const timeSelect = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
+        );
 
         // Get all option elements
         const options = await timeSelect.locator('option').all();
@@ -237,7 +261,9 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      */
     async addNote(note: string): Promise<void> {
         // Click the note button to open the modal
-        const noteButton = this.itemLocator.getByTestId(MEAL_SELECTORS.MENU_ITEM.NOTE.BUTTON);
+        const noteButton = this.itemLocator.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.NOTE.BUTTON
+        );
         await noteButton.click();
 
         // Wait for the modal to appear
@@ -245,11 +271,15 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         await modal.waitFor({state: 'visible'});
 
         // Fill in the note
-        const textarea = modal.getByTestId(MEAL_SELECTORS.MENU_ITEM.NOTE.TEXTAREA);
+        const textarea = modal.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.NOTE.TEXTAREA
+        );
         await textarea.fill(note);
 
         // Submit the form
-        const submitButton = modal.getByTestId(MEAL_SELECTORS.MENU_ITEM.NOTE.SUBMIT);
+        const submitButton = modal.getByTestId(
+            MEAL_SELECTORS.MENU_ITEM.NOTE.SUBMIT
+        );
         await submitButton.click();
 
         // Wait for the modal to be properly closed
@@ -293,5 +323,6 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         if (note) {
             await this.addNote(note);
         }
+        await this.itemLocator.page().waitForTimeout(500);
     }
 }

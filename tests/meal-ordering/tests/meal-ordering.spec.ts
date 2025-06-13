@@ -28,17 +28,15 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
 
                 // Choose appropriate navigation method based on test case
                 if (testCase.verifyTodayMeal) {
-                    result =
-                        await navigateAndFilterTodayMeals(
-                            app,
-                            testCase.filterCriteria
-                        );
+                    result = await navigateAndFilterTodayMeals(
+                        app,
+                        testCase.filterCriteria
+                    );
                 } else {
-                    result =
-                        await navigateAndFilterTomorrowMeals(
-                            app,
-                            testCase.filterCriteria
-                        );
+                    result = await navigateAndFilterTomorrowMeals(
+                        app,
+                        testCase.filterCriteria
+                    );
                 }
 
                 const {success, filteredList} = result;
@@ -48,34 +46,31 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                     return;
                 }
 
-                // Step 2: Select and order meal (skip if we're only verifying today's meal)
-                if (!testCase.verifyTodayMeal) {
-                    const mealDetails =
-                        await selectAndOrderMeal(
-                            filteredList,
-                            testCase.mealSelectionIndex || 0,
-                            testCase.orderQuantity,
-                            testCase.orderNote
-                        );
+                // Step 2: Always order a meal
+                const mealDetails = await selectAndOrderMeal(
+                    filteredList,
+                    testCase.mealSelectionIndex || 0,
+                    testCase.orderQuantity,
+                    testCase.timeSlot,
+                    testCase.orderNote
+                );
 
-                    if (!mealDetails.success) {
-                        console.log('Failed to select and order meal');
-                        return;
-                    }
+                if (!mealDetails.success) {
+                    console.log('Failed to select and order meal');
+                    return;
+                }
 
-                    // Step 3: Verify cart if required
-                    if (testCase.verifyCart) {
-                        // Convert null to undefined for type compatibility
-                        const verifyDetails = {
-                            success: mealDetails.success,
-                            mealName: mealDetails.mealName || undefined,
-                            restaurantName:
-                                mealDetails.restaurantName || undefined,
-                            quantity: mealDetails.quantity,
-                            note: mealDetails.note
-                        };
-                        await verifyCart(app, verifyDetails);
-                    }
+                // Step 3: Verify cart if required
+                if (testCase.verifyCart) {
+                    // Convert null to undefined for type compatibility
+                    const verifyDetails = {
+                        success: mealDetails.success,
+                        mealName: mealDetails.mealName || undefined,
+                        restaurantName: mealDetails.restaurantName || undefined,
+                        quantity: mealDetails.quantity,
+                        note: mealDetails.note
+                    };
+                    await verifyCart(app, verifyDetails);
                 }
 
                 // Special step for Today's Meal verification

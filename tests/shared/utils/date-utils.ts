@@ -26,32 +26,34 @@ export function parseDateTimes(dateText: string | null): ParsedDateTimeInfo {
     }
 
     try {
-        const lines = dateText.split('\n').map(line => line.trim());
-
-        // Format 1: Two-day format with "od" and "do"
+        // First check if it's a single line with 'od' and 'do' (without newlines)
         if (
-            lines.length === 2 &&
-            lines[0].includes('od') &&
-            lines[1].includes('do')
+            dateText.includes('od') &&
+            dateText.includes('do') &&
+            !dateText.includes('\n')
         ) {
-            return parseTwoDayFormat(lines[0], lines[1]);
+            // Handle single line format: "od 14. 6. 2025 13:15 do 19. 6. 2025 17:30"
+            const [odPart, doPart] = dateText.split(' do ');
+            if (odPart && doPart) {
+                return parseTwoDayFormat(odPart, 'do ' + doPart);
+            }
         }
 
+        const lines = dateText.split('\n').map(line => line.trim());
+
         // Format 2: Single day with date and time range on separate lines
-        else if (lines.length === 2 && lines[1].includes('-')) {
+        if (lines.length === 2 && lines[1].includes('-')) {
             return parseSingleDayTwoLines(lines[0], lines[1]);
         }
 
         // Format 3: Single day with date and time range on one line
-        else if (dateText.includes(' - ')) {
+        if (dateText.includes(' - ')) {
             return parseSingleDayOneLine(dateText);
         }
 
-        // Unknown format
-        else {
-            console.error('Unknown date format:', dateText);
-            return getEmptyDateTimeInfo();
-        }
+        // If we got here, the format is not recognized
+        console.error('Unknown date format:', dateText);
+        return getEmptyDateTimeInfo();
     } catch (error) {
         console.error('Failed to parse date times:', error);
         return getEmptyDateTimeInfo();
@@ -70,8 +72,7 @@ function parseTwoDayFormat(
         const endDateStr = endLine.replace(/^do\s+/, '');
 
         // Parse start date
-        const [startDay, startMonth, startYearTime] =
-            startDateStr.split('. ');
+        const [startDay, startMonth, startYearTime] = startDateStr.split('. ');
         const [startYear, startTime] = startYearTime.split(' ');
         const [startHour, startMinute] = startTime.split(':');
         const startDate = new Date(
@@ -154,10 +155,7 @@ function parseSingleDayTwoLines(
             isSingleDay: true
         };
     } catch (error) {
-        console.error(
-            'Failed to parse single-day two-lines format:',
-            error
-        );
+        console.error('Failed to parse single-day two-lines format:', error);
         return getEmptyDateTimeInfo();
     }
 }
@@ -240,9 +238,7 @@ function parseSingleDayOneLine(dateText: string): ParsedDateTimeInfo {
             const year = filteredParts[2];
 
             // Find the time components (those containing ':')
-            let startTimeIndex = filteredParts.findIndex(p =>
-                p.includes(':')
-            );
+            let startTimeIndex = filteredParts.findIndex(p => p.includes(':'));
             if (startTimeIndex === -1) return getEmptyDateTimeInfo();
 
             const startTime = filteredParts[startTimeIndex];
@@ -327,9 +323,7 @@ export function formatCzechDate(date: Date | null): string {
     if (!date) {
         return '';
     }
-    return `${date.getDate()}. ${
-        date.getMonth() + 1
-    }. ${date.getFullYear()}`;
+    return `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()}`;
 }
 
 /**
@@ -350,7 +344,10 @@ export function formatTime(date: Date | null): string {
  * @param endDate The end date of the range (optional, if not provided, only the start date is used)
  * @returns A formatted date range string
  */
-export function generateDateRangeString(startDate: Date, endDate?: Date): string {
+export function generateDateRangeString(
+    startDate: Date,
+    endDate?: Date
+): string {
     const formatDate = (date: Date): string => {
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -386,13 +383,16 @@ export enum Month {
  * @param startOffset Number of days to offset from today (0 = today, 1 = tomorrow, etc.)
  * @returns A formatted date range string
  */
-export function generateDateRangeForDays(daysToInclude: number = 4, startOffset: number = 0): string {
+export function generateDateRangeForDays(
+    daysToInclude: number = 4,
+    startOffset: number = 0
+): string {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() + startOffset);
-    
+
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + daysToInclude - 1); // -1 because we count the start day
-    
+
     return generateDateRangeString(startDate, endDate);
 }
 
@@ -420,19 +420,19 @@ export function generateDayAfterTomorrowDateRange(): string {
 export function getDaysToNextWeekend(nextWeekend: boolean = false): number {
     const today = new Date();
     const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
-    
+
     // Calculate days until next Saturday
     let daysToSaturday = (6 - currentDay) % 7;
     if (daysToSaturday === 0 && today.getHours() >= 12) {
         // If it's already Saturday afternoon, target next weekend
         daysToSaturday = 7;
     }
-    
+
     // If we want the weekend after the next one
     if (nextWeekend) {
         daysToSaturday += 7;
     }
-    
+
     return daysToSaturday;
 }
 
@@ -444,14 +444,14 @@ export function getDaysToNextWeekend(nextWeekend: boolean = false): number {
 export function generateWeekendDateRange(nextWeekend: boolean = false): string {
     const today = new Date();
     const daysToSaturday = getDaysToNextWeekend(nextWeekend);
-    
+
     // Create date range from Saturday to Sunday
     const saturday = new Date(today);
     saturday.setDate(today.getDate() + daysToSaturday);
-    
+
     const sunday = new Date(saturday);
     sunday.setDate(saturday.getDate() + 1);
-    
+
     return generateDateRangeString(saturday, sunday);
 }
 
@@ -461,7 +461,10 @@ export function generateWeekendDateRange(nextWeekend: boolean = false): string {
  * @param year The year (defaults to current year)
  * @returns A formatted month string
  */
-export function generateMonthString(month: Month | number, year: number = new Date().getFullYear()): string {
+export function generateMonthString(
+    month: Month | number,
+    year: number = new Date().getFullYear()
+): string {
     const monthNum = (month + 1).toString().padStart(2, '0');
     return `${monthNum}/${year}`;
 }

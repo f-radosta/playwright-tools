@@ -58,11 +58,7 @@ export async function navigateAndFilterTodayMeals(
     app: AppFactory,
     filterCriteria: MenuDTO
 ) {
-    return navigateAndFilterMeals(
-        app,
-        filterCriteria,
-        MealListType.TODAY
-    );
+    return navigateAndFilterMeals(app, filterCriteria, MealListType.TODAY);
 }
 
 /**
@@ -72,11 +68,7 @@ export async function navigateAndFilterTomorrowMeals(
     app: AppFactory,
     filterCriteria: MenuDTO
 ) {
-    return navigateAndFilterMeals(
-        app,
-        filterCriteria,
-        MealListType.TOMORROW
-    );
+    return navigateAndFilterMeals(app, filterCriteria, MealListType.TOMORROW);
 }
 
 /**
@@ -94,11 +86,11 @@ async function navigateAndFilterMeals(
     const getListMethod =
         listType === MealListType.TODAY
             ? currentMenuPage.menuList.getTodayList.bind(
-                    currentMenuPage.menuList
-                )
+                  currentMenuPage.menuList
+              )
             : currentMenuPage.menuList.getTomorrowList.bind(
-                    currentMenuPage.menuList
-                );
+                  currentMenuPage.menuList
+              );
 
     const menuList = await getListMethod();
     expect(
@@ -130,6 +122,7 @@ export async function selectAndOrderMeal(
     filteredList: DailyMenuList,
     mealIndex: number = 0,
     quantity: number = 1,
+    timeSlot?: string,
     note?: string
 ) {
     const availableMeals = await filteredList.getAvailableMeals();
@@ -145,30 +138,18 @@ export async function selectAndOrderMeal(
 
     const meal = availableMeals[mealIndex];
 
-    const [mealName, restaurantName, price, foodType, timeSlots] =
-        await Promise.all([
-            meal.getMealName(),
-            meal.getRestaurantName(),
-            meal.getPricePerUnit(),
-            meal.getMealType(),
-            meal.getAvailableTimeSlots()
-        ]);
+    const [mealName, restaurantName, price, foodType] = await Promise.all([
+        meal.getMealName(),
+        meal.getRestaurantName(),
+        meal.getPricePerUnit(),
+        meal.getMealType()
+    ]);
 
     console.log(
         `Ordering meal: ${mealName} from ${restaurantName} (${foodType}) for ${price}`
     );
-    expect(
-        timeSlots.length,
-        'At least one time slot should be available'
-    ).toBeGreaterThan(0);
 
-    if (timeSlots.length === 0) {
-        return {success: false};
-    }
-
-    const selectedTimeSlot = timeSlots[0].value;
-
-    await meal.orderMeal(quantity, selectedTimeSlot, note);
+    await meal.orderMeal(quantity, timeSlot, note);
 
     const orderedQuantity = await meal.getMealQuantity();
     expect(orderedQuantity).toBe(quantity);
@@ -180,7 +161,7 @@ export async function selectAndOrderMeal(
         price,
         foodType,
         quantity,
-        selectedTimeSlot,
+        timeSlot,
         note
     };
 }
@@ -193,6 +174,7 @@ export async function verifyCart(
         restaurantName?: string;
         quantity?: number;
         note?: string;
+        timeSlot?: string;
     }
 ) {
     console.log('Navigating to meal order homepage to check cart...');
@@ -234,8 +216,12 @@ export async function verifyCart(
 
             expect(cartItemRestaurant).toBe(mealDetails.restaurantName);
 
-            const cartItemTime = await cartItem.getMealTime();
-            expect(cartItemTime).toBeTruthy();
+            // Verify time slot if provided in mealDetails
+            if (mealDetails.timeSlot) {
+                const cartItemTime = await cartItem.getMealTime();
+                expect(cartItemTime).toBe(mealDetails.timeSlot);
+                console.log(`Verified time slot: ${cartItemTime}`);
+            }
 
             const hasNote = await cartItem.hasNote();
             if (mealDetails.note) {
@@ -308,8 +294,7 @@ export async function cleanupMealOrders(app: AppFactory): Promise<boolean> {
         }
 
         console.log("Getting tomorrow's menu list...");
-        const tomorrowList =
-            await currentMenuPage.menuList.getTomorrowList();
+        const tomorrowList = await currentMenuPage.menuList.getTomorrowList();
         if (tomorrowList) {
             const tomorrowMeals = await tomorrowList.getAvailableMeals();
             console.log(
@@ -331,16 +316,13 @@ export async function cleanupMealOrders(app: AppFactory): Promise<boolean> {
     }
 }
 
-
-
-export async function verifyTodayMeal(app: AppFactory): Promise<VerifyTodayMealResult> {
+export async function verifyTodayMeal(
+    app: AppFactory
+): Promise<VerifyTodayMealResult> {
     const mealOrderHP = await app.gotoMealOrderHP();
     const todayMealCard = mealOrderHP.getTodayMealCard();
 
-    expect(
-        todayMealCard,
-        "Today's meal card should be visible"
-    ).toBeTruthy();
+    expect(todayMealCard, "Today's meal card should be visible").toBeTruthy();
 
     if (!todayMealCard) {
         return {
@@ -356,10 +338,7 @@ export async function verifyTodayMeal(app: AppFactory): Promise<VerifyTodayMealR
     }
 
     const cardTitle = await todayMealCard.getTitle();
-    expect(
-        cardTitle,
-        "Today's meal card title should be present"
-    ).toBeTruthy();
+    expect(cardTitle, "Today's meal card title should be present").toBeTruthy();
     console.log(`Card title: ${cardTitle}`);
 
     const mealRows = await todayMealCard.getMealRows();
@@ -428,10 +407,7 @@ export async function verifyTodayMeal(app: AppFactory): Promise<VerifyTodayMealR
         note: noteText
     } = firstMeal;
 
-    expect(
-        restaurantName,
-        'Restaurant name should be present'
-    ).toBeTruthy();
+    expect(restaurantName, 'Restaurant name should be present').toBeTruthy();
     expect(mealTime, 'Meal time should be present').toBeTruthy();
     expect(mealPrice, 'Meal price should be present').toBeTruthy();
     console.log(`Restaurant: ${restaurantName}`);

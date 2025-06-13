@@ -33,7 +33,11 @@ export interface BaseMeal {
  */
 export interface MenuMeal extends BaseMeal {
     getAvailableTimeSlots(): Promise<{value: string}[]>;
-    orderMeal(quantity: number, timeSlot: string, note?: string): Promise<void>;
+    orderMeal(
+        quantity: number,
+        timeSlot?: string,
+        note?: string
+    ): Promise<void>;
 }
 
 /**
@@ -48,8 +52,8 @@ export interface OrderListItem extends BaseMeal {
  * Data transfer object representing meal information extracted from components
  * This is used for simplified data transfer, not as a component interface
  */
-export interface TodayMealInfo {
+export type TodayMealInfo = {
     name: string;
     quantity: number;
     type: string;
-}
+};
