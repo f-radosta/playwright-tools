@@ -3,7 +3,7 @@ import {ListItemInterface} from '@shared-interfaces/list-item.interface';
 import {TrainingPage} from '@training-pages/training.page';
 import {BaseTrainingComponent} from '@training-components/base/base-training.component';
 import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
-import {DateTimeUtils, ParsedDateTimeInfo} from '@shared-utils/date-utils';
+import {parseDateTimes, ParsedDateTimeInfo} from '@shared-utils/date-utils';
 
 export class TrainingListItem
     extends BaseTrainingComponent
@@ -72,7 +72,7 @@ export class TrainingListItem
      */
     async parseDateTimes(): Promise<ParsedDateTimeInfo> {
         const dateText = await this.getDateTime();
-        return DateTimeUtils.parseDateTimes(dateText);
+        return parseDateTimes(dateText);
     }
 
     async getStartDate(): Promise<Date | null> {

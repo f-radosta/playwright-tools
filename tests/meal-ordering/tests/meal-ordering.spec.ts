@@ -1,11 +1,18 @@
 import {userTest} from '@auth/app-auth.fixture';
 import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
-import {MealOrderingHelper} from '@meal/testers/meal-tester';
 import {
     getTestCases,
     MealOrderingTestCase
 } from '@meal/test-data/meal-test-data';
+import {
+    cleanupMealOrders,
+    navigateAndFilterTodayMeals,
+    navigateAndFilterTomorrowMeals,
+    selectAndOrderMeal,
+    verifyCart,
+    verifyTodayMeal
+} from '@meal/testers/meal-tester';
 
 // Get all test cases
 const testCases = getTestCases();
@@ -22,13 +29,13 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 // Choose appropriate navigation method based on test case
                 if (testCase.verifyTodayMeal) {
                     result =
-                        await MealOrderingHelper.navigateAndFilterTodayMeals(
+                        await navigateAndFilterTodayMeals(
                             app,
                             testCase.filterCriteria
                         );
                 } else {
                     result =
-                        await MealOrderingHelper.navigateAndFilterTomorrowMeals(
+                        await navigateAndFilterTomorrowMeals(
                             app,
                             testCase.filterCriteria
                         );
@@ -44,7 +51,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 // Step 2: Select and order meal (skip if we're only verifying today's meal)
                 if (!testCase.verifyTodayMeal) {
                     const mealDetails =
-                        await MealOrderingHelper.selectAndOrderMeal(
+                        await selectAndOrderMeal(
                             filteredList,
                             testCase.mealSelectionIndex || 0,
                             testCase.orderQuantity,
@@ -67,14 +74,13 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                             quantity: mealDetails.quantity,
                             note: mealDetails.note
                         };
-                        await MealOrderingHelper.verifyCart(app, verifyDetails);
+                        await verifyCart(app, verifyDetails);
                     }
                 }
 
                 // Special step for Today's Meal verification
                 if (testCase.verifyTodayMeal) {
-                    const todayMealDetails =
-                        await MealOrderingHelper.verifyTodayMeal(app);
+                    const todayMealDetails = await verifyTodayMeal(app);
 
                     // Perform comprehensive validation of the Today's Meal card
                     if (todayMealDetails.success) {
@@ -126,7 +132,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 // Always run cleanup even if the test fails
                 console.log('\n🧹 Running post-test meal order cleanup...');
                 try {
-                    await MealOrderingHelper.cleanupMealOrders(app);
+                    await cleanupMealOrders(app);
                     console.log('✅ Cleanup completed successfully');
                 } catch (error) {
                     console.error('❌ Cleanup failed:', error);

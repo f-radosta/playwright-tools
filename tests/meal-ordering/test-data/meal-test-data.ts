@@ -1,4 +1,4 @@
-import {DateFilterComponent} from '@shared-filters/date-filter.component';
+import {generateDateRangeForDays, getDaysToNextWeekend} from '@shared-utils/date-utils';
 import {MenuDTO} from '@meal-filters/menu-filter.component';
 
 export interface MealOrderingTestCase {
@@ -30,7 +30,7 @@ export function getDefaultFilterCriteria(daysToInclude: number = 4, startOffset:
     return {
         restaurantName: 'Interní restaurace',
         foodType: 'Hlavní chod',
-        date: DateFilterComponent.generateDateRangeForDays(daysToInclude, startOffset)
+        date: generateDateRangeForDays(daysToInclude, startOffset)
     };
 }
 
@@ -59,7 +59,7 @@ export function getCustomFilterCriteria({
     }
     
     if (includeDateRange) {
-        filter.date = DateFilterComponent.generateDateRangeForDays(daysToInclude, startOffset);
+        filter.date = generateDateRangeForDays(daysToInclude, startOffset);
     }
     
     return filter;
@@ -110,7 +110,7 @@ export function getWeekendFilter(): MenuDTO {
         includeFoodType: true,
         includeDateRange: true,
         daysToInclude: 2, 
-        startOffset: DateFilterComponent.getDaysToNextWeekend()
+        startOffset: getDaysToNextWeekend()
     });
 }
 
