@@ -1,5 +1,5 @@
-import { Locator } from "@playwright/test";
-import { ListItemInterface } from "./list-item.interface";
+import {Locator} from '@playwright/test';
+import {ListItemInterface} from '@shared-interfaces/list-item.interface';
 
 export interface ListInterface {
     readonly itemLocators: Locator;
