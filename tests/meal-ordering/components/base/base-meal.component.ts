@@ -1,6 +1,6 @@
 import {Locator} from '@playwright/test';
 import {BaseListItemComponent} from '@shared-components/base-list-item.component';
-import {BaseMeal} from '@meal-models/meal-ordering.types';
+import {BaseMeal, Restaurant, MealType} from '@meal-models/meal-ordering.types';
 
 /**
  * Base component providing common meal functionality implementations
@@ -40,7 +40,7 @@ export abstract class BaseMealComponent
     /**
      * Get the restaurant name for this meal
      */
-    abstract getRestaurantName(): Promise<string | null>;
+    abstract getRestaurantName(): Promise<Restaurant | null>;
 
     /**
      * Get the price per unit
@@ -50,7 +50,7 @@ export abstract class BaseMealComponent
     /**
      * Get the food type from the icon
      */
-    abstract getMealType(): Promise<string | null>;
+    abstract getMealType(): Promise<MealType | null>;
 
     /**
      * Get the quantity of the meal

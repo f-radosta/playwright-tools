@@ -1,6 +1,6 @@
 import {Locator} from '@playwright/test';
 import {ListItemInterface} from '@shared-components/interfaces/list-item.interface';
-import {OrderListItem as OrderListItemInterface} from '@meal-models/meal-ordering.types';
+import {MealType, OrderListItem as OrderListItemInterface, Restaurant} from '@meal-models/meal-ordering.types';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 
@@ -80,12 +80,12 @@ export class OrderListItem
         return this.normalizeText(text);
     }
 
-    public async getRestaurantName(): Promise<string> {
+    public async getRestaurantName(): Promise<Restaurant | null> {
         const restaurantLocator = this.dataRowLocator.getByTestId(
             MEAL_SELECTORS.ORDER_ITEM.RESTAURANT_NAME
         );
         const text = (await restaurantLocator.textContent()) || '';
-        return this.normalizeText(text);
+        return text ? Restaurant[text as keyof typeof Restaurant] : null;
     }
 
     /**
@@ -132,10 +132,10 @@ export class OrderListItem
         return normalizedText || null;
     }
 
-    public async getMealType(): Promise<string> {
+    public async getMealType(): Promise<MealType | null> {
         const foodIcon = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_TYPE_ICON);
         const text = (await foodIcon.getAttribute('aria-label')) || '';
-        return this.normalizeText(text);
+        return text ? MealType[text as keyof typeof MealType] : null;
     }
 
     /**

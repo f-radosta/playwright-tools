@@ -4,6 +4,16 @@ import {BaseListComponent} from '@shared-components/base-list.component';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {MenuListItem} from '@meal-components/index';
 
+// Set to true to enable debug logging
+const DEBUG = false;
+
+// Helper function for debug logging
+function debugLog(...args: any[]) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
 export class DailyMenuList
     extends BaseListComponent<MenuListItem>
     implements ListInterface
@@ -54,7 +64,7 @@ export class DailyMenuList
      * This method is customized for the date format "29.5. čtvrtek" (day.month. day_of_week)
      */
     private extractDateFromText(text: string): Date {
-        console.log('Extracting date from text:', text);
+        debugLog('Extracting date from text:', text);
         
         // Format: "29.5. čtvrtek" - day.month. day_of_week
         const czechDateRegex = /\b(\d{1,2})\.(\d{1,2})\.(\s+\w+)?/;
@@ -63,7 +73,7 @@ export class DailyMenuList
         if (czechMatch) {
             const [_, day, month] = czechMatch;
             const currentYear = new Date().getFullYear();
-            console.log(`Parsed Czech date: day=${day}, month=${month}, year=${currentYear}`);
+            debugLog(`Parsed Czech date: day=${day}, month=${month}, year=${currentYear}`);
             
             // Create date with current year - using local time
             // Create a date at noon to avoid timezone issues
@@ -72,7 +82,7 @@ export class DailyMenuList
             
             // Set the date to noon on the specified day to avoid timezone issues
             const date = new Date(currentYear, monthNum, dayNum, 12, 0, 0);
-            console.log('Created date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
+            debugLog('Created date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
             return date;
         }
         
@@ -84,7 +94,7 @@ export class DailyMenuList
             const [_, day, month, year] = standardMatch;
             // Adjust year if it's a 2-digit format
             const fullYear = year.length === 2 ? `20${year}` : year;
-            console.log(`Parsed standard date: day=${day}, month=${month}, year=${fullYear}`);
+            debugLog(`Parsed standard date: day=${day}, month=${month}, year=${fullYear}`);
             return new Date(`${fullYear}-${month}-${day}`);
         }
 
@@ -92,22 +102,22 @@ export class DailyMenuList
         const today = new Date();
 
         if (text.toLowerCase().includes('dnes') || text.toLowerCase().includes('today')) {
-            console.log('Identified as today');
+            debugLog('Identified as today');
             return today;
         } else if (text.toLowerCase().includes('zítra') || text.toLowerCase().includes('tomorrow')) {
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
-            console.log('Identified as tomorrow');
+            debugLog('Identified as tomorrow');
             return tomorrow;
         } else if (text.toLowerCase().includes('včera') || text.toLowerCase().includes('yesterday')) {
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
-            console.log('Identified as yesterday');
+            debugLog('Identified as yesterday');
             return yesterday;
         }
 
         // Default to today if no date is found
-        console.log('No date pattern found, defaulting to today');
+        debugLog('No date pattern found, defaulting to today');
         return today;
     }
 
@@ -122,7 +132,7 @@ export class DailyMenuList
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
         
         console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
-        console.log('Today date:', today, 'Day:', today.getDate(), 'Month:', today.getMonth() + 1);
+        debugLog('Today date:', today, 'Day:', today.getDate(), 'Month:', today.getMonth() + 1);
         
         // Compare only the date components (year, month, day)
         const result = (
@@ -131,7 +141,7 @@ export class DailyMenuList
             date.getFullYear() === today.getFullYear()
         );
         
-        console.log('Is today?', result);
+        debugLog('Is today?', result);
         return result;
     }
 
@@ -146,7 +156,7 @@ export class DailyMenuList
         const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 12, 0, 0);
         
         console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
-        console.log('Tomorrow date:', tomorrow, 'Day:', tomorrow.getDate(), 'Month:', tomorrow.getMonth() + 1);
+        debugLog('Tomorrow date:', tomorrow, 'Day:', tomorrow.getDate(), 'Month:', tomorrow.getMonth() + 1);
         
         // Compare only the date components (year, month, day)
         const result = (
@@ -155,7 +165,7 @@ export class DailyMenuList
             date.getFullYear() === tomorrow.getFullYear()
         );
         
-        console.log('Is tomorrow?', result);
+        debugLog('Is tomorrow?', result);
         return result;
     }
 
@@ -170,7 +180,7 @@ export class DailyMenuList
         const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12, 0, 0);
         
         console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
-        console.log('Yesterday date:', yesterday, 'Day:', yesterday.getDate(), 'Month:', yesterday.getMonth() + 1);
+        debugLog('Yesterday date:', yesterday, 'Day:', yesterday.getDate(), 'Month:', yesterday.getMonth() + 1);
         
         // Compare only the date components (year, month, day)
         const result = (
@@ -179,7 +189,7 @@ export class DailyMenuList
             date.getFullYear() === yesterday.getFullYear()
         );
         
-        console.log('Is yesterday?', result);
+        debugLog('Is yesterday?', result);
         return result;
     }
 

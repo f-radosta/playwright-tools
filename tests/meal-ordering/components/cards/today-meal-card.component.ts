@@ -1,5 +1,5 @@
 import {Locator} from '@playwright/test';
-import {BaseMeal} from '@meal-models/meal-ordering.types';
+import {BaseMeal, MealType, Restaurant} from '@meal-models/meal-ordering.types';
 
 /**
  * Class representing the "Your Meal Today" card component
@@ -96,7 +96,7 @@ export class TodayMealCard implements BaseMeal {
      * Gets the type of a meal at a specific index based on the aria-label
      * @param index The index of the meal (0-based)
      */
-    async getMealType(index = 0): Promise<string | null> {
+    async getMealType(index = 0): Promise<MealType | null> {
         const mealRows = await this.getMealRows();
         if (index >= mealRows.length) {
             throw new Error(`Meal with index ${index} not found`);
@@ -107,14 +107,14 @@ export class TodayMealCard implements BaseMeal {
         );
         const ariaLabel = await typeIcon.getAttribute('aria-label');
 
-        return ariaLabel || null;
+        return ariaLabel ? MealType[ariaLabel as keyof typeof MealType] : null;
     }
 
     /**
      * Gets the restaurant name for a specific meal
      * @param index The index of the meal (0-based)
      */
-    async getRestaurantName(index = 0): Promise<string | null> {
+    async getRestaurantName(index = 0): Promise<Restaurant | null> {
         const mealRows = await this.getMealRows();
         if (index >= mealRows.length) {
             throw new Error(`Meal with index ${index} not found`);
@@ -124,7 +124,7 @@ export class TodayMealCard implements BaseMeal {
             .locator('[data-test="meal-restaurant-name"]')
             .textContent();
 
-        return restaurantName?.trim() || null;
+        return restaurantName ? Restaurant[restaurantName as keyof typeof Restaurant] : null;
     }
 
     /**

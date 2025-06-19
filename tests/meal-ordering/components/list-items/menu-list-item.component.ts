@@ -2,6 +2,7 @@ import {MenuMeal} from '@meal-models/meal-ordering.types';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {Restaurant, MealType} from '@meal-models/meal-ordering.types';
 
 export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
@@ -17,11 +18,11 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
      * Get the restaurant name for this meal
      */
-    async getRestaurantName(): Promise<string> {
+    async getRestaurantName(): Promise<Restaurant | null> {
         const text = await this.itemLocator
             .getByTestId(MEAL_SELECTORS.MENU_ITEM.RESTAURANT_NAME)
             .textContent();
-        return this.normalizeText(text);
+        return text ? Restaurant[text as keyof typeof Restaurant] : null;
     }
 
     /**
@@ -57,12 +58,12 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
      * Get the food type from the icon (e.g., "Polévka", "Hlavní chod")
      */
-    async getMealType(): Promise<string> {
+    async getMealType(): Promise<MealType | null> {
         const foodIcon = this.itemLocator.getByTestId(
             MEAL_SELECTORS.MENU_ITEM.MEAL_TYPE_ICON
         );
         const text = await foodIcon.getAttribute('aria-label');
-        return this.normalizeText(text);
+        return text ? MealType[text as keyof typeof MealType] : null;
     }
 
     /**
