@@ -1,4 +1,4 @@
-.PHONY: sync sync-dry show-trace copy-trace trace
+.PHONY: sync sync-dry show-trace copy-trace trace lint
 
 # Regular sync (actual sync)
 sync:
@@ -33,6 +33,11 @@ copy-trace:
 	cp -v "$$SELECTED_TRACE" "$$LOCAL_DIR/"; \
 	echo "✅ Trace copied to $$LOCAL_DIR/$$(basename "$$SELECTED_TRACE")"; \
 	echo "Run 'make show-trace' to view the trace"
+
+# Run TypeScript type checking
+lint:
+	@echo "🔍 Running TypeScript type checking..."
+	@npx tsc --noEmit
 
 # Show a Playwright trace
 # Usage: make show-trace
