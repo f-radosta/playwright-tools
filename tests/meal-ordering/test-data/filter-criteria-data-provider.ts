@@ -1,9 +1,6 @@
 import {
-    Restaurant,
-    MealType,
     OrderDTO,
-    OrdersWithFiltersDTO,
-    OrderWithFilterCriteriaDTO,
+    OrdersWithFilterCriteriaDTO,
     FilterCriteriaCombinationDTO
 } from '../models/meal-ordering.types';
 
@@ -122,13 +119,13 @@ const generateFilterForMealRow = (
  */
 export const generateFiltersForOrder = (
     order: OrderDTO
-): OrdersWithFiltersDTO => {
+): OrdersWithFilterCriteriaDTO => {
     const filterTypes: Array<'none' | 'all' | 'mixed'> = [
         'none',
         'all',
         'mixed'
     ];
-    const ordersWithFilters: OrderWithFilterCriteriaDTO = {};
+    const ordersWithFilters: OrdersWithFilterCriteriaDTO = {};
 
     // Process each meal row in the order
     order.mealRows.forEach((mealRow, index) => {
@@ -145,10 +142,7 @@ export const generateFiltersForOrder = (
         };
     });
 
-    return {
-        ordersWithFilters,
-        totalOrderPrice: order.totalOrderPrice
-    };
+    return ordersWithFilters;
 };
 
 // Export the main function as default

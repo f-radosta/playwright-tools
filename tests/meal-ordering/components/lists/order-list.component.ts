@@ -4,6 +4,7 @@ import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 import {BaseListComponent} from '@shared-components/base-list.component';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {OrderListItem} from '@meal-components/index';
+import {normalizeText} from '@shared-helpers/shared-helper';
 
 export class OrderList
     extends BaseListComponent<OrderListItem>
@@ -57,7 +58,8 @@ export class OrderList
      */
     public async getTotalPrice(): Promise<string> {
         const totalPriceLocator = this.listLocator.getByTestId(MEAL_SELECTORS.PAGE.ORDER_SUMMARY_TOTAL_PRICE);
-        return (await totalPriceLocator.textContent()) || '';
+        const text = (await totalPriceLocator.textContent()) || '';
+        return normalizeText(text);
     }
 
     /**

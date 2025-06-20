@@ -60,7 +60,7 @@ export type TodayMealInfo = {
 
 export enum Restaurant {
     Internal = 'Interní restaurace',
-    External = 'Externí restaurace',
+    Internal2 = 'eŠlichta',
     Tommys = "Tommy's"
 }
 
@@ -81,8 +81,8 @@ export type MealRowDTO = {
     name?: string;
     quantity: number;
     restaurantName: Restaurant;
-    pricePerUnit: string;
-    totalRowPrice: string;
+    pricePerUnit?: string;
+    totalRowPrice?: string;
     mealType: MealType;
     mealTime?: MealTime;
     note?: string;
@@ -91,7 +91,7 @@ export type MealRowDTO = {
 
 export type OrderDTO = {
     mealRows: MealRowDTO[];
-    totalOrderPrice: string;
+    totalOrderPrice?: string;
 };
 
 export type FilterCriteriaCombinationDTO = {
@@ -109,14 +109,9 @@ export type FilterCriteriaCombinationDTO = {
  * The key is the meal row identifier (can be a simple index or a unique identifier)
  * The value is an object containing both the meal row and its filter criteria
  */
-export type OrderWithFilterCriteriaDTO = {
+export type OrdersWithFilterCriteriaDTO = {
     [key: string]: {
         mealRow: MealRowDTO;
         filterCriteria: FilterCriteriaCombinationDTO;
     };
-};
-
-export type OrdersWithFiltersDTO = {
-    ordersWithFilters: OrderWithFilterCriteriaDTO;
-    totalOrderPrice: string;
 };

@@ -131,7 +131,6 @@ export class DailyMenuList
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
         
-        console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
         debugLog('Today date:', today, 'Day:', today.getDate(), 'Month:', today.getMonth() + 1);
         
         // Compare only the date components (year, month, day)
@@ -155,7 +154,6 @@ export class DailyMenuList
         const today = new Date();
         const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 12, 0, 0);
         
-        console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
         debugLog('Tomorrow date:', tomorrow, 'Day:', tomorrow.getDate(), 'Month:', tomorrow.getMonth() + 1);
         
         // Compare only the date components (year, month, day)
@@ -179,7 +177,6 @@ export class DailyMenuList
         const now = new Date();
         const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12, 0, 0);
         
-        console.log('List date:', date, 'Day:', date.getDate(), 'Month:', date.getMonth() + 1);
         debugLog('Yesterday date:', yesterday, 'Day:', yesterday.getDate(), 'Month:', yesterday.getMonth() + 1);
         
         // Compare only the date components (year, month, day)

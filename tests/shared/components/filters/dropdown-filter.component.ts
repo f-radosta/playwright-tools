@@ -78,7 +78,6 @@ export class DropdownFilterComponent implements SingleFilterInterface {
      */
     private async trySelectExactMatch(
         options: Locator,
-        spinner: Locator,
         optionText: string
     ): Promise<boolean> {
         const count = await options.count();
@@ -90,7 +89,6 @@ export class DropdownFilterComponent implements SingleFilterInterface {
             const trimmedText = text.trim();
 
             if (trimmedText.toLowerCase() === trimmedOptionText.toLowerCase()) {
-                await this.waitForSpinner(spinner);
                 await option.click();
                 return true;
             }
@@ -101,18 +99,13 @@ export class DropdownFilterComponent implements SingleFilterInterface {
     /**
      * Selects the first partial match for the option text
      * @param optionText Text to search for
-     * @param spinner Spinner locator
      */
-    private async selectPartialMatch(
-        optionText: string,
-        spinner: Locator
-    ): Promise<void> {
+    private async selectPartialMatch(optionText: string): Promise<void> {
         const partialOption = this.dropdownLocator
             .locator(`div.option:has-text("${optionText}")`)
             .first();
 
         await partialOption.waitFor({state: 'visible'});
-        await this.waitForSpinner(spinner);
         await partialOption.click();
     }
 
@@ -135,13 +128,12 @@ export class DropdownFilterComponent implements SingleFilterInterface {
 
         const exactMatchFound = await this.trySelectExactMatch(
             options,
-            spinner,
             optionText
         );
 
         // If no exact match found, fall back to partial match
         if (!exactMatchFound) {
-            await this.selectPartialMatch(optionText, spinner);
+            await this.selectPartialMatch(optionText);
         }
     }
 }

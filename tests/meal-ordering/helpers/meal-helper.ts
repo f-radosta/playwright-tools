@@ -52,6 +52,8 @@ export async function navigateAndFilterMeals(
 ) {
     const currentMenuPage = await app.gotoCurrentMenu();
 
+    await app.page.reloadPage(); // prevents filters unexpected behavior
+
     await currentMenuPage.menuList.menuFilter.filter(filterCriteria);
 
     const menuLists = await currentMenuPage.menuList.getDailyMenuLists();
@@ -80,56 +82,143 @@ export async function navigateAndFilterMeals(
 }
 
 /**
- * Orders a meal based on the provided order details
- * @param meals Array of MenuMeal objects to order from
+ * Orders meals that match the provided order details
+ * @param availableMeals Array of MenuMeal objects to order from
  * @param orderDTO The order details including quantity, time slot, and note
  * @throws Will throw an error if the order cannot be placed
  */
-export async function selectAndOrderMeal(
-    meals: MenuMeal[],
+export async function selectAndOrderMeals(
+    availableMeals: MenuMeal[],
     orderDTO: OrderDTO
-): Promise<void> {
+): Promise<OrderDTO> {
     // Validate inputs
     expect(
-        meals.length,
+        availableMeals.length,
         'At least one meal should be available for ordering'
     ).toBeGreaterThan(0);
     expect(
         orderDTO.mealRows.length,
         'At least one meal row should be provided'
     ).toBeGreaterThan(0);
+    
+    // Process each meal row in the order
+    for (const orderRow of orderDTO.mealRows) {
+        // Get meal info for all available meals
+        const mealInfoPromises = availableMeals.map(async meal => {
+            const [name, restaurant, price, type] = await Promise.all([
+                meal.getMealName(),
+                meal.getRestaurantName(),
+                meal.getPricePerUnit(),
+                meal.getMealType()
+            ]);
+            return { meal, name, restaurant, price, type };
+        });
 
-    const meal = meals[0];
-    const orderRow = orderDTO.mealRows[0];
+        const mealInfoArray = await Promise.all(mealInfoPromises);
+        
+        // Try to find a meal that matches the orderRow
+        console.log(`Looking for meal from ${orderRow.restaurantName} of type ${orderRow.mealType}`);
+        
+        // Log available meals for debugging
+        console.log(`Found ${mealInfoArray.length} available meals:`);
+        mealInfoArray.forEach((info, idx) => {
+            console.log(`Meal ${idx + 1}: ${info.name} from ${info.restaurant} (${info.type})`);
+        });
+        
+        // Find meals that match the required properties from MealRowDTO
+        const matchingMeals = mealInfoArray.filter(info => {
+            // Restaurant is required to match
+            const restaurantMatches = info.restaurant === orderRow.restaurantName;
+            
+            // Match meal type if possible
+            let mealTypeMatches = true;
+            if (orderRow.mealType && info.type) {
+                mealTypeMatches = info.type.includes(orderRow.mealType.toString());
+            }
+            
+            const matches = restaurantMatches && mealTypeMatches;
+            console.log(`Meal ${info.name}: restaurant match: ${restaurantMatches}, type match: ${mealTypeMatches}, overall: ${matches}`);
+            return matches;
+        });
+        
+        // Get the first matching meal (if multiple match our criteria)
+        const matchingMeal = matchingMeals.length > 0 ? matchingMeals[0] : null;
+        console.log(`Found ${matchingMeals.length} matching meals in total`);
+        
+        if (!matchingMeal) {
+            throw new Error(
+                `Could not find a matching meal from ${orderRow.restaurantName} of type ${orderRow.mealType}. ` +
+                `Available meals: ${mealInfoArray.map(m => `${m.name} (${m.restaurant}, ${m.type})`).join(', ')}`
+            );
+        }
+        
+        // Update the meal name and price information in the orderRow
+        orderRow.name = matchingMeal.name || orderRow.name;
+        orderRow.pricePerUnit = matchingMeal.price || undefined;
+        
+        // Calculate and update total row price
+        if (orderRow.pricePerUnit && orderRow.quantity) {
+            // Parse number from price string (e.g., "20 Kč")
+            const priceValue = parseFloat(orderRow.pricePerUnit);
+            const totalValue = priceValue * orderRow.quantity;
+            
+            // Format total price with the same format (assuming "XX Kč" format)
+            const currencySuffix = orderRow.pricePerUnit.replace(/^[0-9.,\s]+/, '');
+            orderRow.totalRowPrice = `${totalValue} ${currencySuffix.trim()}`;
+        }
+        
+        console.log(`Found matching meal: ${matchingMeal.name} from ${matchingMeal.restaurant}`);
+        console.log(`Ordering meal: ${matchingMeal.name} (${matchingMeal.type}) for ${matchingMeal.price}`);
+        
+        // Place the order
+        await matchingMeal.meal.orderMeal(
+            orderRow.quantity,
+            orderRow.mealTime ? orderRow.mealTime.toString() : undefined,
+            orderRow.note
+        );
+        
+        // Verify the order was placed correctly
+        const orderedQuantity = await matchingMeal.meal.getMealQuantity();
+        expect(
+            orderedQuantity !== null,
+            `Ordered quantity should be available for ${matchingMeal.name}`
+        ).toBeTruthy();
+        
+        if (orderedQuantity !== null) {
+            expect(
+                orderedQuantity,
+                `Ordered quantity should match the requested quantity for ${matchingMeal.name}`
+            ).toBe(orderRow.quantity);
+        }
+    }
 
-    // Verify meal details before ordering
-    const [mealName, restaurantName, price, foodType] = await Promise.all([
-        meal.getMealName(),
-        meal.getRestaurantName(),
-        meal.getPricePerUnit(),
-        meal.getMealType()
-    ]);
+    // Calculate total order price based on all meal rows
+    let totalPrice = 0;
+    let currencySuffix = '';
 
-    expect(mealName, 'Meal name should be available').toBeTruthy();
-    expect(restaurantName, 'Restaurant name should be available').toBeTruthy();
-    expect(price, 'Price should be available').toBeTruthy();
-    expect(foodType, 'Food type should be available').toBeTruthy();
+    // Sum up all row prices
+    orderDTO.mealRows.forEach(row => {
+        if (row.totalRowPrice) {
+            // Extract numeric value for calculation 
+            const rowPrice = parseFloat(row.totalRowPrice);
+            totalPrice += rowPrice;
+            
+            // Get currency suffix from first available row
+            if (!currencySuffix) {
+                currencySuffix = row.totalRowPrice.replace(/^[0-9.,\s]+/, '').trim();
+            }
+        }
+    });
 
-    console.log(
-        `Ordering meal: ${mealName} from ${restaurantName} (${foodType}) for ${price}`
-    );
+    // Format total order price
+    if (totalPrice > 0) {
+        orderDTO.totalOrderPrice = `${totalPrice} ${currencySuffix}`;
+        console.log(`Total order price calculated: ${orderDTO.totalOrderPrice}`);
+    }
 
-    // Place the order
-    await meal.orderMeal(
-        orderRow.quantity,
-        orderRow.mealTime?.toString(),
-        orderRow.note
-    );
+    //detailed log of orderDTO
+    console.log('OrderDTO:', JSON.stringify(orderDTO, null, 2));
 
-    // Verify the order was placed correctly
-    const orderedQuantity = await meal.getMealQuantity();
-    expect(
-        orderedQuantity,
-        'Ordered quantity should match the requested quantity'
-    ).toBe(orderRow.quantity);
+    // All meal data has been updated
+    return orderDTO;
 }

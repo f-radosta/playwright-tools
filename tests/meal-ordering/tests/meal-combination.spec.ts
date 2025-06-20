@@ -1,12 +1,12 @@
 import {userTest} from '@auth/app-auth.fixture';
 import {AppFactory} from '@shared-pages/app.factory';
-import {allOrderCombinations} from '@meal/test-data/all-combinations-data-provider';
-import generateFiltersForOrder from '@meal/test-data/filter-criteria-data-provider';
-import {processMealOrder} from '@meal/testers/combination-meal-tester';
-import {cleanupMealOrders} from '@meal/testers/meal-tester';
+import {allOrderCombinations} from '@meal-test-data/all-combinations-data-provider';
+import {generateFiltersForOrder} from '@meal-test-data/filter-criteria-data-provider';
+import {processMealOrder, verifyCart, toOrderDTO} from '@meal-testers/combination-meal-tester';
+import {cleanupMealOrders} from '@meal-testers/meal-tester';
 
 const generateTestName = (orderIndex: number, mealCount: number): string => {
-    return `Meal combination ${orderIndex + 1}: ${mealCount} meal(s)`;
+    return `${orderIndex + 1}. -> ${mealCount} meal(s)`;
 };
 allOrderCombinations.forEach((order, index) => {
     userTest(
@@ -33,11 +33,46 @@ allOrderCombinations.forEach((order, index) => {
                     );
                 });
 
-                // Process the order with its filter criteria
-                await processMealOrder(app, ordersWithFilters);
+                // Log detailed order with filters information
+                console.log('\n=== Order with Filters ===');
+                //console.log(`Total Order Price: ${ordersWithFilters.totalOrderPrice} CZK`);
+                
+                // Log each meal row with its filter criteria
+                Object.entries(ordersWithFilters).forEach(([key, { mealRow, filterCriteria }]) => {
+                    console.log(`\nMeal ${key}:`);
+                    console.log('  Meal Details:');
+                    console.log(`    - Restaurant: ${mealRow.restaurantName}`);
+                    console.log(`    - Type: ${mealRow.mealType}`);
+                    console.log(`    - Quantity: ${mealRow.quantity}`);
+                    console.log(`    - Price per unit: ${mealRow.pricePerUnit} CZK`);
+                    console.log(`    - Total price: ${mealRow.totalRowPrice} CZK`);
+                    console.log(`    - Date: ${mealRow.date.toISOString().split('T')[0]}`);
+                    if (mealRow.note) console.log(`    - Note: ${mealRow.note}`);
+                    
+                    console.log('  Filter Criteria:');
+                    console.log(`    - Include Restaurant: ${filterCriteria.includeRestaurant}`);
+                    console.log(`    - Include Food Type: ${filterCriteria.includeFoodType}`);
+                    console.log(`    - Include Date Range: ${filterCriteria.includeDateRange}`);
+                    if (filterCriteria.includeRestaurant) console.log(`    - Restaurant: ${filterCriteria.restaurant}`);
+                    if (filterCriteria.includeFoodType) console.log(`    - Food Type: ${filterCriteria.foodType}`);
+                    if (filterCriteria.includeDateRange) {
+                        console.log(`    - Days to Include: ${filterCriteria.daysToInclude}`);
+                        console.log(`    - Start Offset: ${filterCriteria.startOffset}`);
+                    }
+                });
+                console.log('=========================\n');
+                
+                // Process the meal order and get the order details
+                const orderDTO = await processMealOrder(app, ordersWithFilters);
 
                 // Verify the process completed successfully
                 console.log('✅ All meals processed successfully');
+
+                // Verify the cart with the returned order data
+                await verifyCart(app, orderDTO);
+
+                // Cart verification completed successfully
+                console.log('✅ Cart verification completed successfully');
             } finally {
                 // Always run cleanup even if the test fails
                 console.log('\n🧹 Running post-test meal order cleanup...');

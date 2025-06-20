@@ -2,7 +2,8 @@ import {MenuMeal} from '@meal-models/meal-ordering.types';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
-import {Restaurant, MealType} from '@meal-models/meal-ordering.types';
+import { Restaurant, MealType } from '@meal-models/meal-ordering.types';
+import { getEnumValueByDisplayText } from '@shared-helpers/shared-helper';
 
 export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
@@ -22,7 +23,8 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         const text = await this.itemLocator
             .getByTestId(MEAL_SELECTORS.MENU_ITEM.RESTAURANT_NAME)
             .textContent();
-        return text ? Restaurant[text as keyof typeof Restaurant] : null;
+            
+        return getEnumValueByDisplayText(Restaurant, text);
     }
 
     /**
@@ -63,7 +65,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
             MEAL_SELECTORS.MENU_ITEM.MEAL_TYPE_ICON
         );
         const text = await foodIcon.getAttribute('aria-label');
-        return text ? MealType[text as keyof typeof MealType] : null;
+        return getEnumValueByDisplayText(MealType, text);
     }
 
     /**
@@ -198,38 +200,42 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
             MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
         );
 
-        // First try the standard selectOption approach
-        try {
-            await timeSelect.selectOption(timeValue);
-            return;
-        } catch (error) {
-            console.log(
-                'Standard selectOption failed, trying alternative approach'
-            );
-        }
+        // TODO fix
 
-        // If standard approach fails, try clicking the select and then the option
-        try {
-            // Click to open the dropdown
-            await timeSelect.click();
+        await timeSelect.selectOption(timeValue);
 
-            // Find and click the option with the matching value
-            const option = timeSelect.locator(`option[value="${timeValue}"]`);
-            await option.click();
-            return;
-        } catch (error) {
-            console.log(
-                'Alternative approach failed, trying direct option selection'
-            );
-        }
+        // // First try the standard selectOption approach
+        // try {
+        //     await timeSelect.selectOption(timeValue);
+        //     return;
+        // } catch (error) {
+        //     console.log(
+        //         'Standard selectOption failed, trying alternative approach'
+        //     );
+        // }
 
-        // If all else fails, try to set the value directly
-        await timeSelect.evaluate((element, value) => {
-            (element as HTMLSelectElement).value = value;
-            // Dispatch a change event to trigger any listeners
-            const event = new Event('change', {bubbles: true});
-            element.dispatchEvent(event);
-        }, timeValue);
+        // // If standard approach fails, try clicking the select and then the option
+        // try {
+        //     // Click to open the dropdown
+        //     await timeSelect.click();
+
+        //     // Find and click the option with the matching value
+        //     const option = timeSelect.locator(`option[value="${timeValue}"]`);
+        //     await option.click();
+        //     return;
+        // } catch (error) {
+        //     console.log(
+        //         'Alternative approach failed, trying direct option selection'
+        //     );
+        // }
+
+        // // If all else fails, try to set the value directly
+        // await timeSelect.evaluate((element, value) => {
+        //     (element as HTMLSelectElement).value = value;
+        //     // Dispatch a change event to trigger any listeners
+        //     const event = new Event('change', {bubbles: true});
+        //     element.dispatchEvent(event);
+        // }, timeValue);
     }
 
     /**

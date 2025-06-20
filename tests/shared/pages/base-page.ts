@@ -198,4 +198,11 @@ export class BasePage implements PageInterface {
         // Click on the monthly billing link
         await this.monthlyBillingLink().click();
     }
+
+    /**
+     * Reloads the current page
+     */
+    async reloadPage(): Promise<void> {
+        await this.page.reload();
+    }
 }

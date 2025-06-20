@@ -1,6 +1,7 @@
 import {Locator} from '@playwright/test';
 import {ListItemInterface} from '@shared-components/interfaces/list-item.interface';
 import {MealType, OrderListItem as OrderListItemInterface, Restaurant} from '@meal-models/meal-ordering.types';
+import { getEnumValueByDisplayText } from '@shared/helpers/shared-helper';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 
@@ -81,11 +82,11 @@ export class OrderListItem
     }
 
     public async getRestaurantName(): Promise<Restaurant | null> {
-        const restaurantLocator = this.dataRowLocator.getByTestId(
-            MEAL_SELECTORS.ORDER_ITEM.RESTAURANT_NAME
-        );
-        const text = (await restaurantLocator.textContent()) || '';
-        return text ? Restaurant[text as keyof typeof Restaurant] : null;
+        const text = await this.dataRowLocator
+            .getByTestId(MEAL_SELECTORS.ORDER_ITEM.RESTAURANT_NAME)
+            .textContent();
+
+        return getEnumValueByDisplayText(Restaurant, text);
     }
 
     /**
@@ -133,9 +134,11 @@ export class OrderListItem
     }
 
     public async getMealType(): Promise<MealType | null> {
-        const foodIcon = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_TYPE_ICON);
-        const text = (await foodIcon.getAttribute('aria-label')) || '';
-        return text ? MealType[text as keyof typeof MealType] : null;
+        const foodIcon = this.dataRowLocator.getByTestId(
+            MEAL_SELECTORS.ORDER_ITEM.MEAL_TYPE_ICON
+        );
+        const text = await foodIcon.getAttribute('aria-label');
+        return getEnumValueByDisplayText(MealType, text);
     }
 
     /**

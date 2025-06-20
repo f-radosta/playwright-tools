@@ -60,22 +60,26 @@ const generateMealRows = (): MealRowDTO[] => {
         console.log(`DEBUG: Dates count: ${dates.length}`);
     }
 
-    // Map combinations to MealRowDTO objects with whole number prices
     const result = combinations.map(
         ([quantity, restaurantName, mealType, mealTime, note, date]) => {
-            const pricePerUnit = Math.floor(Math.random() * 200 + 50); // 50-250 CZK
-            const totalRowPrice = pricePerUnit * quantity;
 
-            return {
+            // Create base meal row without mealTime
+            const mealRow: Omit<MealRowDTO, 'mealTime'> & { mealTime?: MealTime } = {
                 quantity,
                 restaurantName,
-                pricePerUnit: pricePerUnit.toString(),
-                totalRowPrice: totalRowPrice.toString(),
+                pricePerUnit: undefined,
+                totalRowPrice: undefined,
                 mealType,
-                mealTime,
                 note: note || undefined,
                 date
             };
+
+            // Only add mealTime if restaurant is not Tommy's
+            if (restaurantName !== Restaurant.Tommys) {
+                mealRow.mealTime = mealTime;
+            }
+
+            return mealRow;
         }
     );
 
@@ -138,18 +142,7 @@ export const generateAllOrderCombinations = (): OrderDTO[] => {
 
     // Create orders from the samples
     for (const mealRows of samples) {
-        const totalOrderPrice = mealRows
-            .reduce(
-                (sum: number, row: MealRowDTO) =>
-                    sum + parseInt(row.totalRowPrice, 10),
-                0
-            )
-            .toString();
-
-        orders.push({
-            mealRows,
-            totalOrderPrice
-        });
+        orders.push({mealRows});
     }
 
     return orders;
@@ -165,7 +158,7 @@ generatedCombinations.forEach((order, index) => {
     console.log(
         `DEBUG: Order ${index + 1} has ${
             order.mealRows.length
-        } meals with total price ${order.totalOrderPrice}`
+        } meals`
     );
 });
 
