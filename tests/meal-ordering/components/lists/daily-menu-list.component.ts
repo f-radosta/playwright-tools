@@ -1,4 +1,5 @@
-import {Locator} from '@playwright/test';
+import { Locator } from '@playwright/test';
+import { log } from '@shared/utils/config';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 import {BaseListComponent} from '@shared-components/base-list.component';
 import {ListInterface} from '@shared-interfaces/list.interface';
@@ -10,7 +11,7 @@ const DEBUG = false;
 // Helper function for debug logging
 function debugLog(...args: any[]) {
     if (DEBUG) {
-        console.log(...args);
+        log(...args);
     }
 }
 

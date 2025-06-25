@@ -1,6 +1,7 @@
 import {userTest} from '@auth/app-auth.fixture';
 import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
+import { log } from '@shared/utils/config';
 import {
     getTestCases,
     MealOrderingTestCase
@@ -42,7 +43,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 const {success, filteredList} = result;
 
                 if (!success || !filteredList) {
-                    console.log('Failed to navigate and filter meals');
+                    log('Failed to navigate and filter meals');
                     return;
                 }
 
@@ -56,7 +57,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 );
 
                 if (!mealDetails.success) {
-                    console.log('Failed to select and order meal');
+                    log('Failed to select and order meal');
                     return;
                 }
 
@@ -106,7 +107,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                                 `Meal ${index + 1} should have a type`
                             ).toBeTruthy();
 
-                            console.log(
+                            log(
                                 `Verified meal ${index + 1}: ${
                                     meal.quantity
                                 }x ${meal.name} (${meal.type})`
@@ -114,7 +115,7 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                         });
 
                         // Comprehensive log of the verification
-                        console.log(`Verified Today's Meal card:
+                        log(`Verified Today's Meal card:
                           - Title: ${todayMealDetails.cardTitle}
                           - Restaurant: ${todayMealDetails.restaurantName}
                           - Time: ${todayMealDetails.mealTime}
@@ -125,10 +126,10 @@ testCases.forEach((testCase: MealOrderingTestCase) => {
                 }
             } finally {
                 // Always run cleanup even if the test fails
-                console.log('\n🧹 Running post-test meal order cleanup...');
+                log('\n🧹 Running post-test meal order cleanup...');
                 try {
                     await cleanupMealOrders(app);
-                    console.log('✅ Cleanup completed successfully');
+                    log('✅ Cleanup completed successfully');
                 } catch (error) {
                     console.error('❌ Cleanup failed:', error);
                 }

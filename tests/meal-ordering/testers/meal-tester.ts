@@ -1,4 +1,5 @@
 import {expect} from '@playwright/test';
+import { log } from '@shared/utils/config';
 import {AppFactory} from '@shared-pages/app.factory';
 import {MenuDTO} from '@meal-filters/menu-filter.component';
 import {
@@ -145,7 +146,7 @@ export async function selectAndOrderMeal(
         meal.getMealType()
     ]);
 
-    console.log(
+    log(
         `Ordering meal: ${mealName} from ${restaurantName} (${foodType}) for ${price}`
     );
 
@@ -177,7 +178,7 @@ export async function verifyCart(
         timeSlot?: string;
     }
 ) {
-    console.log('Navigating to meal order homepage to check cart...');
+    log('Navigating to meal order homepage to check cart...');
     const mealOrderHP = await app.gotoMealOrderHP();
 
     // Get cart items (convert component types to model types)
@@ -195,14 +196,14 @@ export async function verifyCart(
         const cartItemName = await cartItem.getMealName();
         const cartItemQuantity = await cartItem.getMealQuantity();
 
-        console.log(`Cart item name: "${cartItemName}"`);
-        console.log(`Meal name: "${mealDetails.mealName}"`);
-        console.log(`Cart item quantity: ${cartItemQuantity}`);
-        console.log(`Quantity: ${mealDetails.quantity}`);
+        log(`Cart item name: "${cartItemName}"`);
+        log(`Meal name: "${mealDetails.mealName}"`);
+        log(`Cart item quantity: ${cartItemQuantity}`);
+        log(`Quantity: ${mealDetails.quantity}`);
         const nameMatches = mealDetails.mealName === cartItemName;
         const quantityMatches = cartItemQuantity === mealDetails.quantity;
 
-        console.log(
+        log(
             `Name matches: ${nameMatches}, Quantity matches: ${quantityMatches}`
         );
 
@@ -211,8 +212,8 @@ export async function verifyCart(
 
             const cartItemRestaurant = await cartItem.getRestaurantName();
 
-            console.log(`Cart item restaurant: "${cartItemRestaurant}"`);
-            console.log(`Menu restaurant: "${mealDetails.restaurantName}"`);
+            log(`Cart item restaurant: "${cartItemRestaurant}"`);
+            log(`Menu restaurant: "${mealDetails.restaurantName}"`);
 
             expect(cartItemRestaurant).toBe(mealDetails.restaurantName);
 
@@ -220,7 +221,7 @@ export async function verifyCart(
             if (mealDetails.timeSlot) {
                 const cartItemTime = await cartItem.getMealTime();
                 expect(cartItemTime).toBe(mealDetails.timeSlot);
-                console.log(`Verified time slot: ${cartItemTime}`);
+                log(`Verified time slot: ${cartItemTime}`);
             }
 
             const hasNote = await cartItem.hasNote();
@@ -239,7 +240,7 @@ export async function verifyCart(
             const totalPrice = await cartItem.getTotalPrice();
             expect(totalPrice).toBeTruthy();
 
-            console.log(
+            log(
                 `Found ordered meal in cart: ${cartItemName} x${cartItemQuantity}`
             );
             break;
@@ -253,10 +254,10 @@ export async function verifyCart(
 
     const cartTotalPrice = await mealOrderHP.cartList.getTotalPrice();
     expect(cartTotalPrice).toContain('Kč');
-    console.log(`Cart total price: ${cartTotalPrice}`);
-    console.log('Checking ordered-unbilled list...');
+    log(`Cart total price: ${cartTotalPrice}`);
+    log('Checking ordered-unbilled list...');
     const orderedItems = await mealOrderHP.orderedUnbilledList.getItems();
-    console.log(
+    log(
         `Found ${orderedItems.length} items in the ordered-unbilled list`
     );
 
@@ -314,14 +315,14 @@ export async function verifyTodayMeal(
 
     const cardTitle = await todayMealCard.getTitle();
     expect(cardTitle, "Today's meal card title should be present").toBeTruthy();
-    console.log(`Card title: ${cardTitle}`);
+    log(`Card title: ${cardTitle}`);
 
     const mealRows = await todayMealCard.getMealRows();
     expect(
         mealRows.length,
         'Card should have at least one meal'
     ).toBeGreaterThan(0);
-    console.log(`Found ${mealRows.length} meals on the card`);
+    log(`Found ${mealRows.length} meals on the card`);
 
     const meals = [];
     for (let i = 0; i < mealRows.length; i++) {
@@ -340,7 +341,7 @@ export async function verifyTodayMeal(
             `Meal type should be present for meal at index ${i}`
         ).toBeTruthy();
 
-        console.log(
+        log(
             `Meal ${i + 1}: ${mealData.quantity}x ${mealData.name} (${
                 mealData.type
             })`
@@ -385,12 +386,12 @@ export async function verifyTodayMeal(
     expect(restaurantName, 'Restaurant name should be present').toBeTruthy();
     expect(mealTime, 'Meal time should be present').toBeTruthy();
     expect(mealPrice, 'Meal price should be present').toBeTruthy();
-    console.log(`Restaurant: ${restaurantName}`);
-    console.log(`Meal time: ${mealTime}`);
-    console.log(`Meal price: ${mealPrice}`);
+    log(`Restaurant: ${restaurantName}`);
+    log(`Meal time: ${mealTime}`);
+    log(`Meal price: ${mealPrice}`);
 
     if (hasNote && noteText) {
-        console.log(`Note: ${noteText}`);
+        log(`Note: ${noteText}`);
     }
     return {
         ...defaultResult,

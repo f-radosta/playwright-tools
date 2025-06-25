@@ -1,4 +1,5 @@
 import {expect} from '@playwright/test';
+import { log } from '@shared/utils/config';
 import {AppFactory} from '@shared-pages/app.factory';
 import type {
     OrderDTO,
@@ -125,7 +126,7 @@ export async function verifyCart(
     app: AppFactory,
     order: OrderDTO
 ): Promise<void> {
-    console.log('Navigating to meal order homepage to verify cart...');
+    log('Navigating to meal order homepage to verify cart...');
     const mealOrderHP = await app.gotoMealOrderHP();
 
     // Get cart items (convert component types to model types)
@@ -136,8 +137,8 @@ export async function verifyCart(
     // Count unique meal names in both cart and order
     const uniqueCartNames = new Set(await Promise.all(cartItems.map(item => item.getMealName())));
     const uniqueOrderNames = new Set(order.mealRows.map(row => row.name));
-    console.log('DEBUG - Unique meal names in cart:', Array.from(uniqueCartNames));
-    console.log('DEBUG - Unique meal names in order:', Array.from(uniqueOrderNames));
+    log('DEBUG - Unique meal names in cart:', Array.from(uniqueCartNames));
+    log('DEBUG - Unique meal names in order:', Array.from(uniqueOrderNames));
     expect(
         uniqueCartNames.size,
         `Expected ${uniqueOrderNames.size} unique meal names in cart, found ${uniqueCartNames.size}`
@@ -221,7 +222,7 @@ export async function verifyCart(
             `Verify total price for ${mealRow.name}`
         ).toContain(mealRow.totalRowPrice);
 
-        console.log(
+        log(
             `✓ Verified meal in cart: ${mealRow.name} x${mealRow.quantity}`
         );
     }
@@ -232,11 +233,11 @@ export async function verifyCart(
     expect(cartTotalPrice, 'Verify cart total price').toContain(
         order.totalOrderPrice
     );
-    console.log(`✓ Verified cart total price: ${cartTotalPrice}`);
+    log(`✓ Verified cart total price: ${cartTotalPrice}`);
 
     // Log ordered-unbilled list status for reference
     const orderedItems = await mealOrderHP.orderedUnbilledList.getItems();
-    console.log(
+    log(
         `Found ${orderedItems.length} items in the ordered-unbilled list`
     );
 }

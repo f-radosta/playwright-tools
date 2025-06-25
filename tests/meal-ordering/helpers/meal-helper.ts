@@ -2,6 +2,7 @@
 // Ensures we pick nth match for each meal type/restaurant combo
 export const matchCounters: Record<string, number> = {};
 
+import { log } from '@shared/utils/config';
 import {
     FilterCriteriaCombinationDTO,
     MenuMeal,
@@ -108,7 +109,7 @@ export async function selectAndOrderMeals(
     // Get all available meals for the current page
     const menuMeals = availableMeals;
 
-    console.log(`DEBUG - Total meals found: ${menuMeals.length}`);
+    log(`DEBUG - Total meals found: ${menuMeals.length}`);
     
     // Process each meal row in the order
     for (const orderRow of orderDTO.mealRows) {
@@ -121,7 +122,7 @@ export async function selectAndOrderMeals(
         };
         
         if (!selectedMeal) {
-            console.log('DEBUG - Position-based lookup failed, trying criteria matching');
+            log('DEBUG - Position-based lookup failed, trying criteria matching');
             
             // Find by restaurant and meal type criteria
             const matchingMeals = await Promise.all(
@@ -143,8 +144,8 @@ export async function selectAndOrderMeals(
             );
 
             // Pick the nth match, where n is the current order index
-            console.log(`DEBUG - Found ${matches.length} matches for ${orderRow.restaurantName} ${orderRow.mealType}`);
-            console.log(`DEBUG - Order index: ${orderDTO.mealRows.indexOf(orderRow)}`);
+            log(`DEBUG - Found ${matches.length} matches for ${orderRow.restaurantName} ${orderRow.mealType}`);
+            log(`DEBUG - Order index: ${orderDTO.mealRows.indexOf(orderRow)}`);
             
             const matchKey = `${orderRow.restaurantName}|${orderRow.mealType}`;
             if (!(matchKey in matchCounters)) {
@@ -155,7 +156,7 @@ export async function selectAndOrderMeals(
 
             const match = matches[matchIndex];
             if (match) {
-                console.log(`DEBUG - Found meal by criteria: ${match.name} from ${match.restaurant} [index ${matchIndex}]`);
+                log(`DEBUG - Found meal by criteria: ${match.name} from ${match.restaurant} [index ${matchIndex}]`);
                 selectedMeal = match.meal;
             }
         }
@@ -168,11 +169,11 @@ export async function selectAndOrderMeals(
             mealInfo.type = await selectedMeal.getMealType() || '';
             mealInfo.price = await selectedMeal.getPricePerUnit() || '';
             
-            console.log(`DEBUG - Selected meal: ${mealInfo.name} from ${mealInfo.restaurant} (${mealInfo.type})`);
+            log(`DEBUG - Selected meal: ${mealInfo.name} from ${mealInfo.restaurant} (${mealInfo.type})`);
             
             // Show locator for debugging
             const locator = selectedMeal.toString();
-            console.log(`DEBUG - Selected meal locator: ${locator}`);
+            log(`DEBUG - Selected meal locator: ${locator}`);
             
         }
         
@@ -199,8 +200,8 @@ export async function selectAndOrderMeals(
             orderRow.totalRowPrice = `${totalValue} ${currencySuffix.trim()}`;
         }
         
-        console.log(`Found matching meal: ${mealInfo.name} from ${mealInfo.restaurant}`);
-        console.log(`Ordering meal: ${mealInfo.name} (${mealInfo.type}) for ${mealInfo.price}`);
+        log(`Found matching meal: ${mealInfo.name} from ${mealInfo.restaurant}`);
+        log(`Ordering meal: ${mealInfo.name} (${mealInfo.type}) for ${mealInfo.price}`);
         
         // Place the order
         await selectedMeal.orderMeal(
@@ -245,11 +246,11 @@ export async function selectAndOrderMeals(
     // Format total order price
     if (totalPrice > 0) {
         orderDTO.totalOrderPrice = `${totalPrice} ${currencySuffix}`;
-        console.log(`Total order price calculated: ${orderDTO.totalOrderPrice}`);
+        log(`Total order price calculated: ${orderDTO.totalOrderPrice}`);
     }
 
     //detailed log of orderDTO
-    console.log('OrderDTO:', JSON.stringify(orderDTO, null, 2));
+    log('OrderDTO:', JSON.stringify(orderDTO, null, 2));
 
     // All meal data has been updated
     return orderDTO;

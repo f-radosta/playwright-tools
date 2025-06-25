@@ -1,6 +1,7 @@
 import {userTest} from '@auth/app-auth.fixture';
 import {AppFactory} from '@shared-pages/app.factory';
 import {expect} from '@playwright/test';
+import {log} from '@shared/utils/config';
 import {TrainingTestCase} from '@training-models/training.types';
 import {getTestCases} from '@training-test-data/training-test-data';
 import {
@@ -21,7 +22,7 @@ testCases.forEach((testCase: TrainingTestCase) => {
         );
 
         if (!success) {
-            console.log('Failed to navigate and filter trainings');
+            log('Failed to navigate and filter trainings');
             return;
         }
 

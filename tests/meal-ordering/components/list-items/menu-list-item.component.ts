@@ -1,3 +1,5 @@
+import { Locator } from '@playwright/test';
+import { log } from '@shared/utils/config';
 import {MenuMeal} from '@meal-models/meal-ordering.types';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
@@ -27,7 +29,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
                     }
                 }
             } catch (e) {
-                console.log(`DEBUG - Error determining list index: ${e}`);
+                log(`DEBUG - Error determining list index: ${e}`);
             }
             
             // Try to get date label
@@ -36,7 +38,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
                 const dateLocator = parentList.getByTestId('date-label');
                 dateText = await dateLocator.textContent() || 'no date';
             } catch (e) {
-                console.log(`DEBUG - Error getting date text: ${e}`);
+                log(`DEBUG - Error getting date text: ${e}`);
             }
             
             return `List ${listIndex} (${dateText}), testId: ${listId}`;
@@ -234,8 +236,8 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * @param timeValue The value of the time slot to select (e.g., "1100", "1130")
      */
     async selectTimeSlot(timeValue: string): Promise<void> {
-        console.log(`DEBUG - selectTimeSlot called with value: ${timeValue}`);
-        console.log(`DEBUG - Item locator in selectTimeSlot: ${await this.itemLocator.toString()}`);
+        log(`DEBUG - selectTimeSlot called with value: ${timeValue}`);
+        log(`DEBUG - Item locator in selectTimeSlot: ${await this.itemLocator.toString()}`);
         
         const timeSelect = this.itemLocator.getByTestId(
             MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
@@ -322,7 +324,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
                 {timeout: 5000}
             )
             .catch(() => {
-                console.log(
+                log(
                     'Could not verify modal display style, continuing anyway'
                 );
             });

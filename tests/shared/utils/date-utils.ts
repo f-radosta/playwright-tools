@@ -2,6 +2,8 @@
  * Date utilities for parsing and formatting dates from UI elements
  */
 
+import { log } from '@shared/utils/config';
+
 /**
  * Interface for parsed date and time information
  */
@@ -166,7 +168,7 @@ function parseSingleDayTwoLines(
  */
 function parseSingleDayOneLine(dateText: string): ParsedDateTimeInfo {
     try {
-        console.log(
+        log(
             'Attempting to parse single-day one-line format:',
             dateText
         );
@@ -190,7 +192,7 @@ function parseSingleDayOneLine(dateText: string): ParsedDateTimeInfo {
             const startTime = `${startHour}:${startMinute}`;
             const endTime = `${endHour}:${endMinute}`;
 
-            console.log('Parsed date components:', {
+            log('Parsed date components:', {
                 day,
                 month,
                 year,
@@ -225,7 +227,7 @@ function parseSingleDayOneLine(dateText: string): ParsedDateTimeInfo {
         }
 
         // If regex failed, try a simpler split approach
-        console.log('Regex failed, trying split approach');
+        log('Regex failed, trying split approach');
         const parts = dateText.split(' ');
 
         // Filter out empty parts and clean up periods from date parts
@@ -263,7 +265,7 @@ function parseSingleDayOneLine(dateText: string): ParsedDateTimeInfo {
                 .split(':')
                 .map(n => parseInt(n, 10));
 
-            console.log('Split approach parsed components:', {
+            log('Split approach parsed components:', {
                 day,
                 month,
                 year,

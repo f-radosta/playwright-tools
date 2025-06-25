@@ -1,4 +1,5 @@
 import {expect} from '@playwright/test';
+import {log} from '@shared/utils/config';
 import {AppFactory} from '@shared-pages/app.factory';
 import {
     NewTrainingFormDTO,
@@ -153,43 +154,43 @@ export async function verifyTrainingDetails(
             training.getDateTime()
         ]);
 
-        console.log('=== Training verification ===');
-        console.log(
+        log('=== Training verification ===');
+        log(
             `Name: Expected "${expectedTraining.name}" | Actual "${actualName}"`
         );
-        console.log(
+        log(
             `Category: Expected "${expectedTraining.category}" | Actual "${actualCategory}"`
         );
-        console.log(
+        log(
             `Trainer: Expected "${expectedTraining.trainer}" | Actual "${actualTrainer}"`
         );
-        console.log(
+        log(
             `Department: Expected "${expectedTraining.department}" | Actual "${actualDepartment}"`
         );
 
-        console.log('Date details:');
-        console.log(
+        log('Date details:');
+        log(
             `  Format: ${dateInfo.isSingleDay ? 'Single day' : 'Two days'}`
         );
-        console.log(
+        log(
             `  Start date: ${formatCzechDate(actualStartDate)} ${
                 dateInfo.startTime || ''
             }`
         );
-        console.log(
+        log(
             `  End date: ${formatCzechDate(actualEndDate)} ${
                 dateInfo.endTime || ''
             }`
         );
-        console.log(
+        log(
             `  Raw start date: ${actualStartDate?.toISOString() || 'N/A'}`
         );
-        console.log(
+        log(
             `  Raw end date: ${actualEndDate?.toISOString() || 'N/A'}`
         );
-        console.log(`  Capacity: ${capacity}`);
+        log(`  Capacity: ${capacity}`);
 
-        console.log(`  Raw date text from UI: "${rawDateText}"`);
+        log(`  Raw date text from UI: "${rawDateText}"`);
 
         expect(actualName).toBe(expectedTraining.name);
         expect(actualCategory).toBe(expectedTraining.category);

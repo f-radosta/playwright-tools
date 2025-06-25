@@ -1,3 +1,4 @@
+import { log } from '@shared/utils/config';
 import {
     Restaurant,
     MealType,
@@ -14,19 +15,19 @@ import {
 // Generate all possible meal rows
 const generateMealRows = (): MealRowDTO[] => {
     const quantities = [1, 2, 3] as const;
-    console.log(`DEBUG: Quantities: ${quantities.length}`);
+    log(`DEBUG: Quantities: ${quantities.length}`);
 
     const restaurants = getEnumValues(Restaurant);
-    console.log(`DEBUG: Restaurants: ${restaurants.length}`, restaurants);
+    log(`DEBUG: Restaurants: ${restaurants.length}`, restaurants);
 
     const mealTypes = getEnumValues(MealType);
-    console.log(`DEBUG: MealTypes: ${mealTypes.length}`, mealTypes);
+    log(`DEBUG: MealTypes: ${mealTypes.length}`, mealTypes);
 
     const mealTimes = getEnumValues(MealTime);
-    console.log(`DEBUG: MealTimes: ${mealTimes.length}`, mealTimes);
+    log(`DEBUG: MealTimes: ${mealTimes.length}`, mealTimes);
 
     const notes = ['', 'Do krabičky'] as const;
-    console.log(`DEBUG: Notes: ${notes.length}`);
+    log(`DEBUG: Notes: ${notes.length}`);
 
     // date -> tomorrow / the day after tomorrow / one week from now
     const dates = [
@@ -34,10 +35,10 @@ const generateMealRows = (): MealRowDTO[] => {
         new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     ];
-    console.log(`DEBUG: Dates: ${dates.length}`);
+    log(`DEBUG: Dates: ${dates.length}`);
 
     // Generate all combinations of meal row properties
-    console.log('DEBUG: About to generate combinations...');
+    log('DEBUG: About to generate combinations...');
     const combinations = combine(
         [...quantities],
         [...restaurants],
@@ -47,17 +48,17 @@ const generateMealRows = (): MealRowDTO[] => {
         [...dates]
     ) as [number, Restaurant, MealType, MealTime, string, Date][];
 
-    console.log(`DEBUG: Combinations generated: ${combinations.length}`);
+    log(`DEBUG: Combinations generated: ${combinations.length}`);
     if (combinations.length === 0) {
-        console.log(
+        log(
             'DEBUG: No combinations generated, checking inputs to combine function...'
         );
-        console.log(`DEBUG: Quantities count: ${quantities.length}`);
-        console.log(`DEBUG: Restaurants count: ${restaurants.length}`);
-        console.log(`DEBUG: MealTypes count: ${mealTypes.length}`);
-        console.log(`DEBUG: MealTimes count: ${mealTimes.length}`);
-        console.log(`DEBUG: Notes count: ${notes.length}`);
-        console.log(`DEBUG: Dates count: ${dates.length}`);
+        log(`DEBUG: Quantities count: ${quantities.length}`);
+        log(`DEBUG: Restaurants count: ${restaurants.length}`);
+        log(`DEBUG: MealTypes count: ${mealTypes.length}`);
+        log(`DEBUG: MealTimes count: ${mealTimes.length}`);
+        log(`DEBUG: Notes count: ${notes.length}`);
+        log(`DEBUG: Dates count: ${dates.length}`);
     }
 
     const result = combinations.map(
@@ -83,7 +84,7 @@ const generateMealRows = (): MealRowDTO[] => {
         }
     );
 
-    console.log(`DEBUG: Final meal rows generated: ${result.length}`);
+    log(`DEBUG: Final meal rows generated: ${result.length}`);
     return result;
 };
 
@@ -151,11 +152,11 @@ export const generateAllOrderCombinations = (): OrderDTO[] => {
 // Generate combinations and add debug info
 const generatedCombinations = generateAllOrderCombinations();
 
-console.log(
+log(
     `DEBUG: Generated ${generatedCombinations.length} order combinations`
 );
 generatedCombinations.forEach((order, index) => {
-    console.log(
+    log(
         `DEBUG: Order ${index + 1} has ${
             order.mealRows.length
         } meals`
