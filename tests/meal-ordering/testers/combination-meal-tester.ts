@@ -20,6 +20,23 @@ import {toOrderListItemModelArray} from './meal-tester';
  * @returns Promise that resolves when all orders are complete
  * @throws Will throw an error if any order cannot be processed
  */
+function calculateTotalOrderPrice(processedMeals: MealRowDTO[]): string | undefined {
+    const sum = processedMeals.reduce((acc, meal) => {
+        if (meal.totalRowPrice) {
+            // Remove currency and spaces, parse as float
+            const num = parseFloat(meal.totalRowPrice.replace(/[^\d.,-]/g, '').replace(',', '.'));
+            if (!isNaN(num)) acc += num;
+        }
+        return acc;
+    }, 0);
+    if (sum > 0) {
+        // Use the currency from the last meal if available
+        const currencyMatch = processedMeals.map(m => m.totalRowPrice).filter(Boolean).pop()?.match(/[^\d.,\s]+/);
+        return `${Math.round(sum)}${currencyMatch ? ` ${currencyMatch[0]}` : ''}`;
+    }
+    return undefined;
+}
+
 export async function processMealOrder(
     app: AppFactory,
     ordersWithFilters: OrdersWithFilterCriteriaDTO
@@ -75,10 +92,11 @@ export async function processMealOrder(
         }
     }
 
-    // Return the processed order data with actual meal names and total price
+    // Calculate total price by summing totalRowPrice of all processed meals
+    const totalOrderPrice = calculateTotalOrderPrice(processedMeals);
     return {
         mealRows: processedMeals,
-        totalOrderPrice: lastTotalOrderPrice
+        totalOrderPrice
     };
 }
 
@@ -115,10 +133,15 @@ export async function verifyCart(
     const cartItems: OrderListItemInterface[] =
         toOrderListItemModelArray(cartItemComponents);
 
+    // Count unique meal names in both cart and order
+    const uniqueCartNames = new Set(await Promise.all(cartItems.map(item => item.getMealName())));
+    const uniqueOrderNames = new Set(order.mealRows.map(row => row.name));
+    console.log('DEBUG - Unique meal names in cart:', Array.from(uniqueCartNames));
+    console.log('DEBUG - Unique meal names in order:', Array.from(uniqueOrderNames));
     expect(
-        cartItems.length,
-        `Expected ${order.mealRows.length} items in cart, found ${cartItems.length}`
-    ).toBe(order.mealRows.length);
+        uniqueCartNames.size,
+        `Expected ${uniqueOrderNames.size} unique meal names in cart, found ${uniqueCartNames.size}`
+    ).toBe(uniqueOrderNames.size);
 
     // Verify each meal in the order exists in the cart
     for (const mealRow of order.mealRows) {

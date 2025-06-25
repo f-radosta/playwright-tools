@@ -2,7 +2,7 @@ import {
     OrderDTO,
     OrdersWithFilterCriteriaDTO,
     FilterCriteriaCombinationDTO
-} from '../models/meal-ordering.types';
+} from '@meal-models/meal-ordering.types';
 
 /**
  * Generate appropriate filter criteria for a meal row

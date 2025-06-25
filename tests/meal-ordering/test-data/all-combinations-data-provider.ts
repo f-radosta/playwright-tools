@@ -71,7 +71,7 @@ const generateMealRows = (): MealRowDTO[] => {
                 totalRowPrice: undefined,
                 mealType,
                 note: note || undefined,
-                date
+                date // Date is included to distinguish otherwise identical meals on different days
             };
 
             // Only add mealTime if restaurant is not Tommy's

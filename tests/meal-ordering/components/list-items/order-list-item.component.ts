@@ -111,6 +111,12 @@ export class OrderListItem
         if (!(await this.hasNote())) {
             return null;
         }
+        const noteContainer = this.dataRowLocator.getByTestId(
+            MEAL_SELECTORS.ORDER_ITEM.NOTE.CONTAINER
+        );
+        // Get the value of data-bs-original-title attribute
+        const note = await noteContainer.getAttribute('data-bs-original-title');
+        return note || null;
 
         const noteLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.NOTE.TEXT);
         const text = (await noteLocator.textContent()) || '';

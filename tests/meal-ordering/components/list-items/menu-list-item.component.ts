@@ -3,9 +3,47 @@ import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 import { Restaurant, MealType } from '@meal-models/meal-ordering.types';
+import { DropdownFilterComponent, DropdownType } from '@shared/components/filters/dropdown-filter.component';
 import { getEnumValueByDisplayText } from '@shared-helpers/shared-helper';
 
 export class MenuListItem extends BaseMealComponent implements MenuMeal {
+    /**
+     * Get the list locator for this meal item
+     * This helper method is used for debugging purposes
+     */
+    async getListLocator(): Promise<string> {
+        try {
+            const parentList = this.itemLocator.locator('..').locator('..');
+            const listId = await parentList.getAttribute('data-testid');
+            let listIndex = 'unknown';
+            
+            // Try to determine the list index
+            try {
+                const allLists = await parentList.page().getByTestId('daily-menu-list').all();
+                for (let i = 0; i < allLists.length; i++) {
+                    if ((await allLists[i].innerHTML()) === (await parentList.innerHTML())) {
+                        listIndex = `${i+1}`;
+                        break;
+                    }
+                }
+            } catch (e) {
+                console.log(`DEBUG - Error determining list index: ${e}`);
+            }
+            
+            // Try to get date label
+            let dateText = 'unknown';
+            try {
+                const dateLocator = parentList.getByTestId('date-label');
+                dateText = await dateLocator.textContent() || 'no date';
+            } catch (e) {
+                console.log(`DEBUG - Error getting date text: ${e}`);
+            }
+            
+            return `List ${listIndex} (${dateText}), testId: ${listId}`;
+        } catch (e) {
+            return `Error getting list locator: ${e}`;
+        }
+    }
     /**
      * Get the name of the meal
      */
@@ -196,48 +234,26 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
      * @param timeValue The value of the time slot to select (e.g., "1100", "1130")
      */
     async selectTimeSlot(timeValue: string): Promise<void> {
+        console.log(`DEBUG - selectTimeSlot called with value: ${timeValue}`);
+        console.log(`DEBUG - Item locator in selectTimeSlot: ${await this.itemLocator.toString()}`);
+        
         const timeSelect = this.itemLocator.getByTestId(
             MEAL_SELECTORS.MENU_ITEM.TIME_SELECT
         );
 
-        // TODO fix
-
-        await timeSelect.selectOption(timeValue);
-
-        // // First try the standard selectOption approach
-        // try {
-        //     await timeSelect.selectOption(timeValue);
-        //     return;
-        // } catch (error) {
-        //     console.log(
-        //         'Standard selectOption failed, trying alternative approach'
-        //     );
-        // }
-
-        // // If standard approach fails, try clicking the select and then the option
-        // try {
-        //     // Click to open the dropdown
-        //     await timeSelect.click();
-
-        //     // Find and click the option with the matching value
-        //     const option = timeSelect.locator(`option[value="${timeValue}"]`);
-        //     await option.click();
-        //     return;
-        // } catch (error) {
-        //     console.log(
-        //         'Alternative approach failed, trying direct option selection'
-        //     );
-        // }
-
-        // // If all else fails, try to set the value directly
-        // await timeSelect.evaluate((element, value) => {
-        //     (element as HTMLSelectElement).value = value;
-        //     // Dispatch a change event to trigger any listeners
-        //     const event = new Event('change', {bubbles: true});
-        //     element.dispatchEvent(event);
-        // }, timeValue);
+        // Map the first time in the string to the select value (e.g., '11:00 - 11:30' -> '1100')
+        const valueToSelect = timeValue.split(' - ')[0].replace(':', '');
+        await timeSelect.selectOption(valueToSelect);
     }
 
+    /**
+     * Get available time slots
+     * @returns Array of objects with time slot value and text
+     */
+    toString(): string {
+        return this.itemLocator.toString();
+    }
+    
     /**
      * Get available time slots
      * @returns Array of objects with time slot value and text

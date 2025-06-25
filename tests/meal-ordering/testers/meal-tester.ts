@@ -271,44 +271,19 @@ export async function verifyCart(
  */
 export async function cleanupMealOrders(app: AppFactory): Promise<boolean> {
     try {
-        //console.log('Cleaning up meal orders...');
         const currentMenuPage = await app.gotoCurrentMenu();
 
-        //console.log('Resetting menu filters...');
         const emptyFilter: MenuDTO = {};
         await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
 
-        //console.log("Getting today's menu list...");
-        const todayList = await currentMenuPage.menuList.getTodayList();
-        if (todayList) {
-            const todayMeals = await todayList.getAvailableMeals();
-            // console.log(
-            //     `Found ${todayMeals.length} meals in today's list. Setting all quantities to 0...`
-            // );
-
-            for (const meal of todayMeals) {
-                const mealName = await meal.getMealName();
-                //console.log(`Setting quantity to 0 for "${mealName}"...`);
+        const allLists = await currentMenuPage.menuList.getDailyMenuLists();
+        for (const list of allLists) {
+            const meals = await list.getAvailableMeals();
+            for (const meal of meals) {
                 await meal.setQuantity(0);
             }
         }
 
-        //console.log("Getting tomorrow's menu list...");
-        const tomorrowList = await currentMenuPage.menuList.getTomorrowList();
-        if (tomorrowList) {
-            const tomorrowMeals = await tomorrowList.getAvailableMeals();
-            // console.log(
-            //     `Found ${tomorrowMeals.length} meals in tomorrow's list. Setting all quantities to 0...`
-            // );
-
-            for (const meal of tomorrowMeals) {
-                const mealName = await meal.getMealName();
-                //console.log(`Setting quantity to 0 for "${mealName}"...`);
-                await meal.setQuantity(0);
-            }
-        }
-
-        //console.log('Meal order cleanup completed successfully.');
         return true;
     } catch (error) {
         console.error('Failed to clean up meal orders:', error);
