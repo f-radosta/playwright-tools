@@ -42,6 +42,7 @@ export const MEAL_SELECTORS = {
         QUANTITY: 'order-meal-quantity',
         MEAL_NAME: 'order-meal-name',
         LIST_ITEM_DATE_ROW: 'list-item-date-row',
+        LIST_ITEM_MEAL_ROW: 'list-item-meal-row',
         TIME: 'order-time',
         TOTAL_PRICE: 'order-total-price',
         RESTAURANT_NAME: 'order-restaurant-name',

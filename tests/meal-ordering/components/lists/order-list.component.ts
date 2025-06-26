@@ -4,6 +4,7 @@ import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 import {BaseListComponent} from '@shared-components/base-list.component';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {OrderListItem} from '@meal-components/index';
+import {OrderMealListItem} from '@meal-components/list-items/order-meal-list-item.component';
 import {normalizeText} from '@shared-helpers/shared-helper';
 
 export class OrderList
@@ -51,6 +52,17 @@ export class OrderList
             throw new Error(`OrderListItem index out of range: ${index}`);
         }
         return items[index];
+    }
+
+    /**
+     * Get all meal items in the cart (each <tr data-test="list-item-meal-row">)
+     */
+    public async getAllMealItems(): Promise<OrderMealListItem[]> {
+        const mealRows = await this.listLocator
+            .getByTestId(SHARED_SELECTORS.LIST)
+            .getByTestId(MEAL_SELECTORS.ORDER_ITEM.LIST_ITEM_MEAL_ROW)
+            .all();
+        return mealRows.map(row => new OrderMealListItem(row));
     }
 
     /**

@@ -13,6 +13,7 @@ import {
     selectAndOrderMeals
 } from '@meal-helpers/meal-helper';
 import {toOrderListItemModelArray} from './meal-tester';
+import { OrderMealListItem } from '../components/list-items/order-meal-list-item.component';
 
 /**
  * Processes meal orders using the provided OrdersWithFiltersDTO which contains meal rows and their associated filter criteria
@@ -129,27 +130,25 @@ export async function verifyCart(
     log('Navigating to meal order homepage to verify cart...');
     const mealOrderHP = await app.gotoMealOrderHP();
 
-    // Get cart items (convert component types to model types)
-    const cartItemComponents = await mealOrderHP.cartList.getItems();
-    const cartItems: OrderListItemInterface[] =
-        toOrderListItemModelArray(cartItemComponents);
+    // Get all meal items in the cart (each meal row)
+    const cartMealItems: OrderMealListItem[] = await mealOrderHP.cartList.getAllMealItems();
 
-    // Count unique meal names in both cart and order
-    const uniqueCartNames = new Set(await Promise.all(cartItems.map(item => item.getMealName())));
-    const uniqueOrderNames = new Set(order.mealRows.map(row => row.name));
-    log('DEBUG - Unique meal names in cart:', Array.from(uniqueCartNames));
-    log('DEBUG - Unique meal names in order:', Array.from(uniqueOrderNames));
+    // Count meal names in both cart and order
+    const cartNames = await Promise.all(cartMealItems.map(item => item.getMealName()));
+    const orderNames = order.mealRows.map(row => row.name);
+    log('DEBUG - Meal names in cart:', cartNames);
+    log('DEBUG - Meal names in order:', orderNames);
     expect(
-        uniqueCartNames.size,
-        `Expected ${uniqueOrderNames.size} unique meal names in cart, found ${uniqueCartNames.size}`
-    ).toBe(uniqueOrderNames.size);
+        cartNames.length,
+        `Expected ${orderNames.length} meal names in cart, found ${cartNames.length}`
+    ).toBe(orderNames.length);
 
     // Verify each meal in the order exists in the cart
     for (const mealRow of order.mealRows) {
         let foundMeal = null;
         
         // for loop with await with an async callback
-        for (const cartItem of cartItems) {
+        for (const cartItem of cartMealItems) {
             const cartItemName = await cartItem.getMealName();
             const cartItemQuantity = await cartItem.getMealQuantity();
 

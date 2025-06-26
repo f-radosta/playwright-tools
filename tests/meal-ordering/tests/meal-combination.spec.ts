@@ -17,6 +17,14 @@ allOrderCombinations.forEach((order, index) => {
         )}`,
         async ({app}: {app: AppFactory}) => {
             try {
+                log('\n🧹 Running post-test meal order cleanup...');
+                try {
+                    await cleanupMealOrders(app);
+                    log('✅ Cleanup completed successfully');
+                } catch (error) {
+                    console.error('❌ Cleanup failed:', error);
+                }
+
                 // Generate filter criteria for each meal in the order
                 const ordersWithFilters = generateFiltersForOrder(order);
 
