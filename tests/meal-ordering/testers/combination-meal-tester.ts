@@ -12,7 +12,6 @@ import {
     convertToMenuDTO,
     selectAndOrderMeals
 } from '@meal-helpers/meal-helper';
-import {toOrderListItemModelArray} from './meal-tester';
 import { OrderMealListItem } from '../components/list-items/order-meal-list-item.component';
 
 /**

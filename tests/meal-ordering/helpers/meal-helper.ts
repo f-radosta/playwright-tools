@@ -12,8 +12,6 @@ import {MenuDTO} from '@meal-filters/menu-filter.component';
 import {generateDateRangeForDays} from '@shared-utils/date-utils';
 import {expect} from '@playwright/test';
 import {AppFactory} from '@shared-pages/app.factory';
-import {DailyMenuList} from '@meal-models/meal-ordering.types';
-import {MealListType} from '@meal-testers/meal-tester';
 
 /**
  * Converts FilterCriteriaCombination to MenuDTO for filtering meals
@@ -254,4 +252,33 @@ export async function selectAndOrderMeals(
 
     // All meal data has been updated
     return orderDTO;
+}
+
+
+/**
+ * Clean up meal orders by resetting filters and setting quantities to 0
+ * This ensures that tests don't leave behind orders that could affect other tests
+ * @param app The AppFactory instance
+ * @returns True if cleanup was successful, false otherwise
+ */
+export async function cleanupMealOrders(app: AppFactory): Promise<boolean> {
+    try {
+        const currentMenuPage = await app.gotoCurrentMenu();
+
+        const emptyFilter: MenuDTO = {};
+        await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
+
+        const allLists = await currentMenuPage.menuList.getDailyMenuLists();
+        for (const list of allLists) {
+            const meals = await list.getAvailableMeals();
+            for (const meal of meals) {
+                await meal.setQuantity(0);
+            }
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Failed to clean up meal orders:', error);
+        return false;
+    }
 }

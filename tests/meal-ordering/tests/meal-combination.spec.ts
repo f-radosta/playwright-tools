@@ -3,7 +3,7 @@ import {AppFactory} from '@shared-pages/app.factory';
 import {allOrderCombinations} from '@meal-test-data/all-combinations-data-provider';
 import {generateFiltersForOrder} from '@meal-test-data/filter-criteria-data-provider';
 import {processMealOrder, verifyCart, toOrderDTO} from '@meal-testers/combination-meal-tester';
-import {cleanupMealOrders} from '@meal-testers/meal-tester';
+import {cleanupMealOrders} from '@meal-helpers/meal-helper';
 import { log } from '@shared/utils/config';
 
 const generateTestName = (orderIndex: number, mealCount: number): string => {
