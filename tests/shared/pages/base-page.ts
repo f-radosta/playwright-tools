@@ -24,6 +24,8 @@ export class BasePage implements PageInterface {
         this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Aktuální menu'});
     readonly monthlyBillingLink = () =>
         this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Měsíční vyúčtování'});
+    readonly orderedMealsLink = () =>
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Objednaná jídla'});
 
     constructor(page: Page) {
         this.page = page;
@@ -197,6 +199,25 @@ export class BasePage implements PageInterface {
         
         // Click on the monthly billing link
         await this.monthlyBillingLink().click();
+    }
+
+    /**
+     * Navigate to Ordered Meals page through the menu
+     */
+    async navigateToOrderedMeals(): Promise<void> {
+        // Check if the ordered meals link is already visible
+        const isVisible = await this.orderedMealsLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_LUNCH).click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
+        // Click on the ordered meals link
+        await this.orderedMealsLink().click();
     }
 
     /**

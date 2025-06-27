@@ -10,27 +10,7 @@ export abstract class BaseMealComponent
     extends BaseListItemComponent
     implements BaseMeal
 {
-    /**
-     * Helper method to normalize text content by trimming whitespace and replacing multiple spaces with a single space
-     */
-    protected normalizeText(text: string | null): string {
-        if (text === null) return '';
-        return text.trim().replace(/\s+/g, ' ');
-    }
 
-    /**
-     * Helper to safely extract text content and normalize it
-     */
-    protected async safeGetText(locator: Locator): Promise<string | null> {
-        try {
-            const text = await locator.textContent();
-            if (text === null || text.trim() === '') return null;
-            return this.normalizeText(text);
-        } catch (error) {
-            console.error('Failed to get text content:', error);
-            return null;
-        }
-    }
 
     /**
      * Get the name of the meal

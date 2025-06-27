@@ -70,6 +70,16 @@ export abstract class BaseListComponent<
     }
 
     /**
+     * Delete all items in the list
+     */
+    async deleteAll(): Promise<void> {
+        const items = await this.getItems();
+        for (const item of items) {
+            await item.clickDelete();
+        }
+    }
+
+    /**
      * Get the count of items in the list
      */
     async getItemCount(): Promise<number> {

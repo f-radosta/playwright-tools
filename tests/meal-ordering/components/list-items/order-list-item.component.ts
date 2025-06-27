@@ -4,6 +4,7 @@ import {MealType, OrderListItem as OrderListItemInterface, Restaurant} from '@me
 import { getEnumValueByDisplayText } from '@shared/helpers/shared-helper';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
+import { normalizeText } from '@shared/helpers/shared-helper';
 
 export class OrderListItem
     extends BaseMealComponent
@@ -24,7 +25,7 @@ export class OrderListItem
      */
     public async getAllText(): Promise<string> {
         const text = (await this.itemLocator.textContent()) || '';
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     /**
@@ -51,7 +52,7 @@ export class OrderListItem
     public async getDate(): Promise<string> {
         const dateLocator = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.DATE);
         const text = (await dateLocator.textContent()) || '';
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     public async isToday(): Promise<boolean> {
@@ -78,7 +79,7 @@ export class OrderListItem
     public async getMealName(): Promise<string> {
         const nameLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.MEAL_NAME);
         const text = (await nameLocator.textContent()) || '';
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     public async getRestaurantName(): Promise<Restaurant | null> {
@@ -96,7 +97,7 @@ export class OrderListItem
     public async getMealTime(): Promise<string | null> {
         const timeLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.TIME);
         const text = (await timeLocator.textContent()) || '';
-        const normalizedText = this.normalizeText(text);
+        const normalizedText = normalizeText(text);
         return normalizedText || null;
     }
 
@@ -117,10 +118,6 @@ export class OrderListItem
         // Get the value of data-bs-original-title attribute
         const note = await noteContainer.getAttribute('data-bs-original-title');
         return note || null;
-
-        const noteLocator = this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.NOTE.TEXT);
-        const text = (await noteLocator.textContent()) || '';
-        return this.normalizeText(text);
     }
 
     public async getPricePerUnit(): Promise<string> {
@@ -128,14 +125,14 @@ export class OrderListItem
             MEAL_SELECTORS.ORDER_ITEM.PRICE_PER_UNIT
         );
         const text = (await priceLocator.textContent()) || '';
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     public async getTotalPrice(): Promise<string | null> {
         const totalPriceLocator =
             this.dataRowLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.TOTAL_PRICE);
         const text = (await totalPriceLocator.textContent()) || '';
-        const normalizedText = this.normalizeText(text);
+        const normalizedText = normalizeText(text);
         return normalizedText || null;
     }
 
@@ -154,7 +151,7 @@ export class OrderListItem
     public async getMealDate(): Promise<Date | null> {
         const dateLocator = this.itemLocator.getByTestId(MEAL_SELECTORS.ORDER_ITEM.DATE);
         const text = (await dateLocator.textContent()) || '';
-        const normalizedText = this.normalizeText(text);
+        const normalizedText = normalizeText(text);
 
         try {
             // Attempt to parse the date from the text

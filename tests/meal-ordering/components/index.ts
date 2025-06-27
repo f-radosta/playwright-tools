@@ -6,3 +6,6 @@ export * from '@meal-list-items/order-list-item.component';
 export * from '@meal-lists/composite-menu-list.component';
 export * from '@meal-lists/daily-menu-list.component';
 export * from '@meal-lists/order-list.component';
+export * from '@meal-list-items/ordered-meals-list-item.component';
+export * from '@meal-lists/ordered-meals-list.component';
+export * from '@meal-filters/ordered-meals-filter.component';

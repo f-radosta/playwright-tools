@@ -1,7 +1,7 @@
 import {Locator} from '@playwright/test';
 import {BaseListComponent} from '@shared-components/base-list.component';
 import {TrainingCompositeFilter, TrainingListItem} from '@training-components/index';
-import {findItemByName} from '@training-helpers/training-helper';
+import {findItemByName} from '@shared-helpers/shared-helper';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 

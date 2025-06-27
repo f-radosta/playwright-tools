@@ -115,3 +115,11 @@ export type OrdersWithFilterCriteriaDTO = {
         filterCriteria: FilterCriteriaCombinationDTO;
     };
 };
+
+export type OrderedMealsDTO = {
+    date: string;
+    userName: string;
+    mealName: string;
+    restaurantName: string;
+    quantity: number;
+};

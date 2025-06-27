@@ -6,7 +6,7 @@ import {
 } from '@training-components/index';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
-import {findItemByName} from '@training-helpers/training-helper';
+import {findItemByName} from '@shared-helpers/shared-helper';
 
 export class CategoriesList
     extends BaseListComponent<CategoryListItem>

@@ -1,12 +1,11 @@
-import { Locator } from '@playwright/test';
 import { log } from '@shared/utils/config';
 import {MenuMeal} from '@meal-models/meal-ordering.types';
 import {BaseMealComponent} from '@meal-base/base-meal.component';
 import {MEAL_SELECTORS} from '@meal-selectors/meals.selectors';
 import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
-import { Restaurant, MealType } from '@meal-models/meal-ordering.types';
-import { DropdownFilterComponent, DropdownType } from '@shared/components/filters/dropdown-filter.component';
-import { getEnumValueByDisplayText } from '@shared-helpers/shared-helper';
+import {Restaurant, MealType} from '@meal-models/meal-ordering.types';
+import {getEnumValueByDisplayText} from '@shared-helpers/shared-helper';
+import {normalizeText} from '@shared-helpers/shared-helper';
 
 export class MenuListItem extends BaseMealComponent implements MenuMeal {
     /**
@@ -53,7 +52,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         const text = await this.itemLocator
             .getByTestId(MEAL_SELECTORS.MENU_ITEM.FOOD_NAME)
             .textContent();
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     /**
@@ -77,7 +76,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         const text = await priceCell
             .getByTestId(SHARED_SELECTORS.LIST.ITEM.TEXT)
             .textContent();
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     /**
@@ -144,7 +143,7 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
         if ((await selectedOption.count()) === 0) return null;
 
         const text = (await selectedOption.textContent()) || '';
-        return this.normalizeText(text);
+        return normalizeText(text);
     }
 
     /**
@@ -179,12 +178,12 @@ export class MenuListItem extends BaseMealComponent implements MenuMeal {
             'data-bs-original-title'
         );
         if (tooltipText) {
-            return this.normalizeText(tooltipText);
+            return normalizeText(tooltipText);
         }
 
         // If no tooltip, try to get visible text (may be truncated)
         const visibleText = await noteIndicator.textContent();
-        return visibleText ? this.normalizeText(visibleText) : null;
+        return visibleText ? normalizeText(visibleText) : null;
     }
 
     /**

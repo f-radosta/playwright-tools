@@ -4,6 +4,7 @@ import {TrainingPage} from '@training-pages/training.page';
 import {BaseTrainingComponent} from '@training-components/base/base-training.component';
 import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
 import {parseDateTimes, ParsedDateTimeInfo} from '@shared-utils/date-utils';
+import {safeGetText} from '@shared-helpers/shared-helper';
 
 export class TrainingListItem
     extends BaseTrainingComponent
@@ -15,7 +16,7 @@ export class TrainingListItem
 
     private async getCellText(cellId: string): Promise<string | null> {
         const cell = this.itemLocator.getByTestId(cellId);
-        return this.safeGetText(cell);
+        return safeGetText(cell);
     }
 
     async getName(): Promise<string | null> {

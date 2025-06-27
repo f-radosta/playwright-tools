@@ -1,5 +1,6 @@
 import {Locator} from '@playwright/test';
 import {BaseMeal, MealType, Restaurant} from '@meal-models/meal-ordering.types';
+import { safeGetText } from '@shared/helpers/shared-helper';
 
 /**
  * Class representing the "Your Meal Today" card component
@@ -7,28 +8,6 @@ import {BaseMeal, MealType, Restaurant} from '@meal-models/meal-ordering.types';
  */
 export class TodayMealCard implements BaseMeal {
     constructor(private readonly rootLocator: Locator) {}
-
-    /**
-     * Helper method to normalize text content by trimming whitespace and replacing multiple spaces with a single space
-     */
-    protected normalizeText(text: string | null): string {
-        if (text === null) return '';
-        return text.trim().replace(/\s+/g, ' ');
-    }
-
-    /**
-     * Helper to safely extract text content and normalize it
-     */
-    protected async safeGetText(locator: Locator): Promise<string | null> {
-        try {
-            const text = await locator.textContent();
-            if (text === null || text.trim() === '') return null;
-            return this.normalizeText(text);
-        } catch (error) {
-            console.error('Failed to get text content:', error);
-            return null;
-        }
-    }
 
     /**
      * Gets the card title element
@@ -140,7 +119,7 @@ export class TodayMealCard implements BaseMeal {
         const timeLocator = mealRows[index].locator('[data-test="meal-time"]');
         if ((await timeLocator.count()) === 0) return null;
 
-        return this.safeGetText(timeLocator);
+        return safeGetText(timeLocator);
     }
 
     /**

@@ -48,12 +48,21 @@ export const MEAL_SELECTORS = {
         RESTAURANT_NAME: 'order-restaurant-name',
         PRICE_PER_UNIT: 'order-price-per-unit'
     },
+    ORDERED_ITEM: {
+        EDIT: 'order-edit',
+        DATE: 'order-date',
+        USER: 'order-user',
+        MEAL: 'order-meal',
+        RESTAURANT: 'order-company',
+        QUANTITY: 'order-quantity'
+    },
 
     XPATH_SELECTOR: {
         FILTER: {
             RESTAURANT: '//*[@id="food_menu_filter_company"]',
             FOOD_TYPE: '//*[@id="food_menu_filter_mealType"]',
-            DATE: '//*[@id="food_menu_filter_dateRange"]'
+            DATE: '//*[@id="food_menu_filter_dateRange"]',
+            USER: '//*[@id="order_item_filter_users"]'
         }
     }
 } as const;
