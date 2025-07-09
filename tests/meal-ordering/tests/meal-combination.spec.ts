@@ -2,7 +2,6 @@ import {adminTest, userTest} from '@auth/app-auth.fixture';
 import {AppFixtures} from '@shared/fixtures/app.fixture';
 import {AppFactory} from '@shared-pages/app.factory';
 import {test} from '@playwright/test';
-
 // Type for test functions that use both AppFactory and AppFixtures
 type TestFunction = (args: { app: AppFactory } & AppFixtures) => Promise<void>;
 import {allOrderCombinations} from '@meal-test-data/all-combinations-data-provider';
@@ -11,6 +10,8 @@ import {processMealOrder, verifyCart, toOrderDTO, OrderDTO} from '@meal-testers/
 import {cleanupMealOrders} from '@meal-helpers/meal-helper';
 import { log } from '@shared/utils/config';
 import { mergeOrders, verifyOrders } from '@meal/testers/ordered-meals-tester';
+import {restaurantOffers} from '@meal-test-data/restaurant-offers-data-provider';
+import {createOrUpdateRestaurantOffer} from '@meal-testers/restaurant-offers-tester';
 
 adminTest(
     'Pre-test meal ordering cleanup',
@@ -20,6 +21,16 @@ adminTest(
         log('✅ Cleanup completed successfully');
     }
 );
+
+for (const offer of restaurantOffers) {
+    adminTest(
+        `Create or update restaurant offer - ${offer.restaurantName}`,
+        async ({app}: {app: AppFactory} & AppFixtures) => {
+            // create or update an existing offer with the same name
+            await createOrUpdateRestaurantOffer(app, offer);
+        }
+    );
+}
 
 const generateTestName = (orderIndex: number, mealCount: number): string => {
     return `${orderIndex + 1}. -> ${mealCount} meal(s)`;

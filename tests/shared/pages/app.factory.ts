@@ -9,6 +9,7 @@ import {CurrentMenuPage} from '@meal-pages/current-menu.page';
 import {MonthlyBillingPage} from '@meal-pages/monthly-billing.page';
 import {MealOrderHPPage} from '@meal-pages/meal-order-hp.page';
 import {OrderedMealsPage} from '@meal-pages/ordered-meals.page';
+import { RestaurantOffersPage } from '@meal/pages/restaurant-offers-page';
 
 export class AppFactory {
     constructor(public readonly page: BasePage) {}
@@ -72,5 +73,12 @@ export class AppFactory {
             await this.page.navigateToOrderedMeals();
         }, requireRedirect);
         return new OrderedMealsPage(this.page.page);
+    }
+
+    async gotoRestaurantOffers(requireRedirect = true): Promise<RestaurantOffersPage> {
+        await this.page.navigateAndWait(async () => {
+            await this.page.navigateToRestaurantOffers();
+        }, requireRedirect);
+        return new RestaurantOffersPage(this.page.page);
     }
 }

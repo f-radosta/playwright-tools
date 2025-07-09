@@ -399,6 +399,23 @@ export function generateDateRangeForDays(
 }
 
 /**
+ * Generate a one-month date range starting from today
+ * @returns A formatted date range string in the format 'DD.MM.YYYY - DD.MM.YYYY' for a one-month period
+ */
+export function generateOneMonthDateRange(): string {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 1);
+    
+    // Handle the case where the target month has fewer days than the current month
+    if (endDate.getDate() < startDate.getDate()) {
+        endDate.setDate(0); // Set to last day of previous month
+    }
+    
+    return generateDateRangeString(startDate, endDate);
+}
+
+/**
  * Generate a date range string for only tomorrow
  * @returns A formatted date range for tomorrow only
  */

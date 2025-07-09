@@ -67,7 +67,10 @@ export enum Restaurant {
 export enum MealType {
     MainCourse = 'Hlavní chod',
     Dessert = 'Dezert',
-    Soup = 'Polévka'
+    Soup = 'Polévka',
+    Breakfast = 'Snídaně',
+    Snack = 'Svačina',
+    Salad = 'Salát'
 }
 
 export enum MealTime {
@@ -123,3 +126,39 @@ export type OrderedMealsDTO = {
     restaurantName: string;
     quantity: number;
 };
+
+export enum OrderDispatchFrequency {
+    OneTime = 'Odeslání jednorázově',
+    Daily = 'Odeslání každý den',
+    Weekly = 'Odeslání týdně',
+    EbranaCanteen = 'eBRÁNA jídelna'
+}
+
+export type DayOfWeek = 
+    | 'Pondělí'
+    | 'Úterý'
+    | 'Středa'
+    | 'Čtvrtek'
+    | 'Pátek'
+    | 'Sobota'
+    | 'Neděle';
+
+export interface MealEntryDTO {
+    mealName: string;
+    mealType: string;
+    price: number;
+    dailyLimit?: number;
+}
+
+export interface RestaurantOfferFormDTO {
+    restaurantName: string;
+    menuValidity: string;
+    includeWeekend: boolean;
+    includeHoliday: boolean;
+    name: string;
+    orderDispatchFrequency: OrderDispatchFrequency;
+    oneTimeOrderDispatchDate?: string; // YYYY-MM-DD format
+    orderDispatchDay?: DayOfWeek; // Required when frequency is 'Odeslání týdně'
+    orderDispatchTime: string; // HH:MM AM/PM format
+    meals: MealEntryDTO[];
+}
