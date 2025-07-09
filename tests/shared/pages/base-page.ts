@@ -226,4 +226,12 @@ export class BasePage implements PageInterface {
     async reloadPage(): Promise<void> {
         await this.page.reload();
     }
+
+    /**
+     * Waits for a specified amount of time
+     * @param timeout The amount of time to wait in milliseconds
+     */
+    async waitForTimeout(timeout: number): Promise<void> {
+        await this.page.waitForTimeout(timeout);
+    }
 }

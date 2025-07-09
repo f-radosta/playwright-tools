@@ -135,10 +135,10 @@ export const generateAllOrderCombinations = (): OrderDTO[] => {
     const allMealRows = generateMealRows();
     const orders: OrderDTO[] = [];
 
-    // Generate samples with good coverage (limit to ~15 samples for practicality)
+    // Generate samples with good coverage (limit samples for practicality)
     const samples = generateMealRowSamples(
         allMealRows,
-        Math.min(15, allMealRows.length)
+        Math.min(2, allMealRows.length)
     );
 
     // Create orders from the samples

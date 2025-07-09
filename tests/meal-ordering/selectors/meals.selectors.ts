@@ -53,7 +53,7 @@ export const MEAL_SELECTORS = {
         DATE: 'order-date',
         USER: 'order-user',
         MEAL: 'order-meal',
-        RESTAURANT: 'order-company',
+        RESTAURANT: 'order-restaurant',
         QUANTITY: 'order-quantity'
     },
 

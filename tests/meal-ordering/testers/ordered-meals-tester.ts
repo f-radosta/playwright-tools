@@ -16,8 +16,15 @@ function extractDateNumbers(date: Date | string): string {
     return `${day}.${month}`;
 }
 
-export async function compareOrders(app: AppFactory, order: OrderDTO): Promise<void> {
+export async function verifyOrders(app: AppFactory, order: OrderDTO): Promise<void> {
     const orderedMealsPage = await app.gotoOrderedMeals();
+    orderedMealsPage.orderedMealsList.orderedMealsFilter.resetFilter();
+    await(
+        await orderedMealsPage.orderedMealsList.getItem(0)
+    ).rootLocator.waitFor({
+        state: 'visible',
+        timeout: 5000
+    });
     const orderedMeals = await orderedMealsPage.orderedMealsList.getAllOrderedMealsData();
 
     // Verify we have the same number of meals
@@ -62,4 +69,55 @@ export async function compareOrders(app: AppFactory, order: OrderDTO): Promise<v
             throw new Error(`Date mismatch: expected ${expectedDate}, got ${actualDate}`);
         }
     }
+}
+
+// export type MealRowDTO = {
+//     name?: string;
+//     quantity: number;
+//     restaurantName: Restaurant;
+//     pricePerUnit?: string;
+//     totalRowPrice?: string;
+//     mealType: MealType;
+//     mealTime?: MealTime;
+//     note?: string;
+//     date: Date;
+// };
+
+// export type OrderDTO = {
+//     mealRows: MealRowDTO[];
+//     totalOrderPrice?: string;
+// };
+
+/**
+ * Combines multiple OrderDTO objects into a single OrderDTO
+ * @param orders Array of OrderDTO objects to merge
+ * @returns A single OrderDTO containing all meal rows from all orders
+ */
+export function mergeOrders(orders: OrderDTO[]): OrderDTO {
+    if (!orders.length) {
+        return { mealRows: [] };
+    }
+
+    // If there's only one order, return a copy of it
+    if (orders.length === 1) {
+        return { ...orders[0] };
+    }
+
+    // Combine all meal rows from all orders
+    const combinedMealRows = orders.flatMap(order => order.mealRows);
+
+    // Calculate total order price if available in any order
+    const totalOrderPrice = orders.some(order => order.totalOrderPrice !== undefined)
+        ? orders.reduce((sum, order) => {
+              if (!order.totalOrderPrice) return sum;
+              // Extract numeric value from price string (e.g., "100 Kč" -> 100)
+              const priceValue = parseFloat(order.totalOrderPrice.replace(/[^\d.,]/g, '').replace(',', '.'));
+              return sum + (isNaN(priceValue) ? 0 : priceValue);
+          }, 0).toFixed(0) + ' Kč'
+        : undefined;
+
+    return {
+        mealRows: combinedMealRows,
+        totalOrderPrice
+    };
 }

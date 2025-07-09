@@ -1,4 +1,4 @@
-import {Locator} from '@playwright/test';
+import {expect, Locator} from '@playwright/test';
 import {BaseListComponent} from '@shared-components/base-list.component';
 import {ListInterface} from '@shared-interfaces/list.interface';
 import {OrderedMealsListItem} from '@meal-components/index';
@@ -48,25 +48,22 @@ export class OrderedMealsList
                         item.getQuantity()
                     ]);
 
-                // Check if any required field is missing
-                if (
-                    !date ||
-                    !userName ||
-                    !mealName ||
-                    !restaurantName ||
-                    quantityStr === undefined
-                ) {
-                    console.warn(
-                        'Skipping item due to missing required fields'
-                    );
-                    return null;
+                expect(date).toBeTruthy();
+                expect(userName).toBeTruthy();
+                expect(mealName).toBeTruthy();
+                expect(restaurantName).toBeTruthy();
+                expect(quantityStr).toBeTruthy();
+                if (quantityStr === null) {
+                    throw new Error('Quantity is null');
                 }
-
-                // Convert quantity to number, default to 0 if conversion fails
-                const quantity =
-                    typeof quantityStr === 'number'
-                        ? quantityStr
-                        : parseInt(quantityStr || '0', 10) || 0;
+                
+                // Remove 'x' prefix if present and parse the quantity
+                const quantityValue = quantityStr.replace(/^x\s*/, '');
+                const quantity = parseInt(quantityValue, 10);
+                
+                if (isNaN(quantity)) {
+                    throw new Error(`Failed to parse quantity from: ${quantityStr}`);
+                }
 
                 return {
                     date,

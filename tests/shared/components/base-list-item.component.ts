@@ -28,14 +28,18 @@ export abstract class BaseListItemComponent implements ListItemInterface {
      * Click the edit button on the list item
      */
     async clickEdit(): Promise<void> {
-        await this.itemLocator.getByTitle(SHARED_SELECTORS.LIST.TITLES.EDIT).click();
+        await this.itemLocator
+            .getByTitle(SHARED_SELECTORS.LIST.TITLES.EDIT)
+            .click();
     }
 
     /**
      * Click the delete button on the list item
      */
     async clickDelete(): Promise<void> {
-        await this.itemLocator.getByTestId(SHARED_SELECTORS.ACTIONS.TRASH).click();
+        await this.itemLocator
+            .getByTestId(SHARED_SELECTORS.ACTIONS.TRASH)
+            .click();
     }
 
     /**
@@ -52,7 +56,9 @@ export abstract class BaseListItemComponent implements ListItemInterface {
         await withConfirmationDialog(
             this.itemLocator.page(),
             async () => {
-                await this.itemLocator.getByTestId(SHARED_SELECTORS.ACTIONS.TRASH).click();
+                await this.itemLocator
+                    .getByTestId(SHARED_SELECTORS.ACTIONS.TRASH)
+                    .click();
             },
             true,
             'Opravdu chcete smazat záznam?'
@@ -105,5 +111,9 @@ export abstract class BaseListItemComponent implements ListItemInterface {
      */
     locator(selector: string): Locator {
         return this.itemLocator.locator(selector);
+    }
+
+    get rootLocator(): Locator {
+        return this.itemLocator;
     }
 }

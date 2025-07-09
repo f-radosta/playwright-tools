@@ -55,7 +55,7 @@ async function loginAsUser(): Promise<void> {
 export const test = baseTest;
 
 // Admin test - create a test function with admin auth
-export function adminTest(title: string, testFn: Function) {
+export function adminTest(title: string, testFn: (args: any) => Promise<void>) {
     appTest.describe('Admin', () => {
         // Run login before tests in this group
         appTest.beforeAll(async () => {
@@ -65,12 +65,12 @@ export function adminTest(title: string, testFn: Function) {
         // Use the saved authentication state
         appTest.use({storageState: path.join(authDir, 'tool-admin.json')});
 
-        appTest(title, testFn as any);
+        appTest(title, testFn);
     });
 }
 
 // User test - create a test function with user auth
-export function userTest(title: string, testFn: Function) {
+export function userTest(title: string, testFn: (args: any) => Promise<void>) {
     appTest.describe('User', () => {
         // Run login before tests in this group
         appTest.beforeAll(async () => {
@@ -80,7 +80,7 @@ export function userTest(title: string, testFn: Function) {
         // Use the saved authentication state
         appTest.use({storageState: path.join(authDir, 'user.json')});
 
-        appTest(title, testFn as any);
+        appTest(title, testFn);
     });
 }
 

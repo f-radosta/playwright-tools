@@ -195,7 +195,7 @@ export async function selectAndOrderMeals(
             
             // Format total price with the same format (assuming "XX Kč" format)
             const currencySuffix = orderRow.pricePerUnit.replace(/^[0-9.,\s]+/, '');
-            orderRow.totalRowPrice = `${totalValue} ${currencySuffix.trim()}`;
+            orderRow.totalRowPrice = `${Math.round(totalValue)} ${currencySuffix.trim()}`;
         }
         
         log(`Found matching meal: ${mealInfo.name} from ${mealInfo.restaurant}`);
@@ -243,7 +243,7 @@ export async function selectAndOrderMeals(
 
     // Format total order price
     if (totalPrice > 0) {
-        orderDTO.totalOrderPrice = `${totalPrice} ${currencySuffix}`;
+        orderDTO.totalOrderPrice = `${Math.round(totalPrice)} ${currencySuffix}`;
         log(`Total order price calculated: ${orderDTO.totalOrderPrice}`);
     }
 
@@ -263,16 +263,35 @@ export async function selectAndOrderMeals(
  */
 export async function cleanupMealOrders(app: AppFactory): Promise<boolean> {
     try {
-        const currentMenuPage = await app.gotoCurrentMenu();
+        // const currentMenuPage = await app.gotoCurrentMenu();
 
-        const emptyFilter: MenuDTO = {};
-        await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
+        // const emptyFilter: MenuDTO = {};
+        // await currentMenuPage.menuList.menuFilter.filter(emptyFilter);
 
-        const allLists = await currentMenuPage.menuList.getDailyMenuLists();
-        for (const list of allLists) {
-            const meals = await list.getAvailableMeals();
-            for (const meal of meals) {
-                await meal.setQuantity(0);
+        // const allLists = await currentMenuPage.menuList.getDailyMenuLists();
+        // for (const list of allLists) {
+        //     const meals = await list.getAvailableMeals();
+        //     for (const meal of meals) {
+        //         await meal.setQuantity(0);
+        //     }
+        // }
+
+        const orderedMealsPage = await app.gotoOrderedMeals();
+        orderedMealsPage.orderedMealsList.orderedMealsFilter.resetFilter();
+        await (await orderedMealsPage.orderedMealsList.getItem(0)).rootLocator.waitFor({
+            state: 'visible', // or 'attached' or 'hidden', depending on what you want
+            timeout: 5000 // 5 seconds
+        });
+
+        let finished = false;
+        while (!finished) {
+            const orderedMeals = await orderedMealsPage.orderedMealsList.getItems();
+            if (orderedMeals.length === 0) {
+                finished = true;
+            } else {
+                log('Deleting meal: ' + (await orderedMeals[0].getMealName()));
+                await orderedMeals[0].deleteItself();
+                await app.page.waitForTimeout(1000);
             }
         }
 
