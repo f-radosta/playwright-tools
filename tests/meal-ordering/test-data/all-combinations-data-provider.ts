@@ -73,9 +73,10 @@ const generateMealRows = (): MealRowDTO[] => {
                 pricePerUnit: undefined,
                 totalRowPrice: undefined,
                 mealType,
-                note: note || undefined,
-                date // Date is included to distinguish otherwise identical meals on different days
+                date, // Date is included to distinguish otherwise identical meals on different days
+                ...(restaurantName !== Restaurant.Tommys && note ? { note } : {})
             };
+
 
             // Only add mealTime if restaurant is not Tommy's and meal type is not Breakfast, Snack, or Salad
             if (restaurantName !== Restaurant.Tommys && 
@@ -143,7 +144,7 @@ export const generateAllOrderCombinations = (): OrderDTO[] => {
     // Generate samples with good coverage (limit samples for practicality)
     const samples = generateMealRowSamples(
         allMealRows,
-        Math.min(2, allMealRows.length)
+        Math.min(7, allMealRows.length)
     );
 
     // Create orders from the samples

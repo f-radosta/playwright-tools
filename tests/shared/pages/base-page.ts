@@ -183,7 +183,7 @@ export class BasePage implements PageInterface {
         }
         
         // Click on the current menu link
-        await this.currentMenuLink().click();
+        await this.currentMenuLink().click({ timeout: 10000 });
     }
 
     /**

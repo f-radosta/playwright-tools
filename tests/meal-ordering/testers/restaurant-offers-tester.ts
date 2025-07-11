@@ -24,16 +24,11 @@ export async function createOrUpdateRestaurantOffer(
     if (existingOffer) {
         // If offer exists, go to edit form
         form = await existingOffer.goToEditForm(app.page.page);
-        try {
-            await form.fillForm(offer);
-        } catch (error) {
-            await form.goBack();
-        }
     } else {
         // If offer doesn't exist, create a new one
         form = await restaurantOffersPage.goToAddForm();
-        await form.fillForm(offer);
     }
+    await form.fillForm(offer);
     
     // Verify the operation was successful by checking the page title is visible
     await restaurantOffersPage.pageTitle().isVisible();

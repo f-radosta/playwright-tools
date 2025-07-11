@@ -235,6 +235,8 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
         for (let i = count - 1; i >= 0; i--) {
             await deleteButtons.nth(i).click();
         }
+
+        await this.page.waitForTimeout(1000);
     }
 
     /**
@@ -277,11 +279,15 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
         // const lastRow = this.page.locator(MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_CONTAINER_ROW).last();
         // await lastRow.waitFor({ state: 'visible', timeout: 5000 });
 
+        await this.page.waitForTimeout(100);
+
         // Fill meal name
         const nameInput = this.page.locator(
             MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_NAME_INPUT
         );
         await nameInput.fill(mealName);
+
+        await this.page.waitForTimeout(100);
 
         // Fill meal type
         const typeSelect = this.page.locator(
@@ -289,6 +295,8 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
         );
         const optionValue = this.getMealTypeOptionValue(mealType);
         await typeSelect.selectOption(optionValue);
+
+        await this.page.waitForTimeout(100);
 
         // Fill price
         const priceInput = this.page.locator(
@@ -303,6 +311,8 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
             );
             await limitInput.fill(dailyLimit.toString());
         }
+
+        await this.page.waitForTimeout(100);
     }
 
     async moveToPast(): Promise<void> {

@@ -102,11 +102,6 @@ const generateFilterForMealRow = (
             // Only apply date range filter if we have days to include AND useDateRange is true
             const applyDateFilter = useDateRange && daysToInclude > 0;
 
-            console.log('XXX includeDateRange: ' + applyDateFilter);
-            console.log('XXX daysToInclude: ' + daysToInclude);
-            console.log('XXX startOffset: ' + startOffset);
-            console.log('XXX useDateRange: ' + useDateRange);
-
             return {
                 includeRestaurant: useRestaurant,
                 includeFoodType: useFoodType,

@@ -13,7 +13,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   /* Maximum time one test can run for */
-  timeout: 360000, // max 360 seconds per test
+  timeout: 2000000, // big timeout
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
