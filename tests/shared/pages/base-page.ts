@@ -18,6 +18,8 @@ export class BasePage implements PageInterface {
         this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Seznam školení'});
     readonly trainingCategoriesLink = () =>
         this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Kategorie školení'});
+    readonly departmentsLink = () =>
+        this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.NAVTAB).filter({hasText: 'Číselník oddělení'});
 
     // Lunch ordering submenu elements
     readonly currentMenuLink = () =>
@@ -254,5 +256,24 @@ export class BasePage implements PageInterface {
      */
     async waitForTimeout(timeout: number): Promise<void> {
         await this.page.waitForTimeout(timeout);
+    }
+
+    /**
+     * Navigate to Departments page through the menu
+     */
+    async navigateToDepartments(): Promise<void> {
+        // Check if the departments link is already visible
+        const isVisible = await this.departmentsLink().isVisible()
+            .catch(() => false);
+        
+        // Only toggle if the link isn't already visible
+        if (!isVisible) {
+            await this.page.getByTestId(SHARED_SELECTORS.NAVIGATION.TOGGLE_TRAINING).click();
+            // Small wait to allow menu to expand
+            await this.page.waitForTimeout(100);
+        }
+        
+        // Click on the departments link
+        await this.departmentsLink().click();
     }
 }

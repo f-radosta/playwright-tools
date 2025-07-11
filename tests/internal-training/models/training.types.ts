@@ -57,6 +57,13 @@ export type CategoryDTO = {
 };
 
 /**
+ * Simple DTO for department filtering
+ */
+export type DepartmentDTO = {
+    departmentName: string;
+};
+
+/**
  * Base interface for a component that displays training details
  */
 export interface BaseTraining {

@@ -1,5 +1,4 @@
 export const TRAINING_SELECTORS = {
-
     CELL: {
         NAME: 'name-cell',
         CAPACITY: 'capacity-cell',
@@ -9,7 +8,7 @@ export const TRAINING_SELECTORS = {
         DEPARTMENT: 'department-cell',
         CATEGORY: 'category-cell',
         EDIT: 'edit-cell',
-        SIGN: 'sign-cell',
+        SIGN: 'sign-cell'
     },
 
     XPATH_SELECTOR: {
@@ -24,6 +23,7 @@ export const TRAINING_SELECTORS = {
         },
         CATEGORY: '//*[@id="training_course_courseCategories"]',
         TRAINER: '//*[@id="training_course_teacher"]',
-        DEPARTMENT: '//*[@id="training_course_departments"]'
+        DEPARTMENT: '//*[@id="training_course_departments"]',
+        DEPARTMENT_NAME: '//*[@id="department_name"]'
     }
 } as const;

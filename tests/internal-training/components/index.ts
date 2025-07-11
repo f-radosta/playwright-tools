@@ -5,3 +5,6 @@ export * from '@training-filters/training-filter.component';
 export * from '@training-list-items/training-list-item.component';
 export * from '@training-lists/training-list.component';
 export * from '@training-base/base-training.component';
+export * from '@training-filters/departments-filter.component';
+export * from '@training-list-items/department-list-item.component';
+export * from '@training/components/lists/departments-list.component';
