@@ -1,18 +1,28 @@
-import { Locator, Page, expect } from '@playwright/test';
-import { BasePage } from '@shared/pages/base-page';
-import { TrainingsList } from '@training/components';
-import { DateFilterComponent, DropdownFilterComponent, DropdownType, RichTextInputComponent } from '@shared/components';
-import { trainingSelectors } from '@training/selectors/training.selectors';
+import {Locator, Page, expect} from '@playwright/test';
+import {BasePage} from '@shared-pages/base-page';
+import {TrainingsList} from '@training-components/index';
+import {
+    DateFilterComponent,
+    DropdownFilterComponent,
+    DropdownType,
+    RichTextInputComponent
+} from '@shared-components/index';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
+import {TRAINING_SELECTORS} from '@training-selectors/training.selectors';
+import {PageInterface} from '@shared-pages/page.interface';
+import {NewTrainingFormDTO} from '@training-models/training.types';
 
-export class TrainingListPage extends BasePage {
-    // Training list page specific elements
-    override pageTitle(): Locator {
-        return this.page.getByRole('heading', { name: 'Vypsaná školení' }).locator('span');
+export class TrainingListPage extends BasePage implements PageInterface {
+    pageTitle(): Locator {
+        return this.page
+            .getByRole('heading', {name: 'Vypsaná školení'})
+            .locator('span');
     }
-    readonly createButton = () => this.page.getByRole('link', { name: 'Vytvořit školení' });
-    readonly formSaveButton = () => this.page.getByRole('button', { name: 'Uložit' });
+    readonly createButton = () =>
+        this.page.getByRole('link', {name: 'Vytvořit školení'});
+    readonly formSaveButton = () =>
+        this.page.getByRole('button', {name: 'Uložit'});
 
-    // Component instances
     private _trainingsList: TrainingsList | null = null;
 
     constructor(page: Page) {
@@ -25,7 +35,11 @@ export class TrainingListPage extends BasePage {
      */
     get trainingsList(): TrainingsList {
         if (!this._trainingsList) {
-            this._trainingsList = new TrainingsList(this.page.getByTestId('list-and-filter-wrapper'));
+            this._trainingsList = new TrainingsList(
+                this.page.getByTestId(
+                    SHARED_SELECTORS.LIST.LIST_AND_FILTER_WRAPPER
+                )
+            );
         }
         return this._trainingsList;
     }
@@ -40,49 +54,48 @@ export class TrainingListPage extends BasePage {
         const formContainer = this.page.locator('form[name="training_course"]');
 
         const categoryDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.category), 
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.CATEGORY
+            ),
             DropdownType.TOMSELECT
         );
         const trainerDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.trainer), 
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.TRAINER
+            ),
             DropdownType.TOMSELECT
         );
         const departmentDropdown = new DropdownFilterComponent(
-            formContainer.locator(trainingSelectors.department), 
+            formContainer.locator(
+                TRAINING_SELECTORS.XPATH_SELECTOR.DEPARTMENT
+            ),
             DropdownType.TOMSELECT
         );
-        const startDateInput = new DateFilterComponent(formContainer.getByLabel('Začátek školení'));
-        const endDateInput = new DateFilterComponent(formContainer.getByLabel('Konec školení'));
+        const startDateInput = new DateFilterComponent(
+            formContainer.getByLabel('Začátek školení')
+        );
+        const endDateInput = new DateFilterComponent(
+            formContainer.getByLabel('Konec školení')
+        );
 
         await categoryDropdown.select(trainingDTO.category);
         await formContainer.getByLabel('Název školení').fill(trainingDTO.name);
-        
-        const descriptionEditor = new RichTextInputComponent(formContainer, 'training_course_description');
+
+        const descriptionEditor = new RichTextInputComponent(
+            formContainer,
+            'training_course_description'
+        );
         await descriptionEditor.setText(trainingDTO.description);
-        
+
         await trainerDropdown.select(trainingDTO.trainer);
         await departmentDropdown.select(trainingDTO.department);
-        await formContainer.getByLabel('Kapacita').fill(trainingDTO.capacity.toString());
+        await formContainer
+            .getByLabel('Kapacita')
+            .fill(trainingDTO.capacity.toString());
         await startDateInput.setDate(trainingDTO.startDate);
         await endDateInput.setDate(trainingDTO.endDate);
 
         await this.formSaveButton().click();
         await this.expectPageHeaderVisible();
     }
-}
-
-export type NewTrainingFormDTO = {
-    category: string;
-    name: string;
-    description: string;
-    trainer: string;
-    department: string;
-    capacity: number;
-    issueId?: string;
-    roomName?: string;
-    online?: boolean;
-    startDate: string;
-    endDate: string;
-    registrationDeadline?: string;
-    reasonForClosingTheRegistration?: string;
 }
