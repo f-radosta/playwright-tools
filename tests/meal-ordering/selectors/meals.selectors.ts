@@ -72,10 +72,12 @@ export const MEAL_SELECTORS = {
             NAME: '//*[@id="food_offer_name"]',
             MEAL_CONTAINER: '//*[@id="food_offer_meals"]',
             MEAL_CONTAINER_ROW: '//*[@id="food_offer_meals"]//*',
-            MEAL_NAME_INPUT: './/input[contains(@id, "_name")]',
-            MEAL_TYPE_SELECT: './/select[contains(@id, "_mealType")]',
-            MEAL_PRICE_INPUT: './/input[contains(@id, "_price")]',
-            MEAL_LIMIT_INPUT: './/input[contains(@id, "_dailyMaxLimit")]',
+            MEAL_NAME_INPUT:
+                '(//*[@id="food_offer_meals"]//input[contains(@id, "_name")])[last()]',
+            MEAL_TYPE_SELECT:
+                '(//*[@id="food_offer_meals"]//select[contains(@id, "_mealType")])[last()]',
+            MEAL_PRICE_INPUT: '(//*[@id="food_offer_meals"]//input[contains(@id, "_price")])[last()]',
+            MEAL_LIMIT_INPUT: '(//*[@id="food_offer_meals"]//input[contains(@id, "_dailyMaxLimit")])[last()]',
             ADD_MEAL_BUTTON: '//button[@id="food_offer_meals_add"]',
             ORDER_DISPATCH_FREQUENCY:
                 '//select[@id="food_offer_orderDispatchFrequency"]',
@@ -84,7 +86,7 @@ export const MEAL_SELECTORS = {
                 '//input[@id="food_offer_oneTimeOrderDispatchDate"]',
             ORDER_DISPATCH_TIME: '//input[@id="food_offer_orderDispatchTime"]',
             SAVE_BUTTON:
-                '//button[@type="submit" and contains(@class, "btn-primary") and contains(., "Uložit")]',
+                '//button[@type="submit" and contains(., "Uložit")]',
             DELETE_MEAL_BUTTONS: '//button[contains(@id, "_delete")]'
         }
     }

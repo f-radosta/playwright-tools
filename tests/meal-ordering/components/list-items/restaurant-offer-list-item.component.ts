@@ -19,7 +19,7 @@ export class RestaurantOfferListItem
      * @returns A promise that resolves to the name of the restaurant offer
      */
     async getName(): Promise<string | null> {
-        return await this.getTextOfItemContentByIndex(0);
+        return await this.getTextOfItemContentByIndex(1);
     }
 
     /**
@@ -27,9 +27,12 @@ export class RestaurantOfferListItem
      * @returns A promise that resolves when the edit button is clicked and the page is loaded
      */
     async goToEditForm(page: Page): Promise<RestaurantOfferFormPage> {
-        await this.itemLocator
-            .getByTestId(MEAL_SELECTORS.ORDERED_ITEM.EDIT)
-            .click();
+        await this.itemLocator.getByLabel('Upravit menu').click();
         return new RestaurantOfferFormPage(page);
+    }
+
+    async isDateIn2020(): Promise<boolean> {
+        const date = await this.getTextOfItemByIndex(1);
+        return date?.includes('2020') ?? false;
     }
 }

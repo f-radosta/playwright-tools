@@ -29,11 +29,13 @@ const generateMealRows = (): MealRowDTO[] => {
     const notes = ['', 'Do krabičky'] as const;
     log(`DEBUG: Notes: ${notes.length}`);
 
-    // date -> tomorrow / the day after tomorrow / one week from now
+    // date -> tomorrow+7 / the day after tomorrow+7 / one week from now+7
+    const oneWeek = (7 * 24 * 60 * 60 * 1000);
+    const oneDay = (24 * 60 * 60 * 1000);
     const dates = [
-        new Date(Date.now() + 24 * 60 * 60 * 1000),
-        new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        new Date(Date.now() + oneDay + oneWeek),
+        new Date(Date.now() + 2 * oneDay + oneWeek),
+        new Date(Date.now() + oneWeek + oneWeek)
     ];
     log(`DEBUG: Dates: ${dates.length}`);
 
@@ -75,8 +77,11 @@ const generateMealRows = (): MealRowDTO[] => {
                 date // Date is included to distinguish otherwise identical meals on different days
             };
 
-            // Only add mealTime if restaurant is not Tommy's
-            if (restaurantName !== Restaurant.Tommys) {
+            // Only add mealTime if restaurant is not Tommy's and meal type is not Breakfast, Snack, or Salad
+            if (restaurantName !== Restaurant.Tommys && 
+                mealType !== MealType.Breakfast && 
+                mealType !== MealType.Snack && 
+                mealType !== MealType.Salad) {
                 mealRow.mealTime = mealTime;
             }
 

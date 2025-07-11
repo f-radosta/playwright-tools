@@ -11,7 +11,7 @@ import {cleanupMealOrders} from '@meal-helpers/meal-helper';
 import { log } from '@shared/utils/config';
 import { mergeOrders, verifyOrders } from '@meal/testers/ordered-meals-tester';
 import {restaurantOffers} from '@meal-test-data/restaurant-offers-data-provider';
-import {createOrUpdateRestaurantOffer} from '@meal-testers/restaurant-offers-tester';
+import {createOrUpdateRestaurantOffer, moveAllRestaurantOffersToPast} from '@meal-testers/restaurant-offers-tester';
 
 adminTest(
     'Pre-test meal ordering cleanup',
@@ -22,6 +22,12 @@ adminTest(
     }
 );
 
+adminTest(
+    `Move all restaurant offers to past`,
+    async ({app}: {app: AppFactory} & AppFixtures) => {
+        await moveAllRestaurantOffersToPast(app);
+    }
+);
 for (const offer of restaurantOffers) {
     adminTest(
         `Create or update restaurant offer - ${offer.restaurantName}`,

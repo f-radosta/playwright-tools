@@ -24,17 +24,40 @@ export async function createOrUpdateRestaurantOffer(
     if (existingOffer) {
         // If offer exists, go to edit form
         form = await existingOffer.goToEditForm(app.page.page);
-        // Clear existing form data
-        await form.deleteAllMeals();
+        try {
+            await form.fillForm(offer);
+        } catch (error) {
+            await form.goBack();
+        }
     } else {
         // If offer doesn't exist, create a new one
         form = await restaurantOffersPage.goToAddForm();
+        await form.fillForm(offer);
     }
-    
-    // Fill and submit the form with the provided data
-    await form.fillForm(offer);
-    await form.saveForm();
     
     // Verify the operation was successful by checking the page title is visible
     await restaurantOffersPage.pageTitle().isVisible();
+}
+
+export async function moveAllRestaurantOffersToPast(app: AppFactory): Promise<void> {
+    const restaurantOffersPage = await app.gotoRestaurantOffers();
+    const offers = await restaurantOffersPage.restaurantOffersList.getItems();
+    const offersLength = offers.length;
+
+    for (let i = 0; i < offersLength; i) {
+        const item = await restaurantOffersPage.restaurantOffersList.getItem(i);
+        if (await item.isDateIn2020()) {
+            i++;
+            continue;
+        }
+        const editForm = await item.goToEditForm(app.page.page);
+        try {
+            await editForm.moveToPast();
+        } catch (error) {
+            i++;
+            await editForm.page.getByRole('link', {name: 'Zpět na výpis'}).click();
+        } finally {
+            await app.page.reloadPage();
+        }
+    }
 }

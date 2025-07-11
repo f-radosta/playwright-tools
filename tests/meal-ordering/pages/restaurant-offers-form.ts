@@ -40,6 +40,13 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
      * @param restaurantName The name of the restaurant to select
      */
     async selectRestaurant(restaurantName: string): Promise<void> {
+        // restaurant name is sometimes disabled in edit form
+        try {
+            // Dropdown is different in edit form
+            await this.page
+                .locator('//*[@class="ts-control"]//*[@class="item"]')
+                .click({timeout: 100});
+        } catch (error) {}
         await this.restaurantFilter.select(restaurantName);
     }
 
@@ -188,12 +195,14 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
         // Add and fill meals
         for (const meal of formData.meals) {
             await this.clickAddMealButton();
+            await this.page.waitForTimeout(600);
             await this.fillMeal(
                 meal.mealName,
                 meal.mealType,
                 meal.price,
                 meal.dailyLimit
             );
+            await this.page.waitForTimeout(400);
         }
 
         // Save the form
@@ -201,10 +210,15 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
     }
 
     /**
-     * Clicks the save button to submit the form
+     * Clicks the save button to submit the form and waits for the save to complete
      */
     async saveForm(): Promise<void> {
         await this.page.click(MEAL_SELECTORS.XPATH_SELECTOR.FORM.SAVE_BUTTON);
+        await this.page.waitForTimeout(500);
+        // Wait for the 'Zpět na výpis' link to be hidden, indicating the save is complete
+        await this.page
+            .getByRole('link', {name: 'Zpět na výpis'})
+            .waitFor({state: 'hidden', timeout: 5000});
     }
 
     /**
@@ -214,6 +228,7 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
         const deleteButtons = this.page.locator(
             MEAL_SELECTORS.XPATH_SELECTOR.FORM.DELETE_MEAL_BUTTONS
         );
+        await deleteButtons.nth(0).waitFor({state: 'visible'});
         const count = await deleteButtons.count();
 
         // Click all delete buttons in reverse order to avoid index shifting issues
@@ -229,89 +244,74 @@ export class RestaurantOfferFormPage extends BasePage implements PageInterface {
      * @param price The price of the meal
      * @param dailyLimit Optional daily limit for the meal
      */
+    /**
+     * Gets the option value for a meal type
+     * @param mealType The display name of the meal type
+     * @returns The corresponding option value
+     */
+    private getMealTypeOptionValue(mealType: string): string {
+        switch (mealType) {
+            case 'Snídaně':
+                return '0';
+            case 'Polévka':
+                return '1';
+            case 'Hlavní chod':
+                return '2';
+            case 'Salát':
+                return '3';
+            case 'Dezert':
+                return '4';
+            case 'Svačina':
+                return '5';
+            default:
+                return '2'; // Default to MainCourse
+        }
+    }
+
     async fillMeal(
         mealName: string,
         mealType: string,
         price: number,
         dailyLimit?: number
     ): Promise<void> {
-        // Get the main meals container
-        const mealsContainer = await this.page.$(
-            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_CONTAINER
-        );
-        if (!mealsContainer) {
-            throw new Error('Meals container not found');
-        }
+        // const lastRow = this.page.locator(MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_CONTAINER_ROW).last();
+        // await lastRow.waitFor({ state: 'visible', timeout: 5000 });
 
-        // Find all meal rows within the container
-        const mealRows = await mealsContainer.$$(
-            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_CONTAINER_ROW
+        // Fill meal name
+        const nameInput = this.page.locator(
+            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_NAME_INPUT
         );
+        await nameInput.fill(mealName);
 
-        // Find the first empty meal row (where name input is empty)
-        for (const row of mealRows) {
-            const nameInput = await row.$(
-                MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_NAME_INPUT
+        // Fill meal type
+        const typeSelect = this.page.locator(
+            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_TYPE_SELECT
+        );
+        const optionValue = this.getMealTypeOptionValue(mealType);
+        await typeSelect.selectOption(optionValue);
+
+        // Fill price
+        const priceInput = this.page.locator(
+            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_PRICE_INPUT
+        );
+        await priceInput.fill(price.toString());
+
+        // Fill daily limit if provided
+        if (dailyLimit !== undefined) {
+            const limitInput = this.page.locator(
+                MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_LIMIT_INPUT
             );
-            if (nameInput) {
-                const value = await nameInput.inputValue();
-                if (!value.trim()) {
-                    // Fill meal name
-                    await nameInput.fill(mealName);
-
-                    // Fill meal type
-                    const typeSelect = await row.$(
-                        MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_TYPE_SELECT
-                    );
-                    if (typeSelect) {
-                        // Convert enum value to the corresponding option value
-                        let optionValue = '2'; // Default to MainCourse
-                        switch (mealType) {
-                            case 'Snídaně':
-                                optionValue = '0';
-                                break;
-                            case 'Polévka':
-                                optionValue = '1';
-                                break;
-                            case 'Hlavní chod':
-                                optionValue = '2';
-                                break;
-                            case 'Salát':
-                                optionValue = '3';
-                                break;
-                            case 'Dezert':
-                                optionValue = '4';
-                                break;
-                            case 'Svačina':
-                                optionValue = '5';
-                                break;
-                        }
-                        await typeSelect.selectOption(optionValue);
-                    }
-
-                    // Fill price
-                    const priceInput = await row.$(
-                        MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_PRICE_INPUT
-                    );
-                    if (priceInput) {
-                        await priceInput.fill(price.toString());
-                    }
-
-                    // Fill daily limit if provided
-                    if (dailyLimit !== undefined) {
-                        const limitInput = await row.$(
-                            MEAL_SELECTORS.XPATH_SELECTOR.FORM.MEAL_LIMIT_INPUT
-                        );
-                        if (limitInput) {
-                            await limitInput.fill(dailyLimit.toString());
-                        }
-                    }
-
-                    return; // Exit after filling the first empty meal
-                }
-            }
+            await limitInput.fill(dailyLimit.toString());
         }
-
-        throw new Error('No empty meal slot found');
     }
+
+    async moveToPast(): Promise<void> {
+        await this.setMenuValidity('1.1.2020 - 2.1.2020');
+        await this.saveForm();
+    }
+
+    async goBack(): Promise<void> {
+        await this.page.getByRole('link', {name: 'Zpět na výpis'}).click();
+    }
+
 }
