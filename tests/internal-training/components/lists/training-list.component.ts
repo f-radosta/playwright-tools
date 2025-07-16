@@ -1,14 +1,21 @@
-import { Locator } from "@playwright/test";
-import { BaseListComponent } from "@shared/components/base-list.component";
-import { TrainingCompositeFilter, TrainingListItem } from "@training/components";
-import { ListInterface } from "@shared/components/interfaces/list.interface";
+import {Locator} from '@playwright/test';
+import {BaseListComponent} from '@shared-components/base-list.component';
+import {TrainingCompositeFilter, TrainingListItem} from '@training-components/index';
+import {findItemByName} from '@shared-helpers/shared-helper';
+import {ListInterface} from '@shared-interfaces/list.interface';
+import {SHARED_SELECTORS} from '@shared-selectors/shared.selectors';
 
-export class TrainingsList extends BaseListComponent<TrainingListItem> implements ListInterface {
+export class TrainingsList
+    extends BaseListComponent<TrainingListItem>
+    implements ListInterface
+{
     public readonly trainingFilter: TrainingCompositeFilter;
 
-    constructor(public readonly listAndFilterWrapperLocator: Locator) {
-        super(listAndFilterWrapperLocator);
-        this.trainingFilter = new TrainingCompositeFilter(this.listAndFilterWrapperLocator.getByTestId('filter'));
+    constructor(public readonly listLocator: Locator) {
+        super(listLocator);
+        this.trainingFilter = new TrainingCompositeFilter(
+            this.listLocator.getByTestId(SHARED_SELECTORS.LIST.FILTER)
+        );
     }
 
     /**
@@ -20,21 +27,7 @@ export class TrainingsList extends BaseListComponent<TrainingListItem> implement
     }
 
     async findTrainingByName(name: string): Promise<TrainingListItem | null> {
-        const allItems = await this.getItems();
-        const trimmedName = name.trim();
-
-        // Search from last to first for faster search in most cases
-        for (let i = allItems.length - 1; i >= 0; i--) {
-            const item = allItems[i];
-            const itemName = await item.getName();
-
-            if (itemName && itemName.trim().localeCompare(trimmedName) === 0) {
-                //console.log(`Found training "${name}" at index ${i}`);
-                return item;
-            }
-        }
-
-        return null;
+        return findItemByName<TrainingListItem>(this, name);
     }
 
     async deleteTrainingByName(name: string): Promise<void> {
@@ -44,5 +37,4 @@ export class TrainingsList extends BaseListComponent<TrainingListItem> implement
         }
         await training.deleteItself();
     }
-
 }

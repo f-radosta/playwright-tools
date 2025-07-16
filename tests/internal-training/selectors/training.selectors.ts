@@ -1,15 +1,29 @@
-export const trainingSelectors = {
-    filter: {
-        category: '//*[@id="training_course_filter_courseCategories"]',
-        trainer: '//*[@id="training_course_filter_teachers"]',
-        department: '//*[@id="training_course_filter_departments"]',
-        name: '//*[@id="training_course_filter_trainingName"]',
-        online: '//*[@id="training_course_filter_online"]',
-        includePast: '//*[@id="training_course_filter_showPrevious"]',
-        participant: '//*[@id="training_course_filter_participants"]',
+export const TRAINING_SELECTORS = {
+    CELL: {
+        NAME: 'name-cell',
+        CAPACITY: 'capacity-cell',
+        ONLINE: 'online-cell',
+        DATE: 'date-cell',
+        TRAINER: 'trainer-cell',
+        DEPARTMENT: 'department-cell',
+        CATEGORY: 'category-cell',
+        EDIT: 'edit-cell',
+        SIGN: 'sign-cell'
     },
 
-    category: '//*[@id="training_course_courseCategories"]',
-    trainer: '//*[@id="training_course_teacher"]',
-    department: '//*[@id="training_course_departments"]',
-};
+    XPATH_SELECTOR: {
+        FILTER: {
+            CATEGORY: '//*[@id="training_course_filter_courseCategories"]',
+            TRAINER: '//*[@id="training_course_filter_teachers"]',
+            DEPARTMENT: '//*[@id="training_course_filter_departments"]',
+            NAME: '//*[@id="training_course_filter_trainingName"]',
+            ONLINE: '//*[@id="training_course_filter_online"]',
+            INCLUDE_PAST: '//*[@id="training_course_filter_showPrevious"]',
+            PARTICIPANT: '//*[@id="training_course_filter_participants"]'
+        },
+        CATEGORY: '//*[@id="training_course_courseCategories"]',
+        TRAINER: '//*[@id="training_course_teacher"]',
+        DEPARTMENT: '//*[@id="training_course_departments"]',
+        DEPARTMENT_NAME: '//*[@id="department_name"]'
+    }
+} as const;
