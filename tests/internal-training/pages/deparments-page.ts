@@ -38,6 +38,7 @@ export class DepartmentsPage extends BasePage implements PageInterface {
        await this.createButton().click();
        await this.page.getByLabel('Název oddělení').fill(name);
        await this.page.getByRole('button', {name: 'Přidat'}).click();
+       await this.page.getByText('Výpis oddělení').waitFor({state: 'visible'});
     }
 
     async deleteDepartmentByName(name: string): Promise<void> {
